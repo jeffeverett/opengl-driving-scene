@@ -22,7 +22,8 @@ namespace Utils {
             mMovementSpeed (SPEED),
             mMouseSensitivity(SENSITIVITY),
             mZoom(ZOOM),
-            mBoxSize(BOX_SIZE) {
+            mBoxSize(BOX_SIZE),
+            mProjectionMode(PERSPECTIVE) {
         mPosition = position;
         mWorldUp = up;
         mYaw = yaw;
@@ -36,7 +37,8 @@ namespace Utils {
             mMovementSpeed(SPEED),
             mMouseSensitivity(SENSITIVITY),
             mZoom(ZOOM),
-            mBoxSize(BOX_SIZE) {
+            mBoxSize(BOX_SIZE),
+            mProjectionMode(PERSPECTIVE) {
 
         mPosition = glm::vec3(posX, posY, posZ);
         mWorldUp = glm::vec3(upX, upY, upZ);
@@ -53,7 +55,7 @@ namespace Utils {
 
     // Returns the projection matrix
     glm::mat4 Camera::getProjectionMatrix() {
-        if (projectionMode == ORTHO) {
+        if (mProjectionMode == ORTHO) {
             return glm::ortho(-mBoxSize, mBoxSize, -mBoxSize, mBoxSize, -mBoxSize, mBoxSize);
         }
         else {
@@ -63,11 +65,11 @@ namespace Utils {
 
     // Set projection mode
     void Camera::cycleProjectionMode() {
-        if (projectionMode == ORTHO) {
-            this->projectionMode = PERSPECTIVE;
+        if (mProjectionMode == ORTHO) {
+            mProjectionMode = PERSPECTIVE;
         }
         else {
-            this->projectionMode = ORTHO;
+            mProjectionMode = ORTHO;
         }
     }
 
@@ -149,7 +151,7 @@ namespace Utils {
 
         std::ostringstream pmOSS;
         pmOSS << std::setprecision(5) << "Projection Mode: ";
-        if (projectionMode == ORTHO) {
+        if (mProjectionMode == ORTHO) {
             pmOSS << "ORTHO";
         }
         else {

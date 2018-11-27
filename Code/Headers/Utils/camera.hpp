@@ -81,7 +81,7 @@ namespace Utils {
         float mZoom;
         float mBoxSize;
 
-        ProjectionMode projectionMode;
+        ProjectionMode mProjectionMode;
 
         // Calculates the front vector from the Camera's (updated) Euler Angles
         void updateCameraVectors();

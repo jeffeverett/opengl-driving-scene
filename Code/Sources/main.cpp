@@ -23,6 +23,8 @@
 #include <stb_image.h>
 
 const int FPS_ROLLING_FRAMES = 10;
+const GLfloat EDGE_THRESHOLD = 75;
+const double EDGE_ROTATE_SPEED = 10;
 
 // Below used by other files
 GLfloat width = 1280;
@@ -120,15 +122,31 @@ int main(int argc, char * argv[]) {
     auto camera = std::make_shared<Utils::Camera>(glm::vec3(0,0,0));
 
     // Create cubemap
-    std::vector<std::string> faces {
+    /*std::vector<std::string> iceflowFaces {
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_rt.tga",
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_lf.tga",
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_up.tga",
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_dn.tga",
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_ft.tga",
-        PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_dn.tga"
+        PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_bk.tga"
     };
-    auto cubeMap = std::make_shared<Utils::CubeMap>(faces);
+    std::vector<std::string> sunsetFaces {
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_rt.tga",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_lf.tga",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_up.tga",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_dn.tga",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_ft.tga",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_bk.tga"
+    };*/
+    std::vector<std::string> darkFaces {
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyLeft2048.png",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyRight2048.png",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyUp2048.png",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyDown2048.png",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyFront2048.png",
+            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyBack2048.png"
+    };
+    auto cubeMap = std::make_shared<Utils::CubeMap>(darkFaces);
 
     // Create scene
     scene.setCamera(camera);
@@ -175,6 +193,27 @@ int main(int argc, char * argv[]) {
         // Start text renderer at bottom
         textRenderer->resetVerticalOffset();
 
+        // If at edge of screen, rotate in direction of edge
+        double xpos, ypos;
+        double xoffset = 0, yoffset = 0;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        if (xpos < EDGE_THRESHOLD) {
+            xoffset = -EDGE_ROTATE_SPEED;
+        }
+        else if (xpos > width - EDGE_THRESHOLD) {
+            xoffset = EDGE_ROTATE_SPEED;
+        }
+
+        if (ypos < EDGE_THRESHOLD) {
+            yoffset = EDGE_ROTATE_SPEED;
+        }
+        else if (ypos > height - EDGE_THRESHOLD) {
+            yoffset = -EDGE_ROTATE_SPEED;
+        }
+
+        scene.getCamera()->processMouseMovement(xoffset, yoffset);
+
+        // FPS timing/display
         double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
