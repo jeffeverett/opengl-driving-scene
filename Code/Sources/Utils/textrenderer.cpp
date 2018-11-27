@@ -1,4 +1,5 @@
 // Local Headers
+#include "globals.hpp"
 #include "Utils/textrenderer.hpp"
 
 // System Headers
@@ -9,9 +10,17 @@
 // Standard Headers
 #include <iostream>
 
+const GLfloat INITIAL_OFFSET_X = 10;
+const GLfloat INITIAL_OFFSET_Y = 10;
+const GLfloat PADDING_Y = 5;
+
 namespace Utils
 {
-    TextRenderer::TextRenderer(std::string fontFile) {
+    void TextRenderer::resetVerticalOffset() {
+        mVerticalOffset = 0;
+    }
+
+    TextRenderer::TextRenderer(std::string fontFile) : mVerticalOffset(0) {
         // Create textures
         FT_Library ft;
         if (FT_Init_FreeType(&ft))
@@ -82,28 +91,36 @@ namespace Utils
         );
         mShader->use();
         mShader->setInt("text", 0);
-        mShader->setMat4("projection", glm::ortho(0.0f, 1280.0f, 0.0f, 800.0f));
 
     }
 
-    void TextRenderer::renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
+    void TextRenderer::renderText(std::string text, GLfloat scale, glm::vec3 color) {
         // Activate corresponding render state
         mShader->use();
         mShader->setVec3("textColor", color);
+        mShader->setMat4("projection", glm::ortho(0.0f, width, 0.0f, height));
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(mVAO);
 
         // Iterate through all characters
         std::string::const_iterator c;
+        GLfloat maxHeight = 0;
+        GLfloat currentX = INITIAL_OFFSET_X;
+        GLfloat currentY = INITIAL_OFFSET_Y;
         for (c = text.begin(); c != text.end(); c++)
         {
             Character ch = mCharacters[*c];
 
-            GLfloat xpos = x + ch.bearing.x * scale;
-            GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
+            GLfloat xpos = currentX + ch.bearing.x * scale;
+            GLfloat ypos = currentY + mVerticalOffset - (ch.size.y - ch.bearing.y) * scale;
 
             GLfloat w = ch.size.x * scale;
             GLfloat h = ch.size.y * scale;
+
+            if (h > maxHeight) {
+                maxHeight = h;
+            }
+
             // Update VBO for each character
             GLfloat vertices[6][4] = {
                 { xpos,     ypos + h,   0.0, 0.0 },
@@ -114,13 +131,7 @@ namespace Utils
                 { xpos + w, ypos,       1.0, 1.0 },
                 { xpos + w, ypos + h,   1.0, 0.0 }
             };
-            /*for (int i = 0; i < 6; i++) {
-                for (int j = 0; j < 4; j++) {
-                    std::cout << vertices[i][j] << ",";
-                }
-                std::cout << std::endl;
-            }
-            */
+
             // Render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.textureID);
             // Update content of VBO memory
@@ -129,7 +140,9 @@ namespace Utils
             // Render quad
             glDrawArrays(GL_TRIANGLES, 0, 6);
             // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            x += (ch.advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+            currentX += (ch.advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
         }
+
+        mVerticalOffset += maxHeight + PADDING_Y;
     }
 }

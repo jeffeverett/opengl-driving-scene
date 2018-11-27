@@ -2,7 +2,7 @@
 
 // Local Headers
 #include "Utils/camera.hpp"
-#include "Utils/cubemap.hpp"
+#include "cubemap.hpp"
 #include "Utils/gameobject.hpp"
 
 // System Headers
@@ -35,6 +35,7 @@ namespace Utils
         void setDeltaTime(double deltaTime);
         void processInput(GLFWwindow *window);
         void draw();
+        void perFrame();
 
     private:
 

@@ -16,6 +16,7 @@ namespace Utils
     }
 
     void Scene::setCubeMap(std::shared_ptr<Utils::CubeMap> cubeMap) {
+        mShaders.insert(cubeMap->getShader());
         mCubeMap = cubeMap;
     }
 
@@ -24,10 +25,12 @@ namespace Utils
     }
 
     void Scene::processInput(GLFWwindow *window) {
+        // Window close
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
 
+        // Camera movement
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
             mCamera->processKeyboard(Utils::CameraMovement::DOWN, mDeltaTime);
         }
@@ -46,6 +49,11 @@ namespace Utils
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
             mCamera->processKeyboard(Utils::CameraMovement::RIGHT, mDeltaTime);
         }
+
+        // Camera settings
+        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+            mCamera->cycleProjectionMode();
+        }
     }
 
 
@@ -55,16 +63,27 @@ namespace Utils
     }
 
     void Scene::draw() {
-        std::cout << "Drawing frame." << std::endl;
+        std::cout << "Num shaders tracked by scene " << mShaders.size() << std::endl;
         for (auto &shader : mShaders) {
             shader->use();
-            shader->setMat4("view", mCamera->getViewMatrix());
             shader->setMat4("projection", mCamera->getProjectionMatrix());
+
+            if (shader->ID == mCubeMap->getShader()->ID) {
+                glm::mat4 strippedTransformView = glm::mat4(glm::mat3(mCamera->getViewMatrix()));
+                shader->setMat4("view", strippedTransformView);
+            }
+            else {
+                shader->setMat4("view", mCamera->getViewMatrix());
+            }
         }
 
         mCubeMap->draw();
         for (auto &gameObject : mGameObjects) {
             gameObject->draw();
         }
+    }
+
+    void Scene::perFrame() {
+        mCamera->perFrame();
     }
 }

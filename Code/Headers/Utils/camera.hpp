@@ -13,6 +13,7 @@ const float PITCH       =  0.0f;
 const float SPEED       =  2.5f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
+const float BOX_SIZE    =  0.5f;
 
 
 namespace Utils {
@@ -24,6 +25,11 @@ namespace Utils {
         RIGHT,
         UP,
         DOWN
+    };
+
+    enum ProjectionMode {
+        ORTHO,
+        PERSPECTIVE
     };
 
     // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
@@ -44,6 +50,9 @@ namespace Utils {
         // Returns the projection matrix
         glm::mat4 getProjectionMatrix();
 
+        // Set projection mode
+        void cycleProjectionMode();
+
         // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
         void processKeyboard(CameraMovement direction, float deltaTime);
 
@@ -52,6 +61,9 @@ namespace Utils {
 
         // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
         void processMouseScroll(float yoffset);
+
+        // Called every frame
+        void perFrame();
 
     private:
         // Camera Attributes
@@ -67,6 +79,9 @@ namespace Utils {
         float mMovementSpeed;
         float mMouseSensitivity;
         float mZoom;
+        float mBoxSize;
+
+        ProjectionMode projectionMode;
 
         // Calculates the front vector from the Camera's (updated) Euler Angles
         void updateCameraVectors();

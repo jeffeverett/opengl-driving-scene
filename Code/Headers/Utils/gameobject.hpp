@@ -42,7 +42,7 @@ namespace Utils
         GameObject & operator=(GameObject const &) = delete;
 
         // Private Member Variables
-        glm::mat4 mTransform;
+        glm::mat4 mTransform = glm::mat4(1);
         std::shared_ptr<Utils::Model> mModel;
         std::shared_ptr<Utils::Shader> mShader;
     };

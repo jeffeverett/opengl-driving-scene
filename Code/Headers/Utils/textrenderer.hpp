@@ -2,7 +2,7 @@
 
 // Local Headers
 #include "Utils/camera.hpp"
-#include "Utils/cubemap.hpp"
+#include "cubemap.hpp"
 #include "Utils/shader.hpp"
 
 // System Headers
@@ -35,7 +35,8 @@ namespace Utils
 
 
         // Public Member Functions
-        void renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(0,0,0));
+        void resetVerticalOffset();
+        void renderText(std::string text, GLfloat scale, glm::vec3 color = glm::vec3(0,0,0));
 
     private:
 
@@ -48,5 +49,6 @@ namespace Utils
         GLuint mVAO;
         std::shared_ptr<Utils::Shader> mShader;
         std::map<GLchar, Character> mCharacters;
+        int mVerticalOffset;
     };
 }

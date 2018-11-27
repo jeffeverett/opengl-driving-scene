@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iomanip>
+#include <memory>
 #include <iostream>
 #include <sstream>
 
@@ -23,10 +24,17 @@
 
 const int FPS_ROLLING_FRAMES = 10;
 
+// Below used by other files
+GLfloat width = 1280;
+GLfloat height = 800;
+std::unique_ptr<Utils::TextRenderer> textRenderer;
+
+// Below local to translation unit
 Utils::Scene scene;
 bool firstMouse = true;
 float lastX;
 float lastY;
+
 
 void errorCallback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
@@ -49,7 +57,9 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     scene.getCamera()->processMouseMovement(xoffset, yoffset);
 }
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+void framebufferSizeCallback(GLFWwindow* window, int newWidth, int newHeight) {
+    width = newWidth;
+    height = newHeight;
     glViewport(0, 0, width, height);
 }
 
@@ -87,14 +97,13 @@ int main(int argc, char * argv[]) {
 
     // Enable/disable features
     glEnable(GL_BLEND);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
 
     // OpenGL settings
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Create text renderer
-    auto textRenderer = std::make_shared<Utils::TextRenderer>(PROJECT_SOURCE_DIR "/Fonts/arial.ttf");
+    textRenderer = std::make_unique<Utils::TextRenderer>(PROJECT_SOURCE_DIR "/Fonts/arial.ttf");
 
     // Compile/link shaders
     auto defaultShader = std::make_shared<Utils::Shader>(
@@ -108,7 +117,7 @@ int main(int argc, char * argv[]) {
     );
 
     // Create camera
-    auto camera = std::make_shared<Utils::Camera>(glm::vec3(0,0,3));
+    auto camera = std::make_shared<Utils::Camera>(glm::vec3(0,0,0));
 
     // Create cubemap
     std::vector<std::string> faces {
@@ -127,8 +136,8 @@ int main(int argc, char * argv[]) {
 
     // Add GameObjects to scene
     auto carObject = std::make_shared<Utils::GameObject>(carModel, defaultShader);
-    carObject->translate(glm::vec3(0, 0, 0));
-    scene.add(carObject);
+    carObject->scale(glm::vec3(1.0f/400.0f, 1.0f/400.0f, 1.0f/400.0f));
+    //scene.add(carObject);
 
     // Add cube
     float cubeSize = 3.0f;
@@ -161,7 +170,10 @@ int main(int argc, char * argv[]) {
     while (glfwWindowShouldClose(window) == 0) {
         // Background Fill Color
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Start text renderer at bottom
+        textRenderer->resetVerticalOffset();
 
         double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -190,10 +202,13 @@ int main(int argc, char * argv[]) {
         // Render FPS as string
         std::ostringstream fpsOSS;
         fpsOSS << std::setprecision(5) << "FPS: " << rollingFPS;
-        textRenderer->renderText(fpsOSS.str(), 10, 10, 1, glm::vec3(0.5,0.5,0.5));
+        textRenderer->renderText(fpsOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
         // Process input
         scene.processInput(window);
+
+        // Run object scripts
+        scene.perFrame();
 
         // Draw scene
         scene.draw();

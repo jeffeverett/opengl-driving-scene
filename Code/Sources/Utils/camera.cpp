@@ -1,5 +1,6 @@
 // Local Headers
 #include "Utils/camera.hpp"
+#include "globals.hpp"
 
 // System Headers
 #include <glm/gtc/matrix_transform.hpp>
@@ -7,6 +8,8 @@
 // Standard Headers
 #include <vector>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 namespace Utils {
 
@@ -18,7 +21,8 @@ namespace Utils {
             mFront(glm::vec3(0.0f, 0.0f, -1.0f)),
             mMovementSpeed (SPEED),
             mMouseSensitivity(SENSITIVITY),
-            mZoom(ZOOM) {
+            mZoom(ZOOM),
+            mBoxSize(BOX_SIZE) {
         mPosition = position;
         mWorldUp = up;
         mYaw = yaw;
@@ -31,7 +35,8 @@ namespace Utils {
             mFront(glm::vec3(0.0f, 0.0f, -1.0f)),
             mMovementSpeed(SPEED),
             mMouseSensitivity(SENSITIVITY),
-            mZoom(ZOOM) {
+            mZoom(ZOOM),
+            mBoxSize(BOX_SIZE) {
 
         mPosition = glm::vec3(posX, posY, posZ);
         mWorldUp = glm::vec3(upX, upY, upZ);
@@ -43,11 +48,27 @@ namespace Utils {
     // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 Camera::getViewMatrix() {
         return glm::lookAt(mPosition, mPosition + mFront, mUp);
+        //return glm::mat4(1);
     }
 
     // Returns the projection matrix
     glm::mat4 Camera::getProjectionMatrix() {
-        return glm::perspective(30.0f, 1280.0f/800.0f, 0.1f, 100.0f);
+        if (projectionMode == ORTHO) {
+            return glm::ortho(-mBoxSize, mBoxSize, -mBoxSize, mBoxSize, -mBoxSize, mBoxSize);
+        }
+        else {
+            return glm::perspective(glm::radians(30.0f), 1280.0f/800.0f, 0.1f, 100.0f);
+        }
+    }
+
+    // Set projection mode
+    void Camera::cycleProjectionMode() {
+        if (projectionMode == ORTHO) {
+            this->projectionMode = PERSPECTIVE;
+        }
+        else {
+            this->projectionMode = ORTHO;
+        }
     }
 
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -115,5 +136,25 @@ namespace Utils {
         std::cout << "Camera Up: (" << mUp.x << ", " << mUp.y << ", " << mUp.z << ")" << std::endl;
         std::cout << "Camera Right: (" << mRight.x << ", " << mRight.y << ", " << mRight.z << ")" << std::endl;
         std::cout << "Camera Front: (" << mFront.x << ", " << mFront.y << ", " << mFront.z << ")" << std::endl;
+    }
+
+    void Camera::perFrame() {
+        std::ostringstream ypOSS;
+        ypOSS << std::setprecision(5) << "Yaw: " << mYaw << ", Pitch: " << mPitch;
+        textRenderer->renderText(ypOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
+
+        std::ostringstream cpOSS;
+        cpOSS << std::setprecision(5) << "Camera Pos: (" << mPosition[0] << ", " << mPosition[1] << ", " << mPosition[2] << ")";
+        textRenderer->renderText(cpOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
+
+        std::ostringstream pmOSS;
+        pmOSS << std::setprecision(5) << "Projection Mode: ";
+        if (projectionMode == ORTHO) {
+            pmOSS << "ORTHO";
+        }
+        else {
+            pmOSS << "PERSPECTIVE";
+        }
+        textRenderer->renderText(pmOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
     }
 }

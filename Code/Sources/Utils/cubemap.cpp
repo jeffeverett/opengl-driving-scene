@@ -7,44 +7,50 @@
 // Standard Headers
 #include <iostream>
 
-const float cubeSize = 2.5f;
+const float cubeSize = 1.0f;
 // Note: Reuse vertices because normals cannot be shared
 const float vertices[] = {
-    // Back quad
-    -cubeSize,  cubeSize, -cubeSize,
-    -cubeSize, -cubeSize, -cubeSize,
-    cubeSize, -cubeSize, -cubeSize,
-    cubeSize,  cubeSize, -cubeSize,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
 
-    // Left quad
-    -cubeSize, -cubeSize,  cubeSize,
-    -cubeSize, -cubeSize, -cubeSize,
-    -cubeSize,  cubeSize, -cubeSize,
-    -cubeSize,  cubeSize,  cubeSize,
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
 
-    // Right quad
-    cubeSize, -cubeSize, -cubeSize,
-    cubeSize, -cubeSize,  cubeSize,
-    cubeSize,  cubeSize,  cubeSize,
-    cubeSize,  cubeSize, -cubeSize,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
 
-    // Front quad
-    -cubeSize, -cubeSize,  cubeSize,
-    -cubeSize,  cubeSize,  cubeSize,
-    cubeSize,  cubeSize,  cubeSize,
-    cubeSize, -cubeSize,  cubeSize,
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
 
-    // Top quad
-    -cubeSize,  cubeSize, -cubeSize,
-    cubeSize,  cubeSize, -cubeSize,
-    cubeSize,  cubeSize,  cubeSize,
-    -cubeSize,  cubeSize,  cubeSize,
+        -1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
 
-    // Bottom quad
-    -cubeSize, -cubeSize, -cubeSize,
-    -cubeSize, -cubeSize,  cubeSize,
-    cubeSize, -cubeSize, -cubeSize,
-    cubeSize, -cubeSize,  cubeSize
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f
 };
 
 // Define Namespace
@@ -57,7 +63,7 @@ namespace Utils
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), nullptr);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), nullptr);
         glEnableVertexAttribArray(0);
 
         // Shader
@@ -65,6 +71,7 @@ namespace Utils
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/cubemap.vert",
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/cubemap.frag"
         );
+        mShader->use();
         mShader->setInt("skybox", 0);
 
         // Textures
@@ -101,10 +108,12 @@ namespace Utils
 
     void CubeMap::draw() {
         //std::cout << "Drawing cubemap" << std::endl;
+        glDepthMask(GL_FALSE);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
         mShader->use();
         glBindVertexArray(mVAO);
-        glDrawArrays(GL_QUADS, 0, 24);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDepthMask(GL_TRUE);
     }
 }
