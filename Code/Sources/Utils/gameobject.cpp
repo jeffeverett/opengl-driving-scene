@@ -31,9 +31,9 @@ namespace Utils
     void GameObject::draw() {
         // Construct model matrix
         glm::mat4 model(1);
-        glm::scale(model, mScale);
-        glm::rotate(model, glm::radians(mTheta), glm::vec3(0,1,0));
-        glm::translate(model, mPosition);
+        model = glm::scale(model, mScale);
+        model = glm::rotate(model, glm::radians(mTheta), glm::vec3(0,1,0));
+        model = glm::translate(model, mPosition/mScale);
 
         mShader->use();
         mShader->setMat4("model", model);

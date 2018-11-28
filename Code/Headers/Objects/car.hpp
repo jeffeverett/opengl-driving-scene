@@ -42,7 +42,7 @@ namespace Objects
         // Public Member Functions
         static void setup() {
             mDrawable = std::make_shared<Utils::Model>(
-                PROJECT_SOURCE_DIR "/Models/lamborginhi_aventador.obj"
+                PROJECT_SOURCE_DIR "/Models/lambo/Lamborghini_Aventador.fbx"
             );
             mShader = defaultShader;
         }
