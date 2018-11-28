@@ -41,8 +41,8 @@ include_directories(SYSTEM
         Code/Vendor/freetype2)
 
 file(GLOB VENDORS_SOURCES Code/Vendor/glad/src/glad.c)
-file(GLOB PROJECT_HEADERS Code/Headers/*.hpp Code/Headers/Utils/*.hpp)
-file(GLOB PROJECT_SOURCES Code/Sources/*.cpp Code/Sources/Utils/*.cpp)
+file(GLOB PROJECT_HEADERS Code/Headers/*.hpp Code/Headers/Utils/*.hpp Code/Headers/Objects/*.hpp)
+file(GLOB PROJECT_SOURCES Code/Sources/*.cpp Code/Sources/Utils/*.cpp ode/Headers/Objects/*.cpp)
 file(GLOB PROJECT_SHADERS Code/Shaders/*.comp
         Code/Shaders/*.frag
         Code/Shaders/*.geom
@@ -62,7 +62,7 @@ add_definitions(-DGLFW_INCLUDE_NONE
                 -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
                                ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
-                               ${VENDORS_SOURCES} Code/Sources/Utils/scene.cpp)
+                               ${VENDORS_SOURCES})
 target_link_libraries(${PROJECT_NAME} assimp glfw
                       ${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
                       BulletDynamics BulletCollision LinearMath freetype)

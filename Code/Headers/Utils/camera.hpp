@@ -3,13 +3,15 @@
 // System Headers
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "Utils/gameobject.hpp"
 
 // Standard Headers
 #include <vector>
+#include <memory>
 
 // Default camera values
 const float YAW         = -90.0f;
-const float PITCH       =  0.0f;
+const float PITCH       =  -10.0f;
 const float SPEED       =  2.5f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
@@ -65,9 +67,13 @@ namespace Utils {
         // Called every frame
         void perFrame();
 
+        // Tell camera which object to track
+        void setFollow(std::shared_ptr<Utils::GameObject> follow);
+
     private:
         // Camera Attributes
         glm::vec3 mPosition;
+        glm::vec3 mOffset;
         glm::vec3 mFront;
         glm::vec3 mUp;
         glm::vec3 mRight;
@@ -80,6 +86,7 @@ namespace Utils {
         float mMouseSensitivity;
         float mZoom;
         float mBoxSize;
+        std::shared_ptr<Utils::GameObject> mFollow;
 
         ProjectionMode mProjectionMode;
 

@@ -37,7 +37,7 @@ namespace Utils
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
             mCamera->processKeyboard(Utils::CameraMovement::UP, mDeltaTime);
         }
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        /*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
             mCamera->processKeyboard(Utils::CameraMovement::FORWARD, mDeltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
@@ -48,11 +48,15 @@ namespace Utils
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
             mCamera->processKeyboard(Utils::CameraMovement::RIGHT, mDeltaTime);
-        }
+        }*/
 
         // Camera settings
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
             mCamera->cycleProjectionMode();
+        }
+
+        for (auto &gameObject : mGameObjects) {
+            gameObject->processInput(window, mDeltaTime);
         }
     }
 
@@ -84,6 +88,10 @@ namespace Utils
     }
 
     void Scene::perFrame() {
+        for (auto &gameObject : mGameObjects) {
+            gameObject->perFrame(mDeltaTime);
+        }
+
         mCamera->perFrame();
     }
 }

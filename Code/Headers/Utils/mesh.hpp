@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <Utils/drawable.hpp>
 #include <Utils/shader.hpp>
 
 #include <string>
@@ -37,7 +38,7 @@ namespace Utils
     };
 
 
-    class Mesh {
+    class Mesh : public Drawable {
     public:
         /*  Mesh Data  */
         vector<Vertex> vertices;
@@ -57,8 +58,40 @@ namespace Utils
             setupMesh();
         }
 
+
+        Mesh(vector<glm::vec3> positions, vector<glm::vec3> normals, vector<glm::vec2> texCoords = vector<glm::vec2>(), vector<Texture> textures = vector<Texture>())
+        {
+            if (positions.size() != normals.size()) {
+                cout << "Positions and normals should have same number of elements." << std::endl;
+                return;
+            }
+
+            if (texCoords.size() > 0 && texCoords.size() != normals.size()) {
+                cout << "Positions, normals, and textures should have same number of elements." << std::endl;
+                return;
+            }
+
+            vector<Vertex> vertices;
+            vector<unsigned int> indices;
+            for (unsigned int i = 0; i < positions.size(); i++) {
+                if (texCoords.size() > 0) {
+                    vertices.push_back(Vertex{positions[i], normals[i], texCoords[i]});
+                }
+                else {
+                    vertices.push_back(Vertex{positions[i], normals[i]});
+                }
+                indices.push_back(i);
+            }
+            this->vertices = vertices;
+            this->indices = indices;
+            this->textures = textures;
+
+            // now that we have all the required data, set the vertex buffers and its attribute pointers.
+            setupMesh();
+        }
+
         // render the mesh
-        void Draw(Shader shader)
+        void draw(Shader shader) override
         {
             // bind appropriate textures
             unsigned int diffuseNr  = 1;

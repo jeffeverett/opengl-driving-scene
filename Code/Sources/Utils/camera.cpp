@@ -23,7 +23,8 @@ namespace Utils {
             mMouseSensitivity(SENSITIVITY),
             mZoom(ZOOM),
             mBoxSize(BOX_SIZE),
-            mProjectionMode(PERSPECTIVE) {
+            mProjectionMode(PERSPECTIVE),
+            mOffset(glm::vec3(0,10,30)) {
         mPosition = position;
         mWorldUp = up;
         mYaw = yaw;
@@ -38,7 +39,8 @@ namespace Utils {
             mMouseSensitivity(SENSITIVITY),
             mZoom(ZOOM),
             mBoxSize(BOX_SIZE),
-            mProjectionMode(PERSPECTIVE) {
+            mProjectionMode(PERSPECTIVE),
+            mOffset(glm::vec3(0,10,30)) {
 
         mPosition = glm::vec3(posX, posY, posZ);
         mWorldUp = glm::vec3(upX, upY, upZ);
@@ -50,7 +52,6 @@ namespace Utils {
     // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 Camera::getViewMatrix() {
         return glm::lookAt(mPosition, mPosition + mFront, mUp);
-        //return glm::mat4(1);
     }
 
     // Returns the projection matrix
@@ -59,7 +60,7 @@ namespace Utils {
             return glm::ortho(-mBoxSize, mBoxSize, -mBoxSize, mBoxSize, -mBoxSize, mBoxSize);
         }
         else {
-            return glm::perspective(glm::radians(30.0f), 1280.0f/800.0f, 0.1f, 100.0f);
+            return glm::perspective(glm::radians(30.0f), width/height, 0.1f, 100.0f);
         }
     }
 
@@ -142,15 +143,11 @@ namespace Utils {
 
     void Camera::perFrame() {
         std::ostringstream ypOSS;
-        ypOSS << std::setprecision(5) << "Yaw: " << mYaw << ", Pitch: " << mPitch;
+        ypOSS << std::fixed << std::setprecision(5) << "Yaw: " << mYaw << ", Pitch: " << mPitch;
         textRenderer->renderText(ypOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
-        std::ostringstream cpOSS;
-        cpOSS << std::setprecision(5) << "Camera Pos: (" << mPosition[0] << ", " << mPosition[1] << ", " << mPosition[2] << ")";
-        textRenderer->renderText(cpOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
-
         std::ostringstream pmOSS;
-        pmOSS << std::setprecision(5) << "Projection Mode: ";
+        pmOSS << std::fixed << std::setprecision(5) << "Projection Mode: ";
         if (mProjectionMode == ORTHO) {
             pmOSS << "ORTHO";
         }
@@ -158,5 +155,17 @@ namespace Utils {
             pmOSS << "PERSPECTIVE";
         }
         textRenderer->renderText(pmOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
+
+        if (mFollow) {
+            mPosition = mOffset + mFollow->getPosition();
+        }
+
+#ifdef DEBUG
+        std::cout << "Camera Pos: " << mPosition[0] << ", " << mPosition[1] << ", " << mPosition[2] << ")" << std::endl;
+#endif
+    }
+
+    void Camera::setFollow(std::shared_ptr<Utils::GameObject> follow) {
+        mFollow = follow;
     }
 }

@@ -12,8 +12,10 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <Utils/drawable.hpp>
 #include <Utils/mesh.hpp>
 #include <Utils/shader.hpp>
+
 
 #include <string>
 #include <fstream>
@@ -27,7 +29,7 @@ namespace Utils
 {
     unsigned int TextureFromFile(const char *path, const string &directory);
 
-    class Model
+    class Model : public Drawable
     {
     public:
         /*  Model Data */
@@ -44,10 +46,10 @@ namespace Utils
         }
 
         // draws the model, and thus all its meshes
-        void Draw(Shader shader)
+        void draw(Shader shader) override
         {
             for(unsigned int i = 0; i < meshes.size(); i++)
-                meshes[i].Draw(shader);
+                meshes[i].draw(shader);
         }
 
     private:

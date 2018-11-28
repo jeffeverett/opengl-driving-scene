@@ -6,6 +6,8 @@
 #include "Utils/gameobject.hpp"
 #include "Utils/model.hpp"
 #include "Utils/shader.hpp"
+#include "Objects/car.hpp"
+#include "Objects/house.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -22,6 +24,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+
 const int FPS_ROLLING_FRAMES = 10;
 const GLfloat EDGE_THRESHOLD = 75;
 const double EDGE_ROTATE_SPEED = 10;
@@ -29,6 +32,7 @@ const double EDGE_ROTATE_SPEED = 10;
 // Below used by other files
 GLfloat width = 1280;
 GLfloat height = 800;
+std::shared_ptr<Utils::Shader> defaultShader;
 std::unique_ptr<Utils::TextRenderer> textRenderer;
 
 // Below local to translation unit
@@ -56,7 +60,9 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     lastX = xpos;
     lastY = ypos;
 
+#ifdef CAMERA_MOUSE_MOVEMENT
     scene.getCamera()->processMouseMovement(xoffset, yoffset);
+#endif
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int newWidth, int newHeight) {
@@ -104,40 +110,17 @@ int main(int argc, char * argv[]) {
     // OpenGL settings
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Create text renderer
+    // Initialize remaining globals
     textRenderer = std::make_unique<Utils::TextRenderer>(PROJECT_SOURCE_DIR "/Fonts/arial.ttf");
-
-    // Compile/link shaders
-    auto defaultShader = std::make_shared<Utils::Shader>(
-        PROJECT_SOURCE_DIR "/Shaders/VertexShaders/default.vert",
-        PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/default.frag"
-    );
-
-    // Import meshes
-    auto carModel = std::make_shared<Utils::Model>(
-        PROJECT_SOURCE_DIR "/Models/lamborginhi_aventador.obj"
+    defaultShader = std::make_shared<Utils::Shader>(
+            PROJECT_SOURCE_DIR "/Shaders/VertexShaders/default.vert",
+            PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/default.frag"
     );
 
     // Create camera
-    auto camera = std::make_shared<Utils::Camera>(glm::vec3(0,0,0));
+    auto camera = std::make_shared<Utils::Camera>(glm::vec3(0,0,3));
 
     // Create cubemap
-    /*std::vector<std::string> iceflowFaces {
-        PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_rt.tga",
-        PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_lf.tga",
-        PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_up.tga",
-        PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_dn.tga",
-        PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_ft.tga",
-        PROJECT_SOURCE_DIR "/Textures/CubeMaps/sb_iceflow/iceflow_bk.tga"
-    };
-    std::vector<std::string> sunsetFaces {
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_rt.tga",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_lf.tga",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_up.tga",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_dn.tga",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_ft.tga",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/ely_sunset/sunset_bk.tga"
-    };*/
     std::vector<std::string> darkFaces {
             PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyLeft2048.png",
             PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyRight2048.png",
@@ -152,26 +135,17 @@ int main(int argc, char * argv[]) {
     scene.setCamera(camera);
     scene.setCubeMap(cubeMap);
 
+    // Set up objects
+    Objects::House::setup();
+    Objects::Car::setup();
+
     // Add GameObjects to scene
-    auto carObject = std::make_shared<Utils::GameObject>(carModel, defaultShader);
-    carObject->scale(glm::vec3(1.0f/400.0f, 1.0f/400.0f, 1.0f/400.0f));
     //scene.add(carObject);
-
-    // Add cube
-    float cubeSize = 3.0f;
-    std::vector<glm::vec3> positions {
-        glm::vec3(cubeSize,-cubeSize,cubeSize),
-        glm::vec3(cubeSize,-cubeSize,-cubeSize),
-        glm::vec3(-cubeSize,-cubeSize,-cubeSize),
-        glm::vec3(-cubeSize,-cubeSize,cubeSize),
-        glm::vec3(-cubeSize,cubeSize,cubeSize),
-        glm::vec3(cubeSize,cubeSize,cubeSize),
-        glm::vec3(cubeSize,cubeSize,-cubeSize),
-        glm::vec3(-cubeSize,cubeSize,-cubeSize)
-    };
-    std::vector<glm::vec3> normals {
-
-    };
+    auto house = std::make_shared<Objects::House>();
+    scene.add(house);
+    auto car = std::make_shared<Objects::Car>();
+    scene.getCamera()->setFollow(car);
+    scene.add(car);
 
     // Register remaining callbacks
     glfwSetCursorPosCallback(window, mouseCallback);
@@ -187,13 +161,14 @@ int main(int argc, char * argv[]) {
     // Rendering Loop
     while (glfwWindowShouldClose(window) == 0) {
         // Background Fill Color
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Start text renderer at bottom
         textRenderer->resetVerticalOffset();
 
         // If at edge of screen, rotate in direction of edge
+#ifdef CAMERA_MOUSE_MOVEMENT
         double xpos, ypos;
         double xoffset = 0, yoffset = 0;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -212,6 +187,7 @@ int main(int argc, char * argv[]) {
         }
 
         scene.getCamera()->processMouseMovement(xoffset, yoffset);
+#endif
 
         // FPS timing/display
         double currentFrame = glfwGetTime();
@@ -238,9 +214,16 @@ int main(int argc, char * argv[]) {
         }
         scene.setDeltaTime(deltaTime);
 
+#ifdef DEBUG
+        std::cout << "Delta time: " << deltaTime;
+#endif
+
+        // Draw scene
+        scene.draw();
+
         // Render FPS as string
         std::ostringstream fpsOSS;
-        fpsOSS << std::setprecision(5) << "FPS: " << rollingFPS;
+        fpsOSS << std::fixed << std::setprecision(5) << "FPS: " << rollingFPS;
         textRenderer->renderText(fpsOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
         // Process input
@@ -248,9 +231,6 @@ int main(int argc, char * argv[]) {
 
         // Run object scripts
         scene.perFrame();
-
-        // Draw scene
-        scene.draw();
 
         // Flip Buffers and Draw
         glfwSwapBuffers(window);

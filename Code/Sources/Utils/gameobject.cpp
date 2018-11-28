@@ -2,19 +2,26 @@
 #include "Utils/gameobject.hpp"
 #include "Utils/scene.hpp"
 
+// System Headers
+#include <glm/gtc/matrix_transform.hpp>
+
 // Define Namespace
 namespace Utils
 {
+    glm::vec3 GameObject::getPosition() {
+        return mPosition;
+    }
+
     void GameObject::translate(glm::vec3 translationVector) {
-        mTransform = glm::translate(mTransform, translationVector);
+        mPosition += translationVector;
     }
 
     void GameObject::scale(glm::vec3 scaleVector) {
-        mTransform = glm::translate(mTransform, scaleVector);
+        mScale *= scaleVector;
     }
 
-    void GameObject::rotate(glm::vec3 eulerAngles) {
-        mTransform = glm::translate(mTransform, eulerAngles);
+    void GameObject::rotate(float angle) {
+        mTheta += angle;
     }
 
     std::shared_ptr<Utils::Shader> GameObject::getShader() {
@@ -22,9 +29,14 @@ namespace Utils
     }
 
     void GameObject::draw() {
-        //fprintf(stdout, "Drawing object.\n");
+        // Construct model matrix
+        glm::mat4 model(1);
+        glm::scale(model, mScale);
+        glm::rotate(model, glm::radians(mTheta), glm::vec3(0,1,0));
+        glm::translate(model, mPosition);
+
         mShader->use();
-        mShader->setMat4("model", mTransform);
-        mModel->Draw(*mShader);
+        mShader->setMat4("model", model);
+        mDrawable->draw(*mShader);
     }
 }
