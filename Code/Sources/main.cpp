@@ -116,6 +116,9 @@ int main(int argc, char * argv[]) {
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/default.vert",
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/default.frag"
     );
+    defaultShader->use();
+    defaultShader->setVec3("lightColor", glm::vec3(1,1,1));
+    defaultShader->setVec3("lightPos", glm::vec3(10, 20, 40));
 
     // Create camera
     auto camera = std::make_shared<Utils::Camera>(glm::vec3(0,0,3));

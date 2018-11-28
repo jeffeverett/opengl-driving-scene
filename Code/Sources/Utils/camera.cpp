@@ -160,6 +160,9 @@ namespace Utils {
             mPosition = mOffset + mFollow->getPosition();
         }
 
+        defaultShader->use();
+        defaultShader->setVec3("viewPos", mPosition);
+
 #ifdef DEBUG
         std::cout << "Camera Pos: " << mPosition[0] << ", " << mPosition[1] << ", " << mPosition[2] << ")" << std::endl;
 #endif
