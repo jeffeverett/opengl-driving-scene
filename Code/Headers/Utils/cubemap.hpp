@@ -5,6 +5,7 @@
 
 // System Headers
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 // Standard Headers

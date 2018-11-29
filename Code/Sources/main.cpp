@@ -6,6 +6,7 @@
 #include "Utils/gameobject.hpp"
 #include "Utils/model.hpp"
 #include "Utils/shader.hpp"
+#include "Physics/debugdrawer.hpp"
 #include "Objects/car.hpp"
 #include "Objects/house.hpp"
 
@@ -34,6 +35,7 @@ const double EDGE_ROTATE_SPEED = 10;
 GLfloat width = 1280;
 GLfloat height = 800;
 std::shared_ptr<Utils::Shader> defaultShader;
+std::shared_ptr<Utils::Shader> simpleShader;
 std::unique_ptr<Utils::TextRenderer> textRenderer;
 std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 
@@ -123,12 +125,19 @@ int main(int argc, char * argv[]) {
     defaultShader->setVec3("lightColor", glm::vec3(1,1,1));
     defaultShader->setVec3("lightPos", glm::vec3(10, 20, 40));
 
+    simpleShader = std::make_shared<Utils::Shader>(
+            PROJECT_SOURCE_DIR "/Shaders/VertexShaders/simple.vert",
+            PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/simple.frag"
+    );
+
     btDefaultCollisionConfiguration collisionConfiguration;
     btCollisionDispatcher dispatcher(&collisionConfiguration);
     btDbvtBroadphase overlappingPairCache;
     btSequentialImpulseConstraintSolver solver;
     dynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(&dispatcher, &overlappingPairCache, &solver, &collisionConfiguration);
-    dynamicsWorld->deb
+    Physics::DebugDrawer debugDrawer;
+    debugDrawer.setDebugMode(2);
+    dynamicsWorld->setDebugDrawer(&debugDrawer);
 
     btBoxShape groundShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
     btTransform groundTransform;
@@ -246,6 +255,9 @@ int main(int argc, char * argv[]) {
 
         // Draw scene
         scene.draw();
+
+        // Draw physics debugging
+        dynamicsWorld->debugDrawWorld();
 
         // Render FPS as string
         std::ostringstream fpsOSS;

@@ -41,8 +41,8 @@ include_directories(SYSTEM
         Code/Vendor/freetype2)
 
 file(GLOB VENDORS_SOURCES Code/Vendor/glad/src/glad.c)
-file(GLOB PROJECT_HEADERS Code/Headers/*.hpp Code/Headers/Utils/*.hpp Code/Headers/Objects/*.hpp)
-file(GLOB PROJECT_SOURCES Code/Sources/*.cpp Code/Sources/Utils/*.cpp ode/Headers/Objects/*.cpp)
+file(GLOB PROJECT_HEADERS Code/Headers/*.hpp Code/Headers/Utils/*.hpp Code/Headers/Objects/*.hpp Code/Headers/Physics/*.hpp)
+file(GLOB PROJECT_SOURCES Code/Sources/*.cpp Code/Sources/Utils/*.cpp Code/Headers/Objects/*.cpp Code/Headers/Physics/*.cpp)
 file(GLOB PROJECT_SHADERS Code/Shaders/*.comp
         Code/Shaders/*.frag
         Code/Shaders/*.geom

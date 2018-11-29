@@ -31,24 +31,7 @@ namespace Utils
         }
 
         // Camera movement
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-            mCamera->processKeyboard(Utils::CameraMovement::DOWN, mDeltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-            mCamera->processKeyboard(Utils::CameraMovement::UP, mDeltaTime);
-        }
-        /*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            mCamera->processKeyboard(Utils::CameraMovement::FORWARD, mDeltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            mCamera->processKeyboard(Utils::CameraMovement::BACKWARD, mDeltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            mCamera->processKeyboard(Utils::CameraMovement::LEFT, mDeltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            mCamera->processKeyboard(Utils::CameraMovement::RIGHT, mDeltaTime);
-        }*/
+        camera->processInput(window, mDeltaTime);
 
         // Camera settings
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
@@ -68,6 +51,11 @@ namespace Utils
 
     void Scene::draw() {
         std::cout << "Num shaders tracked by scene " << mShaders.size() << std::endl;
+        simpleShader->use();
+        simpleShader->setMat4("projection", mCamera->getProjectionMatrix());
+        simpleShader->setMat4("view", mCamera->getViewMatrix());
+
+
         for (auto &shader : mShaders) {
             shader->use();
             shader->setMat4("projection", mCamera->getProjectionMatrix());
