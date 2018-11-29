@@ -177,7 +177,18 @@ namespace Objects
         // Implement Default Constructor and Destructor
         House() : Utils::GameObject(mDrawable, mShader) {
             // Call setup before constructor
-            translate(glm::vec3(0,0,-10));
+
+            btBoxShape *houseShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
+            btTransform houseTransform;
+            houseTransform.setIdentity();
+            houseTransform.setOrigin(btVector3(0, 0.0, -10));
+            btScalar mass(0.);
+            btVector3 localInertia(0, 0, 0);
+            btDefaultMotionState *myMotionState = new btDefaultMotionState(houseTransform);
+            btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, houseShape, localInertia);
+            mRigidBody = std::make_unique<btRigidBody>(rbInfo);
+            dynamicsWorld->addRigidBody(&(*mRigidBody));
+
         }
         ~House() { }
 

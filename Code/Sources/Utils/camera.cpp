@@ -24,7 +24,7 @@ namespace Utils {
             mZoom(ZOOM),
             mBoxSize(BOX_SIZE),
             mProjectionMode(PERSPECTIVE),
-            mOffset(glm::vec3(0,10,30)) {
+            mOffset(glm::vec3(0,4,10)) {
         mPosition = position;
         mWorldUp = up;
         mYaw = yaw;
@@ -40,7 +40,7 @@ namespace Utils {
             mZoom(ZOOM),
             mBoxSize(BOX_SIZE),
             mProjectionMode(PERSPECTIVE),
-            mOffset(glm::vec3(0,10,30)) {
+            mOffset(glm::vec3(0,4,10)) {
 
         mPosition = glm::vec3(posX, posY, posZ);
         mWorldUp = glm::vec3(upX, upY, upZ);

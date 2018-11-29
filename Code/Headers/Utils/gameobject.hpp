@@ -1,6 +1,7 @@
 #pragma once
 
 // Local Headers
+#include "globals.hpp"
 #include "Utils/drawable.hpp"
 #include "Utils/shader.hpp"
 
@@ -8,6 +9,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <btBulletDynamicsCommon.h>
 
 // Standard Headers
 #include <vector>
@@ -25,13 +27,14 @@ namespace Utils
             mDrawable = drawable;
             mShader = shader;
         }
-        ~GameObject() { }
+        ~GameObject() {  }
 
 
         // Public Member Functions
         glm::vec3 getPosition();
 
         void translate(glm::vec3 translationVector);
+        void applyForce(glm::vec3 vec);
         void scale(glm::vec3 scaleVector);
         void rotate(float angle);
         std::shared_ptr<Utils::Shader> getShader();
@@ -40,9 +43,14 @@ namespace Utils
         virtual void processInput(GLFWwindow *window, double deltaTime) {}
 
     protected:
+        std::unique_ptr<btRigidBody> mRigidBody;
         glm::vec3 mScale = glm::vec3(1);
         glm::vec3 mPosition = glm::vec3(0);
         float mTheta = 0;
+
+        static glm::mat4 btScalar2glmMat4(btScalar* matrix);
+        static glm::vec3 btVector32glmVec3(btVector3 matrix);
+        static btVector3 glmVec32btVector3(glm::vec3 vec);
 
     private:
 

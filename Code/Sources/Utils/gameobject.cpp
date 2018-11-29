@@ -1,6 +1,5 @@
 // Local Headers
 #include "Utils/gameobject.hpp"
-#include "Utils/scene.hpp"
 
 // System Headers
 #include <glm/gtc/matrix_transform.hpp>
@@ -9,11 +8,19 @@
 namespace Utils
 {
     glm::vec3 GameObject::getPosition() {
-        return mPosition;
+        btVector3 origin = mRigidBody->getWorldTransform().getOrigin();
+        return btVector32glmVec3(origin);
     }
 
     void GameObject::translate(glm::vec3 translationVector) {
-        mPosition += translationVector;
+        btVector3 origin = mRigidBody->getWorldTransform().getOrigin();
+        origin += glmVec32btVector3(translationVector);
+        mRigidBody->getWorldTransform().setOrigin(origin);
+    }
+
+    void GameObject::applyForce(glm::vec3 vec) {
+        btVector3 force = glmVec32btVector3(vec);
+        mRigidBody->applyCentralForce(force);
     }
 
     void GameObject::scale(glm::vec3 scaleVector) {
@@ -30,13 +37,30 @@ namespace Utils
 
     void GameObject::draw() {
         // Construct model matrix
-        glm::mat4 model(1);
+        btScalar transform[16];
+        mRigidBody->getWorldTransform().getOpenGLMatrix(transform);
+        glm::mat4 model = btScalar2glmMat4(transform);
         model = glm::scale(model, mScale);
-        model = glm::rotate(model, glm::radians(mTheta), glm::vec3(0,1,0));
-        model = glm::translate(model, mPosition/mScale);
 
         mShader->use();
         mShader->setMat4("model", model);
         mDrawable->draw(*mShader);
+    }
+
+    // https://stackoverflow.com/questions/22002077/getting-bullet-physics-transform-matrix-for-opengl
+    glm::mat4 GameObject::btScalar2glmMat4(btScalar* matrix) {
+        return glm::mat4(
+                matrix[0], matrix[1], matrix[2], matrix[3],
+                matrix[4], matrix[5], matrix[6], matrix[7],
+                matrix[8], matrix[9], matrix[10], matrix[11],
+                matrix[12], matrix[13], matrix[14], matrix[15]);
+    }
+
+    glm::vec3 GameObject::btVector32glmVec3(btVector3 vec) {
+        return glm::vec3(vec[0], vec[1], vec[2]);
+    }
+
+    btVector3 GameObject::glmVec32btVector3(glm::vec3 vec) {
+        return btVector3(vec[0], vec[1], vec[2]);
     }
 }

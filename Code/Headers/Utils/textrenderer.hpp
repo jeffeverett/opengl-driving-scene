@@ -1,8 +1,6 @@
 #pragma once
 
 // Local Headers
-#include "Utils/camera.hpp"
-#include "cubemap.hpp"
 #include "Utils/shader.hpp"
 
 // System Headers

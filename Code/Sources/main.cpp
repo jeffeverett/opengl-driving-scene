@@ -9,6 +9,7 @@
 #include "Objects/car.hpp"
 #include "Objects/house.hpp"
 
+
 // System Headers
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -34,6 +35,7 @@ GLfloat width = 1280;
 GLfloat height = 800;
 std::shared_ptr<Utils::Shader> defaultShader;
 std::unique_ptr<Utils::TextRenderer> textRenderer;
+std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 
 // Below local to translation unit
 Utils::Scene scene;
@@ -112,25 +114,44 @@ int main(int argc, char * argv[]) {
 
     // Initialize remaining globals
     textRenderer = std::make_unique<Utils::TextRenderer>(PROJECT_SOURCE_DIR "/Fonts/arial.ttf");
+
     defaultShader = std::make_shared<Utils::Shader>(
-            PROJECT_SOURCE_DIR "/Shaders/VertexShaders/default.vert",
-            PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/default.frag"
+        PROJECT_SOURCE_DIR "/Shaders/VertexShaders/default.vert",
+        PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/default.frag"
     );
     defaultShader->use();
     defaultShader->setVec3("lightColor", glm::vec3(1,1,1));
     defaultShader->setVec3("lightPos", glm::vec3(10, 20, 40));
+
+    btDefaultCollisionConfiguration collisionConfiguration;
+    btCollisionDispatcher dispatcher(&collisionConfiguration);
+    btDbvtBroadphase overlappingPairCache;
+    btSequentialImpulseConstraintSolver solver;
+    dynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(&dispatcher, &overlappingPairCache, &solver, &collisionConfiguration);
+    dynamicsWorld->deb
+
+    btBoxShape groundShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+    btTransform groundTransform;
+    groundTransform.setIdentity();
+    groundTransform.setOrigin(btVector3(0, -50, 0));
+    btScalar mass(0.);
+    btVector3 localInertia(0, 0, 0);
+    btDefaultMotionState myMotionState(groundTransform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, &myMotionState, &groundShape, localInertia);
+    btRigidBody groundBody = btRigidBody(rbInfo);
+    dynamicsWorld->addRigidBody(&groundBody);
 
     // Create camera
     auto camera = std::make_shared<Utils::Camera>(glm::vec3(0,0,3));
 
     // Create cubemap
     std::vector<std::string> darkFaces {
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyLeft2048.png",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyRight2048.png",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyUp2048.png",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyDown2048.png",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyFront2048.png",
-            PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyBack2048.png"
+        PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyLeft2048.png",
+        PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyRight2048.png",
+        PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyUp2048.png",
+        PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyDown2048.png",
+        PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyFront2048.png",
+        PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyBack2048.png"
     };
     auto cubeMap = std::make_shared<Utils::CubeMap>(darkFaces);
 
@@ -143,7 +164,6 @@ int main(int argc, char * argv[]) {
     Objects::Car::setup();
 
     // Add GameObjects to scene
-    //scene.add(carObject);
     auto house = std::make_shared<Objects::House>();
     scene.add(house);
     auto car = std::make_shared<Objects::Car>();
@@ -218,8 +238,11 @@ int main(int argc, char * argv[]) {
         scene.setDeltaTime(deltaTime);
 
 #ifdef DEBUG
-        std::cout << "Delta time: " << deltaTime;
+        std::cout << "Delta time: " << deltaTime << std::endl;
 #endif
+
+        // Tick physics engine
+        dynamicsWorld->stepSimulation(deltaTime);
 
         // Draw scene
         scene.draw();

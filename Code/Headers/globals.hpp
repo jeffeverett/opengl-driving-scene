@@ -7,6 +7,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <btBulletDynamicsCommon.h>
 
 #include <memory>
 
@@ -15,3 +16,4 @@ extern GLfloat height;
 
 extern std::shared_ptr<Utils::Shader> defaultShader;
 extern std::unique_ptr<Utils::TextRenderer> textRenderer;
+extern std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;

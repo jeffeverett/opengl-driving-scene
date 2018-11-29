@@ -18,7 +18,7 @@
 const double SCALE_FACTOR = 1.0/400.0;
 const double MAX_SPEED = 10;
 const double MAX_ANGULAR_SPEED = 10;
-const double ACCELERATION = 12;
+const double ACCELERATION = 1000;
 const double ANGULAR_ACCELERATION = 15;
 const double FRICTION = 6;
 
@@ -34,7 +34,18 @@ namespace Objects
             // Call setup before constructor
 
             scale(glm::vec3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR));
-            rotate(180.0f);
+
+            btBoxShape *carShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
+            btTransform carTransform;
+            carTransform.setIdentity();
+            carTransform.setOrigin(btVector3(0, 0, 0));
+            carTransform.setRotation(btQuaternion(btVector3(0,1,0), glm::radians(180.0)));
+            btScalar mass(10.);
+            btVector3 localInertia(0, 0, 0);
+            btDefaultMotionState *myMotionState = new btDefaultMotionState(carTransform);
+            btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, carShape, localInertia);
+            mRigidBody = std::make_unique<btRigidBody>(rbInfo);
+            dynamicsWorld->addRigidBody(&(*mRigidBody));
         }
         ~Car() { }
 
@@ -50,10 +61,11 @@ namespace Objects
 
         void processInput(GLFWwindow *window, double deltaTime) override {
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-                mAcceleration = ACCELERATION;
+                applyForce(glm::vec3(0, 0, -ACCELERATION));
             }
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-                mAcceleration = -ACCELERATION;
+                applyForce(glm::vec3(0, 0, ACCELERATION));
+
             }
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
                 mAngularAcceleration = ANGULAR_ACCELERATION;
@@ -64,7 +76,7 @@ namespace Objects
         }
 
         void perFrame(double deltaTime) override {
-            mAngularSpeed += mAngularAcceleration*deltaTime;
+            /*mAngularSpeed += mAngularAcceleration*deltaTime;
             if (mAngularSpeed > MAX_ANGULAR_SPEED) {
                 mAngularSpeed = MAX_ANGULAR_SPEED;
             }
@@ -100,7 +112,8 @@ namespace Objects
                 else {
                     mSpeed += FRICTION*deltaTime;
                 }
-            }
+            }*/
+
 
             mAcceleration = 0;
             mAngularAcceleration = 0;
