@@ -13,9 +13,9 @@
 #include <memory>
 
 // Default camera values
-const float THETA       =  0.0f;
+const float THETA       =  180.0f;
 const float PHI         =  15.0f;
-const float SENSITIVITY =  40.0f;
+const float SENSITIVITY =  60.0f;
 const float RADIUS      =  10.0f;
 const float BOX_SIZE    =  25.0f;
 

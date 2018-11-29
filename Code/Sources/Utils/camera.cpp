@@ -44,7 +44,7 @@ namespace Utils {
 
     void Camera::perFrame() {
         std::ostringstream ypOSS;
-        ypOSS << std::fixed << std::setprecision(5) << "Yaw: " << mTheta << ", Pitch: " << mPhi;
+        ypOSS << std::fixed << std::setprecision(5) << "Yaw: " << fmod(mTheta, 360) << ", Pitch: " << fmod(mPhi, 360);
         textRenderer->renderText(ypOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
         std::ostringstream pmOSS;
@@ -57,7 +57,7 @@ namespace Utils {
         }
         textRenderer->renderText(pmOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
-        double thetaRadians = glm::radians(mTheta);
+        double thetaRadians = glm::radians(mTheta-mFollow->getTheta());
         double phiRadians = glm::radians(mPhi);
         glm::vec3 offset(
             -mRadius*glm::sin(thetaRadians)*glm::cos(phiRadians),

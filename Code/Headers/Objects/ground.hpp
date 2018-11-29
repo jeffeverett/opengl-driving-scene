@@ -15,7 +15,7 @@
 #include <memory>
 
 const float SIZE = 50.0f;
-const float TEXTURE_REPEAT = 20.0f;
+const float TEXTURE_REPEAT = 30.0f;
 
 std::vector<glm::vec3> groundPositions {
     glm::vec3(-SIZE,  0.0f, -SIZE),

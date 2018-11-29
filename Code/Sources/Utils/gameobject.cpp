@@ -12,6 +12,10 @@ namespace Utils
         return btVector32glmVec3(origin)+mOffset;
     }
 
+    float GameObject::getTheta() {
+        return mTheta;
+    }
+
     void GameObject::setOffset(glm::vec3 offset) {
         mOffset = offset;
     }
@@ -29,10 +33,6 @@ namespace Utils
 
     void GameObject::scale(glm::vec3 scaleVector) {
         mScale *= scaleVector;
-    }
-
-    void GameObject::rotate(float angle) {
-        mTheta += angle;
     }
 
     std::shared_ptr<Utils::Shader> GameObject::getShader() {

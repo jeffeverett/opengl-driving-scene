@@ -32,12 +32,11 @@ namespace Utils
 
         // Public Member Functions
         glm::vec3 getPosition();
-
+        float getTheta();
         void setOffset(glm::vec3 offset);
         void translate(glm::vec3 translationVector);
         void applyForce(glm::vec3 vec);
         void scale(glm::vec3 scaleVector);
-        void rotate(float angle);
         std::shared_ptr<Utils::Shader> getShader();
         void draw();
         virtual void perFrame(double deltaTime) {};
@@ -47,7 +46,7 @@ namespace Utils
         std::unique_ptr<btRigidBody> mRigidBody;
         glm::vec3 mScale = glm::vec3(1);
         glm::vec3 mOffset = glm::vec3(0);
-        float mTheta = 0;
+        float mTheta = 180;
 
         static glm::mat4 btScalar2glmMat4(btScalar* matrix);
         static glm::vec3 btVector32glmVec3(btVector3 matrix);

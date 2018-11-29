@@ -18,8 +18,8 @@
 const double SCALE_FACTOR = 1.0/400.0;
 const double MAX_SPEED = 10;
 const double MAX_ANGULAR_SPEED = 10;
-const double ACCELERATION = 1000;
-const double ANGULAR_ACCELERATION = 15;
+const double ACCELERATION = 150;
+const double ANGULAR_ACCELERATION = 100;
 const double FRICTION = 6;
 
 // Define Namespace
@@ -40,13 +40,14 @@ namespace Objects
             btTransform carTransform;
             carTransform.setIdentity();
             carTransform.setOrigin(btVector3(0, 0.05, 0));
-            carTransform.setRotation(btQuaternion(btVector3(0,1,0), glm::radians(180.0)));
             btScalar mass(10.);
             btVector3 localInertia(0, 0, 0);
             btDefaultMotionState *myMotionState = new btDefaultMotionState(carTransform);
             btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, carShape, localInertia);
             mRigidBody = std::make_unique<btRigidBody>(rbInfo);
             dynamicsWorld->addRigidBody(&(*mRigidBody));
+
+            calculateRotation();
         }
         ~Car() { }
 
@@ -59,21 +60,29 @@ namespace Objects
             mShader = defaultShader;
         }
 
+        void calculateRotation() {
+            mRigidBody->getWorldTransform().setRotation(btQuaternion(btVector3(0,1,0), glm::radians(mTheta)));
+        }
 
         void processInput(GLFWwindow *window, double deltaTime) override {
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-                applyForce(glm::vec3(0, 0, -ACCELERATION));
+                applyForce(glm::vec3(glm::sin(glm::radians(mTheta))*ACCELERATION, 0, glm::cos(glm::radians(mTheta))*ACCELERATION));
             }
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-                applyForce(glm::vec3(0, 0, ACCELERATION));
+                applyForce(glm::vec3(-glm::sin(glm::radians(mTheta))*ACCELERATION, 0, -glm::cos(glm::radians(mTheta))*ACCELERATION));
 
             }
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-                mAngularAcceleration = ANGULAR_ACCELERATION;
+                mTheta += ANGULAR_ACCELERATION*deltaTime;
+                calculateRotation();
             }
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-                mAngularAcceleration = -ANGULAR_ACCELERATION;
+                mTheta -= ANGULAR_ACCELERATION*deltaTime;
+                calculateRotation();
             }
+
+            // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=12045
+            mRigidBody->setActivationState(ACTIVE_TAG);
         }
 
         void perFrame(double deltaTime) override {
@@ -115,18 +124,14 @@ namespace Objects
                 }
             }*/
 
-
-            mAcceleration = 0;
-            mAngularAcceleration = 0;
-
             std::ostringstream cpOSS;
             glm::vec3 position = getPosition();
             cpOSS << std::fixed << std::setprecision(5) << "Car Pos: (" << position[0] << ", " << position[1] << ", " << position[2] << ")";
             textRenderer->renderText(cpOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
-            std::ostringstream csOSS;
-            csOSS << std::fixed << std::setprecision(4) << "Speed: " << mSpeed << ", Ang Speed: " << mAngularSpeed << ", Theta: " << mTheta << ", Acc: " << mAcceleration << ", Ang Acc: " << mAngularAcceleration;
-            textRenderer->renderText(csOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
+            std::ostringstream ctOSS;
+            ctOSS << std::fixed << std::setprecision(5) << "Car Theta: " << fmod(mTheta, 360);
+            textRenderer->renderText(ctOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
         }
 
     private:
@@ -136,12 +141,6 @@ namespace Objects
         Car & operator=(Car const &) = delete;
 
         // Private members
-        double mAngularSpeed = 0;
-        double mAngularAcceleration = 0;
-
-        double mSpeed = 0;
-        double mAcceleration = 0;
-
         static std::shared_ptr<Utils::Drawable> mDrawable;
         static std::shared_ptr<Utils::Shader> mShader;
     };
