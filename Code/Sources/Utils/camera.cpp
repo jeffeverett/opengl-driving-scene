@@ -44,7 +44,7 @@ namespace Utils {
 
     void Camera::perFrame() {
         std::ostringstream ypOSS;
-        ypOSS << std::fixed << std::setprecision(5) << "Theta: " << fmod(mTheta, 360) << ", Phi: " << fmod(mPhi, 360);
+        ypOSS << std::fixed << std::setprecision(5) << "Theta: " << fmod(mTheta, 360) << ", Phi: " << fmod(mPhi, 360) << ", Radius: " << mRadius;
         textRenderer->renderText(ypOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
         std::ostringstream pmOSS;
@@ -88,9 +88,15 @@ namespace Utils {
         }
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
             mRadius += SENSITIVITY*deltaTime;
+            if (mRadius > 30) {
+                mRadius = 30;
+            }
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
             mRadius -= SENSITIVITY*deltaTime;
+            if (mRadius < 2) {
+                mRadius = 2;
+            }
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
             mTheta += SENSITIVITY*deltaTime;
