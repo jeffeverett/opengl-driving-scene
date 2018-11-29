@@ -44,7 +44,7 @@ namespace Utils {
 
     void Camera::perFrame() {
         std::ostringstream ypOSS;
-        ypOSS << std::fixed << std::setprecision(5) << "Yaw: " << fmod(mTheta, 360) << ", Pitch: " << fmod(mPhi, 360);
+        ypOSS << std::fixed << std::setprecision(5) << "Theta: " << fmod(mTheta, 360) << ", Phi: " << fmod(mPhi, 360);
         textRenderer->renderText(ypOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
         std::ostringstream pmOSS;
@@ -78,6 +78,11 @@ namespace Utils {
     }
 
     void Camera::processInput(GLFWwindow *window, double deltaTime) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            mTheta = THETA;
+            mPhi = PHI;
+            mRadius = RADIUS;
+        }
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
             cycleProjectionMode();
         }
@@ -95,10 +100,15 @@ namespace Utils {
         }
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
            mPhi += SENSITIVITY*deltaTime;
+           if (mPhi > 175) {
+               mPhi = 175;
+           }
         }
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
             mPhi -= SENSITIVITY*deltaTime;
-
+            if (mPhi < 5) {
+                mPhi = 5;
+            }
         }
     }
 }

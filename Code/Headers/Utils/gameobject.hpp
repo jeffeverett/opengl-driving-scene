@@ -32,6 +32,7 @@ namespace Utils
 
         // Public Member Functions
         glm::vec3 getPosition();
+        void setPosition(glm::vec3 position);
         float getTheta();
         void setOffset(glm::vec3 offset);
         void translate(glm::vec3 translationVector);

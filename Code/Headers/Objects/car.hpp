@@ -39,7 +39,7 @@ namespace Objects
             btBoxShape *carShape = new btBoxShape(btVector3(btScalar(0.25), btScalar(0.1), btScalar(0.55)));
             btTransform carTransform;
             carTransform.setIdentity();
-            carTransform.setOrigin(btVector3(0, 0.05, 0));
+            carTransform.setOrigin(btVector3(0, 0, 0));
             btScalar mass(10.);
             btVector3 localInertia(0, 0, 0);
             btDefaultMotionState *myMotionState = new btDefaultMotionState(carTransform);
@@ -65,6 +65,12 @@ namespace Objects
         }
 
         void processInput(GLFWwindow *window, double deltaTime) override {
+            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+                setPosition(glm::vec3(0,0,0));
+                mTheta = 180;
+                calculateRotation();
+                mRigidBody->setLinearVelocity(btVector3(0,0,0));
+            }
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
                 applyForce(glm::vec3(glm::sin(glm::radians(mTheta))*ACCELERATION, 0, glm::cos(glm::radians(mTheta))*ACCELERATION));
             }

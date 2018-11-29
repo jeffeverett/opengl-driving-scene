@@ -12,6 +12,10 @@ namespace Utils
         return btVector32glmVec3(origin)+mOffset;
     }
 
+    void GameObject::setPosition(glm::vec3 position) {
+        mRigidBody->getWorldTransform().setOrigin(glmVec32btVector3(position));
+    }
+
     float GameObject::getTheta() {
         return mTheta;
     }
