@@ -31,7 +31,7 @@ namespace Physics
             std::cout << "Drawing line" << std::endl;
 #endif
 
-            // Vertex data
+            // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=11517
             GLuint VAO, VBO;
             GLfloat points[12];
 

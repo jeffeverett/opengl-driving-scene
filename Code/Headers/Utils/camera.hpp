@@ -13,12 +13,11 @@
 #include <memory>
 
 // Default camera values
-const float YAW         = -90.0f;
-const float PITCH       =  -10.0f;
-const float SPEED       =  2.5f;
-const float SENSITIVITY =  0.1f;
-const float ZOOM        =  45.0f;
-const float BOX_SIZE    =  0.5f;
+const float THETA       =  0.0f;
+const float PHI         =  15.0f;
+const float SENSITIVITY =  40.0f;
+const float RADIUS      =  10.0f;
+const float BOX_SIZE    =  25.0f;
 
 
 namespace Utils {
@@ -41,59 +40,29 @@ namespace Utils {
     class Camera {
     public:
         // Constructor with vectors
-        Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-                glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-                float yaw = YAW,
-                float pitch = PITCH);
+        Camera(float radius = RADIUS, float theta = THETA, float phi = PHI) :
+            mProjectionMode(PERSPECTIVE),
+            mRadius(radius),
+            mTheta(theta),
+            mPhi(phi) {}
 
-        // Constructor with scalar values
-        Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
-
-        // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
         glm::mat4 getViewMatrix();
-
-        // Returns the projection matrix
         glm::mat4 getProjectionMatrix();
-
-        // Set projection mode
         void cycleProjectionMode();
-
-        // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-        void processKeyboard(CameraMovement direction, float deltaTime);
-
-        // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-        void processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
-
-        // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-        void processMouseScroll(float yoffset);
-
-        // Called every frame
         void perFrame();
-
-        // Tell camera which object to track
+        void processInput(GLFWwindow *window, double deltaTime);
         void setFollow(std::shared_ptr<Utils::GameObject> follow);
 
     private:
         // Camera Attributes
+        double mRadius;
+        float mTheta;
+        float mPhi;
+
+        // Position is calculated once per frame and then stored here
         glm::vec3 mPosition;
-        glm::vec3 mOffset;
-        glm::vec3 mFront;
-        glm::vec3 mUp;
-        glm::vec3 mRight;
-        glm::vec3 mWorldUp;
-        // Euler Angles
-        float mYaw;
-        float mPitch;
-        // Camera options
-        float mMovementSpeed;
-        float mMouseSensitivity;
-        float mZoom;
-        float mBoxSize;
+
         std::shared_ptr<Utils::GameObject> mFollow;
-
         ProjectionMode mProjectionMode;
-
-        // Calculates the front vector from the Camera's (updated) Euler Angles
-        void updateCameraVectors();
     };
 }

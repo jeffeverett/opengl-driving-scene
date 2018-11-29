@@ -28,8 +28,6 @@
 
 
 const int FPS_ROLLING_FRAMES = 10;
-const GLfloat EDGE_THRESHOLD = 75;
-const double EDGE_ROTATE_SPEED = 10;
 
 // Below used by other files
 GLfloat width = 1280;
@@ -63,10 +61,6 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     float yoffset = lastY - ypos;
     lastX = xpos;
     lastY = ypos;
-
-#ifdef CAMERA_MOUSE_MOVEMENT
-    scene.getCamera()->processMouseMovement(xoffset, yoffset);
-#endif
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int newWidth, int newHeight) {
@@ -151,7 +145,7 @@ int main(int argc, char * argv[]) {
     dynamicsWorld->addRigidBody(&groundBody);
 
     // Create camera
-    auto camera = std::make_shared<Utils::Camera>(glm::vec3(0,0,3));
+    auto camera = std::make_shared<Utils::Camera>();
 
     // Create cubemap
     std::vector<std::string> darkFaces {
@@ -198,28 +192,6 @@ int main(int argc, char * argv[]) {
 
         // Start text renderer at bottom
         textRenderer->resetVerticalOffset();
-
-        // If at edge of screen, rotate in direction of edge
-#ifdef CAMERA_MOUSE_MOVEMENT
-        double xpos, ypos;
-        double xoffset = 0, yoffset = 0;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        if (xpos < EDGE_THRESHOLD) {
-            xoffset = -EDGE_ROTATE_SPEED;
-        }
-        else if (xpos > width - EDGE_THRESHOLD) {
-            xoffset = EDGE_ROTATE_SPEED;
-        }
-
-        if (ypos < EDGE_THRESHOLD) {
-            yoffset = EDGE_ROTATE_SPEED;
-        }
-        else if (ypos > height - EDGE_THRESHOLD) {
-            yoffset = -EDGE_ROTATE_SPEED;
-        }
-
-        scene.getCamera()->processMouseMovement(xoffset, yoffset);
-#endif
 
         // FPS timing/display
         double currentFrame = glfwGetTime();

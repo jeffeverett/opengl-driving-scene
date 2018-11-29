@@ -31,13 +31,9 @@ namespace Utils
         }
 
         // Camera movement
-        camera->processInput(window, mDeltaTime);
+        mCamera->processInput(window, mDeltaTime);
 
-        // Camera settings
-        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-            mCamera->cycleProjectionMode();
-        }
-
+        // Forward to tracked gameobjects
         for (auto &gameObject : mGameObjects) {
             gameObject->processInput(window, mDeltaTime);
         }

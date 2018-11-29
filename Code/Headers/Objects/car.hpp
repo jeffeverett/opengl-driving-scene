@@ -35,7 +35,7 @@ namespace Objects
 
             scale(glm::vec3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR));
 
-            btBoxShape *carShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
+            btBoxShape *carShape = new btBoxShape(btVector3(btScalar(0.25), btScalar(0.1), btScalar(0.55)));
             btTransform carTransform;
             carTransform.setIdentity();
             carTransform.setOrigin(btVector3(0, 0, 0));
