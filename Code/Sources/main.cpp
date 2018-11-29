@@ -9,6 +9,7 @@
 #include "Physics/debugdrawer.hpp"
 #include "Objects/car.hpp"
 #include "Objects/house.hpp"
+#include "Objects/ground.hpp"
 
 
 // System Headers
@@ -133,17 +134,6 @@ int main(int argc, char * argv[]) {
     debugDrawer.setDebugMode(2);
     dynamicsWorld->setDebugDrawer(&debugDrawer);
 
-    btBoxShape groundShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
-    btTransform groundTransform;
-    groundTransform.setIdentity();
-    groundTransform.setOrigin(btVector3(0, -50, 0));
-    btScalar mass(0.);
-    btVector3 localInertia(0, 0, 0);
-    btDefaultMotionState myMotionState(groundTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, &myMotionState, &groundShape, localInertia);
-    btRigidBody groundBody = btRigidBody(rbInfo);
-    dynamicsWorld->addRigidBody(&groundBody);
-
     // Create camera
     auto camera = std::make_shared<Utils::Camera>();
 
@@ -165,6 +155,7 @@ int main(int argc, char * argv[]) {
     // Set up objects
     Objects::House::setup();
     Objects::Car::setup();
+    Objects::Ground::setup();
 
     // Add GameObjects to scene
     auto house = std::make_shared<Objects::House>();
@@ -172,6 +163,8 @@ int main(int argc, char * argv[]) {
     auto car = std::make_shared<Objects::Car>();
     scene.getCamera()->setFollow(car);
     scene.add(car);
+    auto ground = std::make_shared<Objects::Ground>();
+    scene.add(ground);
 
     // Register remaining callbacks
     glfwSetCursorPosCallback(window, mouseCallback);

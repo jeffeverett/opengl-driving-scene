@@ -33,12 +33,13 @@ namespace Objects
         Car() : Utils::GameObject(mDrawable, mShader) {
             // Call setup before constructor
 
+            setOffset(glm::vec3(0, -0.1, 0));
             scale(glm::vec3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR));
 
             btBoxShape *carShape = new btBoxShape(btVector3(btScalar(0.25), btScalar(0.1), btScalar(0.55)));
             btTransform carTransform;
             carTransform.setIdentity();
-            carTransform.setOrigin(btVector3(0, 0, 0));
+            carTransform.setOrigin(btVector3(0, 0.05, 0));
             carTransform.setRotation(btQuaternion(btVector3(0,1,0), glm::radians(180.0)));
             btScalar mass(10.);
             btVector3 localInertia(0, 0, 0);

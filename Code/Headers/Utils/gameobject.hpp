@@ -33,6 +33,7 @@ namespace Utils
         // Public Member Functions
         glm::vec3 getPosition();
 
+        void setOffset(glm::vec3 offset);
         void translate(glm::vec3 translationVector);
         void applyForce(glm::vec3 vec);
         void scale(glm::vec3 scaleVector);
@@ -45,7 +46,7 @@ namespace Utils
     protected:
         std::unique_ptr<btRigidBody> mRigidBody;
         glm::vec3 mScale = glm::vec3(1);
-        glm::vec3 mPosition = glm::vec3(0);
+        glm::vec3 mOffset = glm::vec3(0);
         float mTheta = 0;
 
         static glm::mat4 btScalar2glmMat4(btScalar* matrix);

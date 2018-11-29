@@ -46,7 +46,9 @@ namespace Utils
     }
 
     void Scene::draw() {
+#ifdef DEBUG
         std::cout << "Num shaders tracked by scene " << mShaders.size() << std::endl;
+#endif
         simpleShader->use();
         simpleShader->setMat4("projection", mCamera->getProjectionMatrix());
         simpleShader->setMat4("view", mCamera->getViewMatrix());

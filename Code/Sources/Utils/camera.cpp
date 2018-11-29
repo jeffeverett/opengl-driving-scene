@@ -85,7 +85,7 @@ namespace Utils {
             mRadius += SENSITIVITY*deltaTime;
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-            mRadius += SENSITIVITY*deltaTime;
+            mRadius -= SENSITIVITY*deltaTime;
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
             mTheta += SENSITIVITY*deltaTime;

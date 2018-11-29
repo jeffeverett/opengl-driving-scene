@@ -14,7 +14,7 @@
 #include <vector>
 #include <memory>
 
-std::vector<glm::vec3> positions {
+std::vector<glm::vec3> housePositions {
     // Back
     glm::vec3(-1.0f,  1.0f, -1.0f),
     glm::vec3(-1.0f, -1.0f, -1.0f),
@@ -64,7 +64,7 @@ std::vector<glm::vec3> positions {
     glm::vec3(1.0f, -1.0f,  1.0f)
 };
 
-std::vector<glm::vec3> normals {
+std::vector<glm::vec3> houseNormals {
     // Back
     glm::vec3(0.0f, 0.0f, -1.0f),
     glm::vec3(0.0f, 0.0f, -1.0f),
@@ -115,7 +115,7 @@ std::vector<glm::vec3> normals {
     glm::vec3(0.0f, -1.0f, 0.0f),
 };
 
-std::vector<glm::vec2> texCoords {
+std::vector<glm::vec2> houseTexCoords {
     // Back
     glm::vec2(0, 1),
     glm::vec2(0, 0),
@@ -218,7 +218,7 @@ namespace Objects
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
             mTextures.push_back(Utils::Texture { textureID, "texture_diffuse", texturePath });
-            mDrawable = std::make_shared<Utils::Mesh>(positions, normals, texCoords, mTextures);
+            mDrawable = std::make_shared<Utils::Mesh>(housePositions, houseNormals, houseTexCoords, mTextures);
             mShader = defaultShader;
         }
 
