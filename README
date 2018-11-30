@@ -7,14 +7,22 @@ Final Project
 
 Build Instructions:
 Simply running "make" should work. However, in case it doesn't,
-the project itself is based off of the CMake meta-build system.
-The series of command-line instructions to compile and run the
-program are as follows:
+it should be noted that (1) the project is based off of the CMake meta-build
+system and (2) the project uses git submodules for the vendor libraries;
+these are not included in the zip file in order to make it small enough
+for the Moodle submission.
+
+If there are issues with the Makefile, please try running the following
+commands manually:
+- git submodule update --init --recursive
 - mkdir Build
 - cd Build
 - cmake ..
 - make
 - ./final
+
+Unfortunately, due to the setup's need to download and compile all of the vendor
+submodules, this process does take a long time.
 
 Keys:
 - ESC: Exit program
@@ -53,6 +61,9 @@ that I made to them:
 - Lighting shader files: Default shader provides textures and lighting. These were
   basically constructed by combining the tutorial for texturing and the tutorial
   for lighting.
+
+There have also been small snippets taken from various forums/Q&A sites.
+These are acknowledged in the source code at the location of their inclusion.
 
 Accomplishments:
 The main accomplishments for this project thus far have been:

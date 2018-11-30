@@ -5,7 +5,7 @@
 [submodule "Code/Vendor/glad"]
 	path = Code/Vendor/glad
 	url = https://github.com/Dav1dde/glad.git
-    branch = c
+	branch = c
 [submodule "Code/Vendor/glfw"]
 	path = Code/Vendor/glfw
 	url = https://github.com/glfw/glfw.git
