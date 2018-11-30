@@ -4,4 +4,4 @@ final:
 	git submodule update --init --recursive
 	mkdir Build
 	cd Build; cmake ..; make
-	cp Build/final ./final
+	cp Build/final/final ./final
