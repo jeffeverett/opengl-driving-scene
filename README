@@ -1,0 +1,90 @@
+Jeff Everett
+CSCI 4229
+Undergraduate
+11/29/2018
+
+Final Project
+
+Build Instructions:
+Simply running "make" should work. However, in case it doesn't,
+the project itself is based off of the CMake meta-build system.
+The series of command-line instructions to compile and run the
+program are as follows:
+- mkdir Build
+- cd Build
+- cmake ..
+- make
+- ./final
+
+Keys:
+- ESC: Exit program
+- WASD: Car movement
+- SPACE: Reset scene
+- Arrow Keys: Rotate camera around car
+- Q/E: Increase/decrease radius of offset
+- P: Change camera projection mode (although it no longer really makes sense
+     to use anything besides perspective, which is the default)
+
+Acknowledgments:
+This program began by forking the Glitter project by GitHub user Polytonic.
+This repo is here: https://github.com/Polytonic/Glitter.
+This essentially provides the underlying CMake setup. It copies vendor libraries
+to subdirectories and appropriately incorporates those libraries into the CMake project.
+None of the non-vendor C++ code is used in the current version of this project.
+
+The other major code contributor is the website https://learnopengl.com/.
+This site provides a number of tutorials on modern OpenGL and provides utilities
+for tasks such as asset import and shader program compilation/linkage.
+The following is a list of files influenced by this site, as well as the modifications
+that I made to them:
+- Code/Headers/Utils/shader.hpp: Only very minor changes made.
+- Code/Headers/Utils/model.hpp & Code/Sources/Utils/model.cpp: Only very minor
+  changes made.
+- Code/Headers/Utils/mesh.hpp: Added code for creation of meshes based on
+  manually-specified lists of vertex positions, indices, texture coordinates, and
+  texture identifiers. This was to enable manually-created objects.
+- Cubemap files: Shaders and code for cubemap influenced by site. I wrapped
+  given code into a class that calls necessary OpenGL commands when appropriate
+  when considered with the larger project structure that I created.
+- Text rendering files: Shaders and code for texture rendering influenced by site
+  (as well as incorporates the FreeType library for shader-based text rendering).
+  Again took snippets of code and wrapped in class that called commands at the
+  appropriate times.
+- Lighting shader files: Default shader provides textures and lighting. These were
+  basically constructed by combining the tutorial for texturing and the tutorial
+  for lighting.
+
+Accomplishments:
+The main accomplishments for this project thus far have been:
+- Employing the programmable pipeline
+- Implementing collision detection
+
+The first of these was surprisingly difficult, even after deciding to utilize
+the above-mentioned resources. I kept making small errors that took hours to
+debug. This was somewhat alleviated after using RenderDoc for debugging purposes,
+but even this solution was limited in comparison to traditional debuggers.
+Specifically, it does not allow you to set breakpoints in the shader code and
+step through it line by line.
+
+The second was actually much easier, although admittedly I used a pre-existing
+physics engine (Bullet) for the task. Still, it's tedious to, for example, size
+the AABB for the objects in code (especially when compared the visual editing tools
+available in modern game engine editors). I did create a class which implements the
+debug drawing interface which they provide in order make this process easier
+(and because the lines drawn look neat).
+
+To Do:
+I didn't finish what I wanted for this. In the future, I will:
+- Create more complicated manually-generated geometry (specifically, street lights).
+- Fix whatever weirdness is currently happening with the texture mapping for
+  the imported car model.
+- Provide spotlights on car.
+- Use instancing to draw multiple copies of brick walls and street lights.
+- Remove warnings/optimize texture sizes.
+I have started some of these tasks already, but none of them are completed.
+
+Stretch:
+The collision detection works well, but the remainder of the physics does not.
+Currently, the car can rotate without acceleration, and the "gas" simply applies
+a force in the direction which the car is facing. Time permitting, I will try
+to create a more realistic physics environment.

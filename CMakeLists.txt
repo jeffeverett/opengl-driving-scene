@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(DrivingScene)
+project(final)
 
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
