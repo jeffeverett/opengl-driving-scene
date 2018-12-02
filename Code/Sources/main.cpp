@@ -10,6 +10,7 @@
 #include "Objects/car.hpp"
 #include "Objects/house.hpp"
 #include "Objects/ground.hpp"
+#include "Objects/terrain.hpp"
 
 
 // System Headers
@@ -156,6 +157,7 @@ int main(int argc, char * argv[]) {
     Objects::House::setup();
     Objects::Car::setup();
     Objects::Ground::setup();
+    Objects::Terrain::setup();
 
     // Add GameObjects to scene
     auto house = std::make_shared<Objects::House>();
@@ -163,8 +165,10 @@ int main(int argc, char * argv[]) {
     auto car = std::make_shared<Objects::Car>();
     scene.getCamera()->setFollow(car);
     scene.add(car);
-    auto ground = std::make_shared<Objects::Ground>();
-    scene.add(ground);
+    auto terrain = std::make_shared<Objects::Terrain>();
+    scene.add(terrain);
+    //auto ground = std::make_shared<Objects::Ground>();
+    //scene.add(ground);
 
     // Register remaining callbacks
     glfwSetCursorPosCallback(window, mouseCallback);
