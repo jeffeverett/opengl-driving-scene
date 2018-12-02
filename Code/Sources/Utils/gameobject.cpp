@@ -9,7 +9,7 @@ namespace Utils
 {
     glm::vec3 GameObject::getPosition() {
         btVector3 origin = mRigidBody->getWorldTransform().getOrigin();
-        return btVector32glmVec3(origin)+mOffset;
+        return btVector32glmVec3(origin)+getWorldOffset();
     }
 
     void GameObject::setPosition(glm::vec3 position) {
@@ -22,6 +22,12 @@ namespace Utils
 
     void GameObject::setOffset(glm::vec3 offset) {
         mOffset = offset;
+    }
+
+    glm::vec3 GameObject::getWorldOffset() {
+        btMatrix3x3 rotationMatrix = mRigidBody->getWorldTransform().getBasis();
+        btVector3 worldOffset = rotationMatrix*glmVec32btVector3(mOffset);
+        return btVector32glmVec3(worldOffset);
     }
 
     void GameObject::translate(glm::vec3 translationVector) {
@@ -47,9 +53,10 @@ namespace Utils
         // Construct model matrix
         btScalar transform[16];
         mRigidBody->getWorldTransform().getOpenGLMatrix(transform);
-        transform[12] += mOffset[0];
-        transform[13] += mOffset[1];
-        transform[14] += mOffset[2];
+        glm::vec3 worldOffset = getWorldOffset();
+        transform[12] += worldOffset[0];
+        transform[13] += worldOffset[1];
+        transform[14] += worldOffset[2];
         glm::mat4 model = btScalar2glmMat4(transform);
         model = glm::scale(model, mScale);
 

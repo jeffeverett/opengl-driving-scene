@@ -28,7 +28,7 @@ namespace Physics
 
         virtual void drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color) override {
 #ifdef DEBUG
-            std::cout << "Drawing line" << std::endl;
+            //std::cout << "Drawing line" << std::endl;
 #endif
 
             // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=11517
@@ -66,21 +66,6 @@ namespace Physics
             mShader->use();
             glDrawArrays(GL_LINES, 0, 2);
             glBindVertexArray(0);
-
-            /*GLuint VAO, VBO;
-            GLfloat positions[6] = { from[0], from[1], from[2], to[0], to[1], to[2] };
-
-            glGenVertexArrays(1, &VAO);
-            glGenBuffers(1, &VBO);
-            glBindVertexArray(VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*6, &positions[0], GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (void*)0);
-
-            mShader->use();
-            glDrawArrays(GL_LINES, 0, 6);*/
         }
 
         virtual void drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color) {

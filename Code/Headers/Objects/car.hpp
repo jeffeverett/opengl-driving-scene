@@ -16,11 +16,8 @@
 #include <iomanip>
 
 const double SCALE_FACTOR = 1.0/400.0;
-const double MAX_SPEED = 10;
-const double MAX_ANGULAR_SPEED = 10;
-const double ACCELERATION = 150;
+const double ACCELERATION = 15000;
 const double ANGULAR_ACCELERATION = 100;
-const double FRICTION = 6;
 
 // Define Namespace
 namespace Objects
@@ -39,9 +36,10 @@ namespace Objects
             btBoxShape *carShape = new btBoxShape(btVector3(btScalar(0.25), btScalar(0.1), btScalar(0.55)));
             btTransform carTransform;
             carTransform.setIdentity();
-            carTransform.setOrigin(btVector3(0, 0, 0));
-            btScalar mass(10.);
+            carTransform.setOrigin(btVector3(0, 2, 0));
+            btScalar mass(1575.0);
             btVector3 localInertia(0, 0, 0);
+            carShape->calculateLocalInertia(mass, localInertia);
             btDefaultMotionState *myMotionState = new btDefaultMotionState(carTransform);
             btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, carShape, localInertia);
             mRigidBody = std::make_unique<btRigidBody>(rbInfo);
@@ -61,12 +59,12 @@ namespace Objects
         }
 
         void calculateRotation() {
-            mRigidBody->getWorldTransform().setRotation(btQuaternion(btVector3(0,1,0), glm::radians(mTheta)));
+            // mRigidBody->getWorldTransform().setRotation(btQuaternion(btVector3(0,1,0), glm::radians(mTheta)));
         }
 
         void processInput(GLFWwindow *window, double deltaTime) override {
             if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-                setPosition(glm::vec3(0,0,0));
+                setPosition(glm::vec3(0,2,0));
                 mTheta = 180;
                 calculateRotation();
                 mRigidBody->setLinearVelocity(btVector3(0,0,0));
@@ -79,8 +77,8 @@ namespace Objects
 
             }
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-                mTheta += ANGULAR_ACCELERATION*deltaTime;
-                calculateRotation();
+                applyForce(glm::vec3(-glm::sin(glm::radians(mTheta+90))*ACCELERATION, 0, -glm::cos(glm::radians(mTheta+90))*ACCELERATION));
+
             }
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
                 mTheta -= ANGULAR_ACCELERATION*deltaTime;
@@ -92,44 +90,6 @@ namespace Objects
         }
 
         void perFrame(double deltaTime) override {
-            /*mAngularSpeed += mAngularAcceleration*deltaTime;
-            if (mAngularSpeed > MAX_ANGULAR_SPEED) {
-                mAngularSpeed = MAX_ANGULAR_SPEED;
-            }
-            else if (mAngularSpeed < -MAX_ANGULAR_SPEED) {
-                mAngularSpeed = -MAX_ANGULAR_SPEED;
-            }
-            if (glm::abs(mAngularSpeed) > 0.05) {
-                rotate(mAngularSpeed*deltaTime);
-
-                if (mAngularSpeed > 0) {
-                    mAngularSpeed -= FRICTION*deltaTime;
-                }
-                else {
-                    mAngularSpeed += FRICTION*deltaTime;
-                }
-            }
-
-            mSpeed += mAcceleration*deltaTime;
-            if (mSpeed > MAX_SPEED) {
-                mSpeed = MAX_SPEED;
-            }
-            else if (mSpeed < -MAX_SPEED) {
-                mSpeed = -MAX_SPEED;
-            }
-
-            if (glm::abs(mSpeed) > 0.05) {
-                glm::vec3 positionOffset = glm::vec3(mSpeed * glm::sin(glm::radians(mTheta)) * deltaTime, 0, mSpeed * glm::cos(glm::radians(mTheta)) * deltaTime);
-                translate(positionOffset);
-
-                if (mSpeed > 0) {
-                    mSpeed -= FRICTION*deltaTime;
-                }
-                else {
-                    mSpeed += FRICTION*deltaTime;
-                }
-            }*/
-
             std::ostringstream cpOSS;
             glm::vec3 position = getPosition();
             cpOSS << std::fixed << std::setprecision(5) << "Car Pos: (" << position[0] << ", " << position[1] << ", " << position[2] << ")";

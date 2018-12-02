@@ -35,6 +35,7 @@ namespace Utils
         void setPosition(glm::vec3 position);
         float getTheta();
         void setOffset(glm::vec3 offset);
+        glm::vec3 getWorldOffset();
         void translate(glm::vec3 translationVector);
         void applyForce(glm::vec3 vec);
         void scale(glm::vec3 scaleVector);
