@@ -36,7 +36,7 @@ namespace Objects
         Streetlight & operator=(Streetlight const &) = delete;
 
         // Private Member functions
-        static void createCircle(float height);
+        static void createOpenCylinder(float height1, float height2, float radius);
 
         // Private members
         static std::shared_ptr<Utils::Drawable> mDrawable;

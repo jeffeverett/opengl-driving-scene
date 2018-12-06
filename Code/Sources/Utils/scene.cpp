@@ -28,24 +28,62 @@ namespace Utils
         mDeltaTime = deltaTime;
     }
 
+    void Scene::setFog(bool val) {
+        defaultShader->use();
+        if (val) {
+            mFogEnabled = true;
+            defaultShader->setFloat("fogDensity", 0.05f);
+        }
+        else {
+            mFogEnabled = false;
+            defaultShader->setFloat("fogDensity", 0.0f);
+        }
+    }
+
+    void Scene::setNightMode(bool val) {
+        defaultShader->use();
+        if (val) {
+            mNightModeEnabled = true;
+            defaultShader->setVec3("dirLight.ambient", glm::vec3(0.1,0.1,0.1));
+            defaultShader->setVec3("dirLight.diffuse", glm::vec3(0.25,0.25,0.25));
+            defaultShader->setVec3("dirLight.specular", glm::vec3(1,1,1));
+        }
+        else {
+            mNightModeEnabled = false;
+            defaultShader->setVec3("dirLight.ambient", glm::vec3(0.3,0.3,0.3));
+            defaultShader->setVec3("dirLight.diffuse", glm::vec3(0.95,0.95,0.95));
+            defaultShader->setVec3("dirLight.specular", glm::vec3(1,1,1));
+        }
+    }
+
     void Scene::processInput(GLFWwindow *window) {
         // Window close
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
 
-        // Enable fog
+        // Night w/fog
         if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-            mFogEnabled = true;
-            defaultShader->use();
-            defaultShader->setFloat("fogDensity", 0.05f);
+            setFog(true);
+            setNightMode(true);
         }
 
-        // Disable fog
+        // Night w/o fog
         if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-            mFogEnabled = false;
-            defaultShader->use();
-            defaultShader->setFloat("fogDensity", 0.0f);
+            setFog(false);
+            setNightMode(true);
+        }
+
+        // Day w/fog
+        if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
+            setFog(true);
+            setNightMode(false);
+        }
+
+        // Day w/o fog
+        if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+            setFog(false);
+            setNightMode(false);
         }
 
         // Camera movement

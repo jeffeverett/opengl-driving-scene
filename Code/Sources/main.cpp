@@ -119,11 +119,7 @@ int main(int argc, char * argv[]) {
     );
     defaultShader->use();
     defaultShader->setVec3("dirLight.direction", glm::vec3(-1,-1,-1));
-    defaultShader->setVec3("dirLight.ambient", glm::vec3(0.1,0.1,0.1));
-    defaultShader->setVec3("dirLight.diffuse", glm::vec3(0.25,0.25,0.25));
-    defaultShader->setVec3("dirLight.specular", glm::vec3(1,1,1));
     defaultShader->setVec4("fogColor", glm::vec4(1,1,1,1));
-    defaultShader->setFloat("fogDensity", 0.05f);
 
     simpleShader = std::make_shared<Utils::Shader>(
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/simple.vert",
@@ -156,6 +152,8 @@ int main(int argc, char * argv[]) {
     // Create scene
     scene.setCamera(camera);
     scene.setCubeMap(cubeMap);
+    scene.setFog(true);
+    scene.setNightMode(true);
 
     // Set up objects
     Objects::Wall::setup();

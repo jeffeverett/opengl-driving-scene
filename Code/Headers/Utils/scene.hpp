@@ -24,7 +24,7 @@ namespace Utils
     public:
 
         // Implement Default Constructor and Destructor
-        Scene() : mFogEnabled(true) { }
+        Scene() { }
         ~Scene() { }
 
 
@@ -32,6 +32,8 @@ namespace Utils
         void add(std::shared_ptr<Utils::GameObject> gameObject);
         void setCamera(std::shared_ptr<Utils::Camera> camera);
         std::shared_ptr<Utils::Camera> getCamera();
+        void setFog(bool val);
+        void setNightMode(bool val);
         void setCar(std::shared_ptr<Objects::Car> car);
         void setCubeMap(std::shared_ptr<Utils::CubeMap> cubeMap);
         void setDeltaTime(double deltaTime);
@@ -53,6 +55,7 @@ namespace Utils
 
         // Private Member Variables
         bool mFogEnabled;
+        bool mNightModeEnabled;
         double mDeltaTime;
         std::shared_ptr<Utils::CubeMap> mCubeMap;
         std::shared_ptr<Utils::Camera> mCamera;
