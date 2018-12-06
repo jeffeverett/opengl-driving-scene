@@ -10,6 +10,7 @@
 #include "Objects/car.hpp"
 #include "Objects/terrain.hpp"
 #include "Objects/wall.hpp"
+#include "Objects/streetlight.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -122,6 +123,7 @@ int main(int argc, char * argv[]) {
     defaultShader->setVec3("dirLight.diffuse", glm::vec3(0.25,0.25,0.25));
     defaultShader->setVec3("dirLight.specular", glm::vec3(1,1,1));
     defaultShader->setVec4("fogColor", glm::vec4(1,1,1,1));
+    defaultShader->setFloat("fogDensity", 0.05f);
 
     simpleShader = std::make_shared<Utils::Shader>(
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/simple.vert",
@@ -159,6 +161,7 @@ int main(int argc, char * argv[]) {
     Objects::Wall::setup();
     Objects::Car::setup();
     Objects::Terrain::setup();
+    Objects::Streetlight::setup();
 
     // Add GameObjects to scene
     auto wall = std::make_shared<Objects::Wall>();
@@ -169,6 +172,8 @@ int main(int argc, char * argv[]) {
     scene.add(car);
     auto terrain = std::make_shared<Objects::Terrain>();
     scene.add(terrain);
+    auto streetlight = std::make_shared<Objects::Streetlight>();
+    scene.add(streetlight);
 
     // Register remaining callbacks
     glfwSetCursorPosCallback(window, mouseCallback);
@@ -226,7 +231,7 @@ int main(int argc, char * argv[]) {
         scene.draw();
 
         // Draw physics debugging
-        //dynamicsWorld->debugDrawWorld();
+        dynamicsWorld->debugDrawWorld();
 
         // Render FPS as string
         std::ostringstream fpsOSS;

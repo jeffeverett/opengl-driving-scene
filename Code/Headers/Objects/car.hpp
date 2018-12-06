@@ -47,6 +47,8 @@ namespace Objects
         float mWheelTurn;
         static glm::vec3 mSpotlightOffset1;
         static glm::vec3 mSpotlightOffset2;
+        static glm::vec3 mTaillightOffset1;
+        static glm::vec3 mTaillightOffset2;
         static std::shared_ptr<Utils::Drawable> mDrawable;
         static std::shared_ptr<Utils::Shader> mShader;
     };

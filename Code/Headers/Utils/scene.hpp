@@ -24,7 +24,7 @@ namespace Utils
     public:
 
         // Implement Default Constructor and Destructor
-        Scene() : mFogEnabled(false) { }
+        Scene() : mFogEnabled(true) { }
         ~Scene() { }
 
 

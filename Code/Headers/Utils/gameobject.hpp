@@ -37,6 +37,7 @@ namespace Utils
         void setOffset(glm::vec3 offset);
         glm::vec3 getWorldOffset();
         glm::vec3 getWorldForward();
+        glm::vec3 getWorldOffset(glm::vec3 localOffset);
         void translate(glm::vec3 translationVector);
         void applyForce(glm::vec3 vec);
         void scale(glm::vec3 scaleVector);

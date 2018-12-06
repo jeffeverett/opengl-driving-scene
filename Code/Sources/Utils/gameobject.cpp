@@ -36,6 +36,12 @@ namespace Utils
         return btVector32glmVec3(worldOffset);
     }
 
+    glm::vec3 GameObject::getWorldOffset(glm::vec3 localOffset) {
+        btMatrix3x3 rotationMatrix = mRigidBody->getWorldTransform().getBasis();
+        btVector3 worldOffset = rotationMatrix*glmVec32btVector3(localOffset);
+        return btVector32glmVec3(worldOffset);
+    }
+
     void GameObject::translate(glm::vec3 translationVector) {
         btVector3 origin = mRigidBody->getWorldTransform().getOrigin();
         origin += glmVec32btVector3(translationVector);

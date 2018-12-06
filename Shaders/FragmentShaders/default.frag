@@ -51,7 +51,7 @@ uniform float specStrength;
 uniform DirLight dirLight;
 #define NR_POINT_LIGHTS 4
 uniform PointLight pointLights[NR_POINT_LIGHTS];
-#define NR_SPOT_LIGHTS 2
+#define NR_SPOT_LIGHTS 4
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 uniform vec3 viewPos;
 uniform vec4 fogColor;

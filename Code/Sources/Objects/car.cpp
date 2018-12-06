@@ -5,6 +5,8 @@ using namespace Objects;
 
 glm::vec3 Car::mSpotlightOffset1;
 glm::vec3 Car::mSpotlightOffset2;
+glm::vec3 Car::mTaillightOffset1;
+glm::vec3 Car::mTaillightOffset2;
 std::shared_ptr<Utils::Drawable> Car::mDrawable;
 std::shared_ptr<Utils::Shader> Car::mShader;
 
@@ -39,19 +41,35 @@ void Car::setup() {
     mShader = defaultShader;
 
     defaultShader->use();
-    defaultShader->setVec3("spotLights[0].ambient", glm::vec3(0.1,0.1,0.1));
-    defaultShader->setVec3("spotLights[0].diffuse", glm::vec3(0.35,0.35,0.35));
-    defaultShader->setVec3("spotLights[0].specular", glm::vec3(1,1,1));
-    defaultShader->setFloat("spotLights[0].innerCutoff", glm::cos(glm::radians(12.5)));
-    defaultShader->setFloat("spotLights[0].outerCutoff", glm::cos(glm::radians(17.5)));
-    defaultShader->setFloat("spotLights[0].constant", 1.0f);
-    defaultShader->setFloat("spotLights[0].linear", 0.09f);
-    defaultShader->setFloat("spotLights[0].quadratic", 0.032f);
-    /*defaultShader->setVec3("spotLights[1].ambient", glm::vec3(0.1,0.1,0.1));
-    defaultShader->setVec3("spotLights[1].diffuse", glm::vec3(0.35,0.35,0.35));
-    defaultShader->setVec3("spotLights[1].specular", glm::vec3(1,1,1));
-    defaultShader->setFloat("spotLights[1].innerCutoff", glm::radians(5.0));
-    defaultShader->setFloat("spotLights[1].outerCutoff", glm::radians(7.0));*/
+    // Front spotlights
+    for (int i = 0; i <= 1; i++) {
+        std::string number = std::to_string(i);
+        defaultShader->setVec3("spotLights[" + number + "].ambient", glm::vec3(0.13,0.13,0.13));
+        defaultShader->setVec3("spotLights[" + number + "].diffuse", glm::vec3(0.55,0.55,0.55));
+        defaultShader->setVec3("spotLights[" + number + "].specular", glm::vec3(1,1,1));
+        defaultShader->setFloat("spotLights[" + number + "].innerCutoff", glm::cos(glm::radians(12.5)));
+        defaultShader->setFloat("spotLights[" + number + "].outerCutoff", glm::cos(glm::radians(17.5)));
+        defaultShader->setFloat("spotLights[" + number + "].constant", 1.0f);
+        defaultShader->setFloat("spotLights[" + number + "].linear", 0.09f);
+        defaultShader->setFloat("spotLights[" + number + "].quadratic", 0.032f);
+    }
+    // Tail lights
+    for (int i = 2; i <= 3; i++) {
+        std::string number = std::to_string(i);
+        defaultShader->setVec3("spotLights[" + number + "].ambient", glm::vec3(0.23,0.06,0.06));
+        defaultShader->setVec3("spotLights[" + number + "].diffuse", glm::vec3(0.75,0.15,0.15));
+        defaultShader->setVec3("spotLights[" + number + "].specular", glm::vec3(1,1,1));
+        defaultShader->setFloat("spotLights[" + number + "].innerCutoff", glm::cos(glm::radians(12.5)));
+        defaultShader->setFloat("spotLights[" + number + "].outerCutoff", glm::cos(glm::radians(17.5)));
+        defaultShader->setFloat("spotLights[" + number + "].constant", 1.0f);
+        defaultShader->setFloat("spotLights[" + number + "].linear", 0.09f);
+        defaultShader->setFloat("spotLights[" + number + "].quadratic", 0.032f);
+    }
+
+    mSpotlightOffset1 = glm::vec3(-0.17,0.15,0.5);
+    mSpotlightOffset2 = glm::vec3(0.17,0.15,0.5);
+    mTaillightOffset1 = glm::vec3(-0.17,0.15,-0.5);
+    mTaillightOffset2 = glm::vec3(0.17,0.15,-0.5);
 }
 
 void Car::calculateRotation(double angle) {
@@ -59,8 +77,9 @@ void Car::calculateRotation(double angle) {
 }
 
 void Car::updateLighting() {
-    glm::vec3 spotlightPosition1 = getPosition()+mSpotlightOffset1;
-    glm::vec3 spotlightPosition2 = getPosition()+mSpotlightOffset2;
+    // Spotlights
+    glm::vec3 spotlightPosition1 = getPosition()+getWorldOffset(mSpotlightOffset1);
+    glm::vec3 spotlightPosition2 = getPosition()+getWorldOffset(mSpotlightOffset2);
     glm::vec3 spotlightDirection = getWorldForward();
 
     defaultShader->use();
@@ -70,7 +89,21 @@ void Car::updateLighting() {
     defaultShader->setVec3("spotLights[1].direction", spotlightDirection);
 
     debugDrawer->drawLine(glmVec32btVector3(spotlightPosition1), glmVec32btVector3(spotlightPosition1+glm::vec3(3)*spotlightDirection), btVector3(1.0,0,0));
-    //debugDrawer->drawLine(glmVec32btVector3(spotlightPosition2), glmVec32btVector3(spotlightPosition2+glm::vec3(3)*spotlightDirection), btVector3(1.0,0,0));
+    debugDrawer->drawLine(glmVec32btVector3(spotlightPosition2), glmVec32btVector3(spotlightPosition2+glm::vec3(3)*spotlightDirection), btVector3(1.0,0,0));
+
+    // Tail lights
+    glm::vec3 taillightPosition1 = getPosition()+getWorldOffset(mTaillightOffset1);
+    glm::vec3 taillightPosition2 = getPosition()+getWorldOffset(mTaillightOffset2);
+    glm::vec3 taillightDirection = glm::vec3(-1)*getWorldForward();
+
+    defaultShader->use();
+    defaultShader->setVec3("spotLights[2].position", taillightPosition1);
+    defaultShader->setVec3("spotLights[3].position", taillightPosition2);
+    defaultShader->setVec3("spotLights[2].direction", taillightDirection);
+    defaultShader->setVec3("spotLights[3].direction", taillightDirection);
+
+    debugDrawer->drawLine(glmVec32btVector3(taillightPosition1), glmVec32btVector3(taillightPosition1+glm::vec3(3)*taillightDirection), btVector3(1.0,0,0));
+    debugDrawer->drawLine(glmVec32btVector3(taillightPosition2), glmVec32btVector3(taillightPosition2+glm::vec3(3)*taillightDirection), btVector3(1.0,0,0));
 }
 
 void Car::processInput(GLFWwindow *window, double deltaTime) {
