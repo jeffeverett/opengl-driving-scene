@@ -222,14 +222,11 @@ int main(int argc, char * argv[]) {
         // Tick physics engine
         dynamicsWorld->stepSimulation(deltaTime);
 
-        // Update lighting
-        scene.updateLighting();
-
         // Draw scene
         scene.draw();
 
         // Draw physics debugging
-        dynamicsWorld->debugDrawWorld();
+        //dynamicsWorld->debugDrawWorld();
 
         // Render FPS as string
         std::ostringstream fpsOSS;

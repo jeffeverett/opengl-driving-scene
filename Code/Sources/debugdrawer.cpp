@@ -11,7 +11,7 @@ DebugDrawer::DebugDrawer() {
 
 void DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color) {
 #ifdef DEBUG
-    //std::cout << "Drawing line" << std::endl;
+    std::cout << "Drawing line with color (" << color[0] << ", " << color[1] << ", " << color[2] << ")" << std::endl;
 #endif
 
     // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=11517

@@ -92,6 +92,9 @@ namespace Utils
         if (!mFogEnabled) {
             mCubeMap->draw();
         }
+
+        updateLighting();
+
         for (auto &gameObject : mGameObjects) {
             gameObject->draw();
         }

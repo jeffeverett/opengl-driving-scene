@@ -17,7 +17,7 @@
 
 const double SCALE_FACTOR = 1.0/400.0;
 const double ACCELERATION = 15000;
-const double ANGULAR_ACCELERATION = 100;
+const double WHEEL_TURN_RATE = 100;
 
 // Define Namespace
 namespace Objects
@@ -44,6 +44,7 @@ namespace Objects
         Car & operator=(Car const &) = delete;
 
         // Private members
+        float mWheelTurn;
         static glm::vec3 mSpotlightOffset1;
         static glm::vec3 mSpotlightOffset2;
         static std::shared_ptr<Utils::Drawable> mDrawable;

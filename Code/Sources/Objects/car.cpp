@@ -9,7 +9,7 @@ std::shared_ptr<Utils::Drawable> Car::mDrawable;
 std::shared_ptr<Utils::Shader> Car::mShader;
 
 
-Car::Car() : Utils::GameObject(mDrawable, mShader) {
+Car::Car() : Utils::GameObject(mDrawable, mShader), mWheelTurn(0) {
     setOffset(glm::vec3(0, -0.1, 0));
     scale(glm::vec3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR));
 
@@ -69,9 +69,8 @@ void Car::updateLighting() {
     defaultShader->setVec3("spotLights[0].direction", spotlightDirection);
     defaultShader->setVec3("spotLights[1].direction", spotlightDirection);
 
-    debugDrawer->drawLine(glmVec32btVector3(spotlightPosition1), glmVec32btVector3(spotlightPosition1+glm::vec3(3)*spotlightDirection), btVector3(255,0,0));
-    debugDrawer->drawLine(glmVec32btVector3(spotlightPosition2), glmVec32btVector3(spotlightPosition2+glm::vec3(3)*spotlightDirection), btVector3(255,0,0));
-
+    debugDrawer->drawLine(glmVec32btVector3(spotlightPosition1), glmVec32btVector3(spotlightPosition1+glm::vec3(3)*spotlightDirection), btVector3(1.0,0,0));
+    //debugDrawer->drawLine(glmVec32btVector3(spotlightPosition2), glmVec32btVector3(spotlightPosition2+glm::vec3(3)*spotlightDirection), btVector3(1.0,0,0));
 }
 
 void Car::processInput(GLFWwindow *window, double deltaTime) {
@@ -89,10 +88,10 @@ void Car::processInput(GLFWwindow *window, double deltaTime) {
 
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        applyForce(glm::vec3(glm::sin(glm::radians(mTheta+90))*ACCELERATION, 0, glm::cos(glm::radians(mTheta+90))*ACCELERATION));
+        mWheelTurn -= WHEEL_TURN_RATE * deltaTime;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        applyForce(glm::vec3(-glm::sin(glm::radians(mTheta+90))*ACCELERATION, 0, -glm::cos(glm::radians(mTheta+90))*ACCELERATION));
+        mWheelTurn += WHEEL_TURN_RATE * deltaTime;
     }
 
     // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=12045
