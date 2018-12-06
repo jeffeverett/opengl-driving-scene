@@ -22,9 +22,9 @@ add_subdirectory(Code/Vendor/bullet)
 add_subdirectory(Code/Vendor/freetype2)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
     if(NOT WIN32)
         set(GLAD_LIBRARIES dl)
     endif()
@@ -42,7 +42,7 @@ include_directories(SYSTEM
 
 file(GLOB VENDORS_SOURCES Code/Vendor/glad/src/glad.c)
 file(GLOB PROJECT_HEADERS Code/Headers/*.hpp Code/Headers/Utils/*.hpp Code/Headers/Objects/*.hpp Code/Headers/Physics/*.hpp)
-file(GLOB PROJECT_SOURCES Code/Sources/*.cpp Code/Sources/Utils/*.cpp Code/Headers/Objects/*.cpp Code/Headers/Physics/*.cpp)
+file(GLOB PROJECT_SOURCES Code/Sources/*.cpp Code/Sources/Utils/*.cpp Code/Sources/Objects/*.cpp Code/Sources/Physics/*.cpp)
 file(GLOB PROJECT_SHADERS Code/Shaders/*.comp
         Code/Shaders/*.frag
         Code/Shaders/*.geom

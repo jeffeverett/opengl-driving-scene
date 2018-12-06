@@ -15,6 +15,10 @@ namespace Utils
         return mCamera;
     }
 
+    void Scene::setCar(std::shared_ptr<Objects::Car> car) {
+        mCar = car;
+    }
+
     void Scene::setCubeMap(std::shared_ptr<Utils::CubeMap> cubeMap) {
         mShaders.insert(cubeMap->getShader());
         mCubeMap = cubeMap;
@@ -30,6 +34,20 @@ namespace Utils
             glfwSetWindowShouldClose(window, true);
         }
 
+        // Enable fog
+        if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+            mFogEnabled = true;
+            defaultShader->use();
+            defaultShader->setFloat("fogDensity", 0.05f);
+        }
+
+        // Disable fog
+        if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+            mFogEnabled = false;
+            defaultShader->use();
+            defaultShader->setFloat("fogDensity", 0.0f);
+        }
+
         // Camera movement
         mCamera->processInput(window, mDeltaTime);
 
@@ -37,6 +55,10 @@ namespace Utils
         for (auto &gameObject : mGameObjects) {
             gameObject->processInput(window, mDeltaTime);
         }
+    }
+
+    void Scene::updateLighting() {
+        mCar->updateLighting();
     }
 
 
@@ -67,7 +89,9 @@ namespace Utils
             }
         }
 
-        mCubeMap->draw();
+        if (!mFogEnabled) {
+            mCubeMap->draw();
+        }
         for (auto &gameObject : mGameObjects) {
             gameObject->draw();
         }

@@ -93,6 +93,9 @@ namespace Utils
         // render the mesh
         void draw(Shader shader) override
         {
+            bool specMap = false;
+            shader.use();
+
             // bind appropriate textures
             unsigned int diffuseNr  = 1;
             unsigned int specularNr = 1;
@@ -102,21 +105,30 @@ namespace Utils
             {
                 glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
                 // retrieve texture number (the N in diffuse_textureN)
-                string number;
+                string uniformName;
                 string name = textures[i].type;
                 if(name == "texture_diffuse")
-                    number = std::to_string(diffuseNr++);
-                else if(name == "texture_specular")
-                    number = std::to_string(specularNr++); // transfer unsigned int to stream
+                    uniformName = "material.diffuse";
+                else if(name == "texture_specular") {
+                    uniformName = "material.specular";
+                    specMap = true;
+                }
                 else if(name == "texture_normal")
-                    number = std::to_string(normalNr++); // transfer unsigned int to stream
+                    uniformName = "material.normal";
                 else if(name == "texture_height")
-                    number = std::to_string(heightNr++); // transfer unsigned int to stream
+                    uniformName = "material.height";
 
                 // now set the sampler to the correct texture unit
-                glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+                glUniform1i(glGetUniformLocation(shader.ID, uniformName.c_str()), i);
                 // and finally bind the texture
                 glBindTexture(GL_TEXTURE_2D, textures[i].id);
+            }
+
+            if (specMap) {
+                shader.setFloat("specStrength", 1);
+            }
+            else {
+                shader.setFloat("specStrength", 0);
             }
 
             // draw mesh

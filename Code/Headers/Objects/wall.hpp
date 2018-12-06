@@ -9,49 +9,39 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <stb_image.h>
-#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 // Standard Headers
 #include <vector>
 #include <memory>
 
-const float SIZE_X = 128.0f;
-const float SIZE_Y = 3.0f;
-const float SIZE_Z = 128.0f;
-
-const float TEXTURE_REPEAT_X = 30.0f;
-const float TEXTURE_REPEAT_Z = 30.0f;
-
 
 // Define Namespace
 namespace Objects
 {
-    class Terrain : public Utils::GameObject
+    class Wall : public Utils::GameObject
     {
     public:
 
         // Implement Default Constructor and Destructor
-        Terrain();
-        ~Terrain();
+        Wall();
+        ~Wall() { }
 
 
         // Public Member Functions
         static void setup();
-
     private:
 
-        static void loadHeightMap(std::string heightMap);
-
         // Disable Copying and Assignment
-        Terrain(Terrain const &) = delete;
-        Terrain & operator=(Terrain const &) = delete;
+        Wall(Wall const &) = delete;
+        Wall & operator=(Wall const &) = delete;
 
         // Private members
         static std::shared_ptr<Utils::Drawable> mDrawable;
         static std::shared_ptr<Utils::Shader> mShader;
         static std::vector<Utils::Texture> mTextures;
-        static std::vector<std::string> mHeightMaps;
-        static std::shared_ptr<btHeightfieldTerrainShape> mTerrainShape;
-        static unsigned char* mTransposedHeightData;
+
+        static std::vector<glm::vec3> mPositions;
+        static std::vector<glm::vec3> mNormals;
+        static std::vector<glm::vec2> mTexCoords;
     };
 }

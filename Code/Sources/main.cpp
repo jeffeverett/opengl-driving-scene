@@ -8,10 +8,8 @@
 #include "Utils/shader.hpp"
 #include "Physics/debugdrawer.hpp"
 #include "Objects/car.hpp"
-#include "Objects/house.hpp"
-#include "Objects/ground.hpp"
 #include "Objects/terrain.hpp"
-
+#include "Objects/wall.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -38,6 +36,7 @@ std::shared_ptr<Utils::Shader> defaultShader;
 std::shared_ptr<Utils::Shader> simpleShader;
 std::unique_ptr<Utils::TextRenderer> textRenderer;
 std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
+std::unique_ptr<Physics::DebugDrawer> debugDrawer;
 
 // Below local to translation unit
 Utils::Scene scene;
@@ -118,8 +117,11 @@ int main(int argc, char * argv[]) {
         PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/default.frag"
     );
     defaultShader->use();
-    defaultShader->setVec3("lightColor", glm::vec3(1,1,1));
-    defaultShader->setVec3("lightPos", glm::vec3(10, 20, 40));
+    defaultShader->setVec3("dirLight.direction", glm::vec3(-1,-1,-1));
+    defaultShader->setVec3("dirLight.ambient", glm::vec3(0.1,0.1,0.1));
+    defaultShader->setVec3("dirLight.diffuse", glm::vec3(0.25,0.25,0.25));
+    defaultShader->setVec3("dirLight.specular", glm::vec3(1,1,1));
+    defaultShader->setVec4("fogColor", glm::vec4(1,1,1,1));
 
     simpleShader = std::make_shared<Utils::Shader>(
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/simple.vert",
@@ -131,9 +133,9 @@ int main(int argc, char * argv[]) {
     btDbvtBroadphase overlappingPairCache;
     btSequentialImpulseConstraintSolver solver;
     dynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(&dispatcher, &overlappingPairCache, &solver, &collisionConfiguration);
-    Physics::DebugDrawer debugDrawer;
-    debugDrawer.setDebugMode(2);
-    dynamicsWorld->setDebugDrawer(&debugDrawer);
+    debugDrawer = std::make_unique<Physics::DebugDrawer>();
+    debugDrawer->setDebugMode(2);
+    dynamicsWorld->setDebugDrawer(&(*debugDrawer));
 
     // Create camera
     auto camera = std::make_shared<Utils::Camera>();
@@ -154,21 +156,19 @@ int main(int argc, char * argv[]) {
     scene.setCubeMap(cubeMap);
 
     // Set up objects
-    Objects::House::setup();
+    Objects::Wall::setup();
     Objects::Car::setup();
-    Objects::Ground::setup();
     Objects::Terrain::setup();
 
     // Add GameObjects to scene
-    auto house = std::make_shared<Objects::House>();
-    scene.add(house);
+    auto wall = std::make_shared<Objects::Wall>();
+    scene.add(wall);
     auto car = std::make_shared<Objects::Car>();
+    scene.setCar(car);
     scene.getCamera()->setFollow(car);
     scene.add(car);
     auto terrain = std::make_shared<Objects::Terrain>();
     scene.add(terrain);
-    //auto ground = std::make_shared<Objects::Ground>();
-    //scene.add(ground);
 
     // Register remaining callbacks
     glfwSetCursorPosCallback(window, mouseCallback);
@@ -184,7 +184,7 @@ int main(int argc, char * argv[]) {
     // Rendering Loop
     while (glfwWindowShouldClose(window) == 0) {
         // Background Fill Color
-        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Start text renderer at bottom
@@ -221,6 +221,9 @@ int main(int argc, char * argv[]) {
 
         // Tick physics engine
         dynamicsWorld->stepSimulation(deltaTime);
+
+        // Update lighting
+        scene.updateLighting();
 
         // Draw scene
         scene.draw();

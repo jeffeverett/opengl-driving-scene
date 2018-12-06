@@ -30,6 +30,8 @@ Keys:
 - SPACE: Reset scene
 - Arrow Keys: Rotate camera around car
 - Q/E: Increase/decrease radius of offset
+- F: enable fog (removes skybox)
+- G: remove fog (adds back skybox)
 - P: Change camera projection mode (although it no longer really makes sense
      to use anything besides perspective, which is the default)
 
