@@ -32,7 +32,6 @@ namespace Objects
 
         // Public Member Functions
         static void setup();
-        void calculateRotation(double angle);
         void updateLighting();
         void processInput(GLFWwindow *window, double deltaTime) override;
         void perFrame(double deltaTime) override;

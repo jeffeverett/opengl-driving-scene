@@ -41,6 +41,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
     dynamicsWorld->addRigidBody(&(*mRigidBody));
 
+    setRenderRotation(theta);
 }
 
 int Streetlight::createOpenCylinder(float height1, float height2, float radius) {

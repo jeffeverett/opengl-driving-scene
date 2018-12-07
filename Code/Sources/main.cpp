@@ -185,11 +185,11 @@ int main(int argc, char * argv[]) {
         glm::vec3 posStreetlight1 = glm::vec3((trackInnerA-streetlightOffset)*glm::cos(theta), 0, (trackInnerB-streetlightOffset)*glm::sin(theta));
         glm::vec3 posStreetlight2 = glm::vec3((trackOuterA+streetlightOffset)*glm::cos(theta), 0, (trackOuterB+streetlightOffset)*glm::sin(theta));
 
-        auto streetlight1 = std::make_shared<Objects::Streetlight>(posStreetlight1, theta, false);
+        auto streetlight1 = std::make_shared<Objects::Streetlight>(posStreetlight1, -theta+glm::radians(180.0f), false);
         scene.addStreetlight(streetlight1);
         scene.add(streetlight1);
 
-        auto streetlight2 = std::make_shared<Objects::Streetlight>(posStreetlight2, theta, true);
+        auto streetlight2 = std::make_shared<Objects::Streetlight>(posStreetlight2, -theta+glm::radians(180.0f), true);
         scene.addStreetlight(streetlight2);
         scene.add(streetlight2);
     }

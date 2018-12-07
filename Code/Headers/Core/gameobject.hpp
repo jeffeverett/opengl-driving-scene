@@ -32,6 +32,8 @@ namespace Core
 
         // Public Member Functions
         glm::vec3 getPosition();
+        void setRotation(float theta);
+        void setRenderRotation(float theta);
         void setPosition(glm::vec3 position);
         float getTheta();
         void setOffset(glm::vec3 offset);
@@ -51,6 +53,7 @@ namespace Core
         std::unique_ptr<btRigidBody> mRigidBody;
         glm::vec3 mScale = glm::vec3(1);
         glm::vec3 mOffset = glm::vec3(0);
+        glm::mat4 mRenderRotation = glm::mat4(1);
         float mTheta = 180;
 
         static glm::mat4 btScalar2glmMat4(btScalar* matrix);

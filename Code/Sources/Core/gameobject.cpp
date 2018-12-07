@@ -4,6 +4,9 @@
 // System Headers
 #include <glm/gtc/matrix_transform.hpp>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
+
 // Define Namespace
 namespace Core
 {
@@ -14,6 +17,14 @@ namespace Core
 
     void GameObject::setPosition(glm::vec3 position) {
         mRigidBody->getWorldTransform().setOrigin(glmVec32btVector3(position));
+    }
+
+    void GameObject::setRotation(float theta) {
+        mRigidBody->getWorldTransform().setRotation(btQuaternion(btVector3(0,1,0), glm::radians(theta)));
+    }
+
+    void GameObject::setRenderRotation(float theta) {
+        mRenderRotation = glm::eulerAngleY(theta);
     }
 
     float GameObject::getTheta() {
@@ -76,6 +87,7 @@ namespace Core
         transform[13] += worldOffset[1];
         transform[14] += worldOffset[2];
         glm::mat4 model = btScalar2glmMat4(transform);
+        model = model*mRenderRotation;
         model = glm::scale(model, mScale);
 
         mShader->use();

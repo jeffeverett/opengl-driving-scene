@@ -27,7 +27,7 @@ Car::Car() : Core::GameObject(mDrawable, mShader), mWheelTurn(0) {
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
     dynamicsWorld->addRigidBody(&(*mRigidBody));
 
-    calculateRotation(180);
+    setRotation(180);
 }
 
 Car::~Car() { }
@@ -72,10 +72,6 @@ void Car::setup() {
     mTaillightOffset2 = glm::vec3(1/SCALE_FACTOR)*glm::vec3(0.17,0.15,-0.5);
 }
 
-void Car::calculateRotation(double angle) {
-    mRigidBody->getWorldTransform().setRotation(btQuaternion(btVector3(0,1,0), glm::radians(angle)));
-}
-
 void Car::updateLighting() {
     // Spotlights
     glm::vec3 spotlightPosition1 = getPosition()+getWorldOffset(mSpotlightOffset1);
@@ -109,7 +105,7 @@ void Car::updateLighting() {
 void Car::processInput(GLFWwindow *window, double deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         setPosition(glm::vec3(-trackInnerA - (trackOuterA-trackInnerA)/2, 1, 0));
-        calculateRotation(180);
+        setRotation(180);
         mRigidBody->setLinearVelocity(btVector3(0,0,0));
         mRigidBody->setAngularVelocity(btVector3(0,0,0));
     }
