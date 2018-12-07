@@ -97,7 +97,15 @@ std::vector<glm::vec2> segmentTexCoords {
 
 
 Wall::Wall() : Core::GameObject(mDrawable, mShader) {
-    btBoxShape *wallShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
+    btTriangleMesh *triangleMesh = new btTriangleMesh(false, false);
+    for (int i = 0; i < mPositions.size(); i+=3) {
+        triangleMesh->addTriangle(
+            glmVec32btVector3(mPositions[i]),
+            glmVec32btVector3(mPositions[i+1]),
+            glmVec32btVector3(mPositions[i+2])
+        );
+    }
+    btBvhTriangleMeshShape *wallShape = new btBvhTriangleMeshShape(triangleMesh, true);
     btTransform wallTransform;
     wallTransform.setIdentity();
     wallTransform.setOrigin(btVector3(0, 0.0, 0));
