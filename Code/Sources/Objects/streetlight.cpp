@@ -22,21 +22,18 @@ const float TEXTURE_SCALE_T = 1;
 const int NR_POINT_LIGHTS = 6;
 const float SEPARATION_X = 3;
 
-Streetlight::Streetlight(float z, bool onLeft) : Core::GameObject(mDrawable, mShader) {
-    float x;
-    float xScale;
+Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::GameObject(mDrawable, mShader) {
     if (onLeft) {
-        x = -SEPARATION_X/2;
+        scale(glm::vec3(1, 1, 1));
     }
     else {
-        x = SEPARATION_X/2;
         scale(glm::vec3(-1, 1, 1));
     }
 
     btCylinderShape *streetlightShape = new btCylinderShape(btVector3(RADIUS, HEIGHT, RADIUS));
     btTransform streetlightTransform;
     streetlightTransform.setIdentity();
-    streetlightTransform.setOrigin(btVector3(x, -4, z));
+    streetlightTransform.setOrigin(btVector3(position[0], -4, position[2]));
     btScalar mass(0.);
     btVector3 localInertia(0, 0, 0);
     btDefaultMotionState *myMotionState = new btDefaultMotionState(streetlightTransform);

@@ -28,6 +28,7 @@ namespace Objects
 
 
         // Public Member Functions
+        static void addSegment(float a, float b, float theta1, float theta2);
         static void setup();
     private:
 

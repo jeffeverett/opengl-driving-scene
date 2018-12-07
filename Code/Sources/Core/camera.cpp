@@ -28,7 +28,7 @@ namespace Core {
             return glm::ortho(-BOX_SIZE, BOX_SIZE, -BOX_SIZE, BOX_SIZE, -BOX_SIZE, BOX_SIZE);
         }
         else {
-            return glm::perspective(glm::radians(30.0f), width/height, 0.1f, 100.0f);
+            return glm::perspective(glm::radians(30.0f), width/height, 0.1f, 300.0f);
         }
     }
 
@@ -88,8 +88,8 @@ namespace Core {
         }
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
             mRadius += SENSITIVITY*deltaTime;
-            if (mRadius > 30) {
-                mRadius = 30;
+            if (mRadius > 100) {
+                mRadius = 100;
             }
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {

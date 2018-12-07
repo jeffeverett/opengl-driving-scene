@@ -27,12 +27,20 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
+
+
 
 const int FPS_ROLLING_FRAMES = 10;
 
 // Below used by other files
 GLfloat width = 1280;
 GLfloat height = 800;
+GLfloat trackInnerA = 25;
+GLfloat trackInnerB = 10;
+GLfloat trackOuterA = 28;
+GLfloat trackOuterB = 13;
 std::shared_ptr<Core::Shader> defaultShader;
 std::shared_ptr<Core::Shader> simpleShader;
 std::unique_ptr<Core::TextRenderer> textRenderer;
@@ -170,16 +178,18 @@ int main(int argc, char * argv[]) {
     scene.add(car);
     auto terrain = std::make_shared<Objects::Terrain>();
     scene.add(terrain);
-    float startZ = 45;
-    float endZ = -45;
-    int repetitions = 10;
+    float streetlightOffset = 1.0f;
+    int repetitions = 12;
     for (int i = 0; i < repetitions; i++) {
-        float z = startZ + (endZ-startZ)*i/repetitions;
-        auto streetlight1 = std::make_shared<Objects::Streetlight>(z, false);
+        float theta = glm::radians(360.0f)*i/repetitions;
+        glm::vec3 posStreetlight1 = glm::vec3((trackInnerA-streetlightOffset)*glm::cos(theta), 0, (trackInnerB-streetlightOffset)*glm::sin(theta));
+        glm::vec3 posStreetlight2 = glm::vec3((trackOuterA+streetlightOffset)*glm::cos(theta), 0, (trackOuterB+streetlightOffset)*glm::sin(theta));
+
+        auto streetlight1 = std::make_shared<Objects::Streetlight>(posStreetlight1, theta, false);
         scene.addStreetlight(streetlight1);
         scene.add(streetlight1);
 
-        auto streetlight2 = std::make_shared<Objects::Streetlight>(z, true);
+        auto streetlight2 = std::make_shared<Objects::Streetlight>(posStreetlight2, theta, true);
         scene.addStreetlight(streetlight2);
         scene.add(streetlight2);
     }

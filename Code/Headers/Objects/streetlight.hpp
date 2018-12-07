@@ -23,7 +23,7 @@ namespace Objects
     public:
 
         // Implement Default Constructor and Destructor
-        Streetlight(float z, bool onLeft);
+        Streetlight(glm::vec3 position, float theta, bool onLeft);
         ~Streetlight() { }
 
 

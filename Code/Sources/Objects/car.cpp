@@ -18,7 +18,7 @@ Car::Car() : Core::GameObject(mDrawable, mShader), mWheelTurn(0) {
     btBoxShape *carShape = new btBoxShape(btVector3(btScalar(0.25), btScalar(0.1), btScalar(0.55)));
     btTransform carTransform;
     carTransform.setIdentity();
-    carTransform.setOrigin(btVector3(0, 2, 0));
+    carTransform.setOrigin(btVector3(-trackInnerA - (trackOuterA-trackInnerA)/2, 1, 0));
     btScalar mass(1575.0);
     btVector3 localInertia(0, 0, 0);
     carShape->calculateLocalInertia(mass, localInertia);
@@ -108,7 +108,7 @@ void Car::updateLighting() {
 
 void Car::processInput(GLFWwindow *window, double deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        setPosition(glm::vec3(0,2,0));
+        setPosition(glm::vec3(-trackInnerA - (trackOuterA-trackInnerA)/2, 1, 0));
         calculateRotation(180);
         mRigidBody->setLinearVelocity(btVector3(0,0,0));
         mRigidBody->setAngularVelocity(btVector3(0,0,0));
