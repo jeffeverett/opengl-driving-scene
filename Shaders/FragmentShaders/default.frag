@@ -49,7 +49,7 @@ uniform Material material;
 // Note: can be used to turn specular highlights on/off
 uniform float specStrength;
 uniform DirLight dirLight;
-#define NR_POINT_LIGHTS 4
+#define NR_POINT_LIGHTS 6
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 #define NR_SPOT_LIGHTS 4
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
@@ -70,8 +70,8 @@ void main()
     // phase 1: Directional lighting
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
     // phase 2: Point lights
-    //for(int i = 0; i < NR_POINT_LIGHTS; i++)
-    //    result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+    for(int i = 0; i < NR_POINT_LIGHTS; i++)
+        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
     // phase 3: Spot light
     for (int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);

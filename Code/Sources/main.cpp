@@ -170,8 +170,19 @@ int main(int argc, char * argv[]) {
     scene.add(car);
     auto terrain = std::make_shared<Objects::Terrain>();
     scene.add(terrain);
-    auto streetlight = std::make_shared<Objects::Streetlight>();
-    scene.add(streetlight);
+    float startZ = 45;
+    float endZ = -45;
+    int repetitions = 10;
+    for (int i = 0; i < repetitions; i++) {
+        float z = startZ + (endZ-startZ)*i/repetitions;
+        auto streetlight1 = std::make_shared<Objects::Streetlight>(z, false);
+        scene.addStreetlight(streetlight1);
+        scene.add(streetlight1);
+
+        auto streetlight2 = std::make_shared<Objects::Streetlight>(z, true);
+        scene.addStreetlight(streetlight2);
+        scene.add(streetlight2);
+    }
 
     // Register remaining callbacks
     glfwSetCursorPosCallback(window, mouseCallback);

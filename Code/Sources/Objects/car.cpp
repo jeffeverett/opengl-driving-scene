@@ -66,10 +66,10 @@ void Car::setup() {
         defaultShader->setFloat("spotLights[" + number + "].quadratic", 0.032f);
     }
 
-    mSpotlightOffset1 = glm::vec3(-0.17,0.15,0.5);
-    mSpotlightOffset2 = glm::vec3(0.17,0.15,0.5);
-    mTaillightOffset1 = glm::vec3(-0.17,0.15,-0.5);
-    mTaillightOffset2 = glm::vec3(0.17,0.15,-0.5);
+    mSpotlightOffset1 = glm::vec3(1/SCALE_FACTOR)*glm::vec3(-0.17,0.15,0.5);
+    mSpotlightOffset2 = glm::vec3(1/SCALE_FACTOR)*glm::vec3(0.17,0.15,0.5);
+    mTaillightOffset1 = glm::vec3(1/SCALE_FACTOR)*glm::vec3(-0.17,0.15,-0.5);
+    mTaillightOffset2 = glm::vec3(1/SCALE_FACTOR)*glm::vec3(0.17,0.15,-0.5);
 }
 
 void Car::calculateRotation(double angle) {

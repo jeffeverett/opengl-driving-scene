@@ -23,12 +23,13 @@ namespace Objects
     public:
 
         // Implement Default Constructor and Destructor
-        Streetlight();
+        Streetlight(float z, bool onLeft);
         ~Streetlight() { }
 
 
         // Public Member Functions
         static void setup();
+        void updateLighting(int lightIdx);
     private:
 
         // Disable Copying and Assignment
@@ -36,9 +37,13 @@ namespace Objects
         Streetlight & operator=(Streetlight const &) = delete;
 
         // Private Member functions
-        static void createOpenCylinder(float height1, float height2, float radius);
+        static int createOpenCylinder(float height1, float height2, float radius);
+        static void createRotatedOpenCylinder(float height1, float height2, float radius, float x1, float x2, float angle1, float angle2);
+        static void createSphere(glm::vec3 offset, float radius);
 
         // Private members
+        static glm::vec3 mPointlightOffset;
+
         static std::shared_ptr<Utils::Drawable> mDrawable;
         static std::shared_ptr<Utils::Shader> mShader;
         static std::vector<Utils::Texture> mTextures;

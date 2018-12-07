@@ -5,6 +5,7 @@
 #include "cubemap.hpp"
 #include "Utils/gameobject.hpp"
 #include "Objects/car.hpp"
+#include "Objects/streetlight.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -30,6 +31,7 @@ namespace Utils
 
         // Public Member Functions
         void add(std::shared_ptr<Utils::GameObject> gameObject);
+        void addStreetlight(std::shared_ptr<Objects::Streetlight> streetlight);
         void setCamera(std::shared_ptr<Utils::Camera> camera);
         std::shared_ptr<Utils::Camera> getCamera();
         void setFog(bool val);
@@ -50,8 +52,10 @@ namespace Utils
 
         // Private Member Containers
         std::shared_ptr<Objects::Car> mCar;
+        std::vector<std::shared_ptr<Objects::Streetlight>> mStreetlights;
         std::set<std::shared_ptr<Utils::Shader>> mShaders;
         std::vector<std::shared_ptr<Utils::GameObject>> mGameObjects;
+
 
         // Private Member Variables
         bool mFogEnabled;
