@@ -99,52 +99,17 @@ namespace Core
         mCar->updateLighting();
 
         // Activate six streetlights closest to car
-        float carZ = mCar->getPosition()[2];
-        for (int i = 0; i < mStreetlights.size(); i+=2) {
-            float streetlightZ = mStreetlights[i]->getPosition()[2];
-            if (streetlightZ <= carZ) {
-                // Streetlights immediately in front of car
-                mStreetlights[i]->updateLighting(0);
-                mStreetlights[i+1]->updateLighting(1);
-
-                // Streetlights immediately behind car (if they exist)
-                if (i-2 < 0) {
-                    mStreetlights[i+2]->updateLighting(2);
-                    mStreetlights[i+3]->updateLighting(3);
-                    mStreetlights[i+4]->updateLighting(4);
-                    mStreetlights[i+5]->updateLighting(5);
-
-                }
-                else {
-                    mStreetlights[i-1]->updateLighting(2);
-                    mStreetlights[i-2]->updateLighting(3);
-
-                    // Next closest pair of streetlights
-                    bool useForward;
-                    if (i-4 < 0) {
-                        useForward = true;
-                    }
-                    else if (i+3 >= mStreetlights.size()) {
-                        useForward = false;
-                    }
-                    else {
-                        float forwardStreetlightZ = mStreetlights[i+2]->getPosition()[2];
-                        float backwardStreetlightZ = mStreetlights[i-3]->getPosition()[2];
-
-                        useForward = abs(forwardStreetlightZ-carZ) <= abs(backwardStreetlightZ-carZ);
-                    }
-
-                    if (useForward) {
-                        mStreetlights[i+2]->updateLighting(4);
-                        mStreetlights[i+3]->updateLighting(5);
-                    }
-                    else {
-                        mStreetlights[i-3]->updateLighting(4);
-                        mStreetlights[i-4]->updateLighting(5);
-                    }
-                }
-                break;
-            }
+        std::map<float, std::shared_ptr<Objects::Streetlight>> distancesMap;
+        glm::vec3 carPos = mCar->getPosition();
+        for (int i = 0; i < mStreetlights.size(); i++) {
+            glm::vec3 streetlightPos = mStreetlights[i]->getPosition();
+            float distance = glm::length(carPos-streetlightPos);
+            distancesMap[distance] = mStreetlights[i];
+        }
+        auto iter = distancesMap.begin();
+        for (int i = 0; i < 6; i++) {
+            iter->second->updateLighting(i);
+            iter++;
         }
     }
 
