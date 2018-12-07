@@ -2,8 +2,8 @@
 
 // Local Headers
 #include "globals.hpp"
-#include "Utils/gameobject.hpp"
-#include "Utils/mesh.hpp"
+#include "Core/gameobject.hpp"
+#include "Core/mesh.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -18,7 +18,7 @@
 // Define Namespace
 namespace Objects
 {
-    class Streetlight : public Utils::GameObject
+    class Streetlight : public Core::GameObject
     {
     public:
 
@@ -44,9 +44,9 @@ namespace Objects
         // Private members
         static glm::vec3 mPointlightOffset;
 
-        static std::shared_ptr<Utils::Drawable> mDrawable;
-        static std::shared_ptr<Utils::Shader> mShader;
-        static std::vector<Utils::Texture> mTextures;
+        static std::shared_ptr<Core::Drawable> mDrawable;
+        static std::shared_ptr<Core::Shader> mShader;
+        static std::vector<Core::Texture> mTextures;
 
         static std::vector<glm::vec3> mPositions;
         static std::vector<glm::vec3> mNormals;

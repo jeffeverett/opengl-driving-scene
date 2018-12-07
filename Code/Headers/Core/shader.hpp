@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iostream>
 
-namespace Utils
+namespace Core
 {
     class Shader
     {

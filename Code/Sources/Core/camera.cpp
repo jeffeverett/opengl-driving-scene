@@ -1,5 +1,5 @@
 // Local Headers
-#include "Utils/camera.hpp"
+#include "Core/camera.hpp"
 #include "globals.hpp"
 
 // System Headers
@@ -11,7 +11,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace Utils {
+namespace Core {
 
     // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 Camera::getViewMatrix() {
@@ -73,7 +73,7 @@ namespace Utils {
 #endif
     }
 
-    void Camera::setFollow(std::shared_ptr<Utils::GameObject> follow) {
+    void Camera::setFollow(std::shared_ptr<Core::GameObject> follow) {
         mFollow = follow;
     }
 

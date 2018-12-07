@@ -1,6 +1,6 @@
 // Local Headers
 #include "globals.hpp"
-#include "Utils/textrenderer.hpp"
+#include "Core/textrenderer.hpp"
 
 // System Headers
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,7 +14,7 @@ const GLfloat INITIAL_OFFSET_X = 10;
 const GLfloat INITIAL_OFFSET_Y = 10;
 const GLfloat PADDING_Y = 5;
 
-namespace Utils
+namespace Core
 {
     void TextRenderer::resetVerticalOffset() {
         mVerticalOffset = 0;
@@ -85,7 +85,7 @@ namespace Utils
         glEnableVertexAttribArray(0);
 
         // Create shader
-        mShader = std::make_shared<Utils::Shader>(
+        mShader = std::make_shared<Core::Shader>(
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/text.vert",
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/text.frag"
         );

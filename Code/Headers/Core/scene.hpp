@@ -1,9 +1,9 @@
 #pragma once
 
 // Local Headers
-#include "Utils/camera.hpp"
+#include "Core/camera.hpp"
 #include "cubemap.hpp"
-#include "Utils/gameobject.hpp"
+#include "Core/gameobject.hpp"
 #include "Objects/car.hpp"
 #include "Objects/streetlight.hpp"
 
@@ -18,7 +18,7 @@
 #include <set>
 
 // Define Namespace
-namespace Utils
+namespace Core
 {
     class Scene
     {
@@ -30,14 +30,14 @@ namespace Utils
 
 
         // Public Member Functions
-        void add(std::shared_ptr<Utils::GameObject> gameObject);
+        void add(std::shared_ptr<Core::GameObject> gameObject);
         void addStreetlight(std::shared_ptr<Objects::Streetlight> streetlight);
-        void setCamera(std::shared_ptr<Utils::Camera> camera);
-        std::shared_ptr<Utils::Camera> getCamera();
+        void setCamera(std::shared_ptr<Core::Camera> camera);
+        std::shared_ptr<Core::Camera> getCamera();
         void setFog(bool val);
         void setNightMode(bool val);
         void setCar(std::shared_ptr<Objects::Car> car);
-        void setCubeMap(std::shared_ptr<Utils::CubeMap> cubeMap);
+        void setCubeMap(std::shared_ptr<Core::CubeMap> cubeMap);
         void setDeltaTime(double deltaTime);
         void updateLighting();
         void processInput(GLFWwindow *window);
@@ -53,15 +53,15 @@ namespace Utils
         // Private Member Containers
         std::shared_ptr<Objects::Car> mCar;
         std::vector<std::shared_ptr<Objects::Streetlight>> mStreetlights;
-        std::set<std::shared_ptr<Utils::Shader>> mShaders;
-        std::vector<std::shared_ptr<Utils::GameObject>> mGameObjects;
+        std::set<std::shared_ptr<Core::Shader>> mShaders;
+        std::vector<std::shared_ptr<Core::GameObject>> mGameObjects;
 
 
         // Private Member Variables
         bool mFogEnabled;
         bool mNightModeEnabled;
         double mDeltaTime;
-        std::shared_ptr<Utils::CubeMap> mCubeMap;
-        std::shared_ptr<Utils::Camera> mCamera;
+        std::shared_ptr<Core::CubeMap> mCubeMap;
+        std::shared_ptr<Core::Camera> mCamera;
     };
 }

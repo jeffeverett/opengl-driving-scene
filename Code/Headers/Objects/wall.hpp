@@ -2,8 +2,8 @@
 
 // Local Headers
 #include "globals.hpp"
-#include "Utils/gameobject.hpp"
-#include "Utils/mesh.hpp"
+#include "Core/gameobject.hpp"
+#include "Core/mesh.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -18,7 +18,7 @@
 // Define Namespace
 namespace Objects
 {
-    class Wall : public Utils::GameObject
+    class Wall : public Core::GameObject
     {
     public:
 
@@ -36,9 +36,9 @@ namespace Objects
         Wall & operator=(Wall const &) = delete;
 
         // Private members
-        static std::shared_ptr<Utils::Drawable> mDrawable;
-        static std::shared_ptr<Utils::Shader> mShader;
-        static std::vector<Utils::Texture> mTextures;
+        static std::shared_ptr<Core::Drawable> mDrawable;
+        static std::shared_ptr<Core::Shader> mShader;
+        static std::vector<Core::Texture> mTextures;
 
         static std::vector<glm::vec3> mPositions;
         static std::vector<glm::vec3> mNormals;

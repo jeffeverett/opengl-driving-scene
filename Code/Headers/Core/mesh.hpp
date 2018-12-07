@@ -5,8 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <Utils/drawable.hpp>
-#include <Utils/shader.hpp>
+#include <Core/drawable.hpp>
+#include <Core/shader.hpp>
 
 #include <string>
 #include <fstream>
@@ -16,7 +16,7 @@
 
 using namespace std;
 
-namespace Utils
+namespace Core
 {
     struct Vertex {
         // position

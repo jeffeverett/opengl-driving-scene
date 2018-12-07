@@ -7,11 +7,11 @@ glm::vec3 Car::mSpotlightOffset1;
 glm::vec3 Car::mSpotlightOffset2;
 glm::vec3 Car::mTaillightOffset1;
 glm::vec3 Car::mTaillightOffset2;
-std::shared_ptr<Utils::Drawable> Car::mDrawable;
-std::shared_ptr<Utils::Shader> Car::mShader;
+std::shared_ptr<Core::Drawable> Car::mDrawable;
+std::shared_ptr<Core::Shader> Car::mShader;
 
 
-Car::Car() : Utils::GameObject(mDrawable, mShader), mWheelTurn(0) {
+Car::Car() : Core::GameObject(mDrawable, mShader), mWheelTurn(0) {
     setOffset(glm::vec3(0, -0.1, 0));
     scale(glm::vec3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR));
 
@@ -35,7 +35,7 @@ Car::~Car() { }
 
 // Public Member Functions
 void Car::setup() {
-    mDrawable = std::make_shared<Utils::Model>(
+    mDrawable = std::make_shared<Core::Model>(
         PROJECT_SOURCE_DIR "/Models/lambo/Lamborghini_Aventador.fbx"
     );
     mShader = defaultShader;

@@ -2,8 +2,8 @@
 
 // Local Headers
 #include "globals.hpp"
-#include "Utils/drawable.hpp"
-#include "Utils/shader.hpp"
+#include "Core/drawable.hpp"
+#include "Core/shader.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -16,14 +16,14 @@
 #include <memory>
 
 // Define Namespace
-namespace Utils
+namespace Core
 {
     class GameObject
     {
     public:
 
         // Implement Default Constructor and Destructor
-        GameObject(std::shared_ptr<Utils::Drawable> drawable, std::shared_ptr<Utils::Shader> shader) {
+        GameObject(std::shared_ptr<Core::Drawable> drawable, std::shared_ptr<Core::Shader> shader) {
             mDrawable = drawable;
             mShader = shader;
         }
@@ -42,7 +42,7 @@ namespace Utils
         void translate(glm::vec3 translationVector);
         void applyForce(glm::vec3 vec);
         void scale(glm::vec3 scaleVector);
-        std::shared_ptr<Utils::Shader> getShader();
+        std::shared_ptr<Core::Shader> getShader();
         void draw();
         virtual void perFrame(double deltaTime) {};
         virtual void processInput(GLFWwindow *window, double deltaTime) {}
@@ -64,7 +64,7 @@ namespace Utils
         GameObject & operator=(GameObject const &) = delete;
 
         // Private Member Variables
-        std::shared_ptr<Utils::Drawable> mDrawable;
-        std::shared_ptr<Utils::Shader> mShader;
+        std::shared_ptr<Core::Drawable> mDrawable;
+        std::shared_ptr<Core::Shader> mShader;
     };
 }

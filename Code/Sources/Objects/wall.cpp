@@ -3,9 +3,9 @@
 using namespace Objects;
 
 
-std::shared_ptr<Utils::Drawable> Wall::mDrawable;
-std::shared_ptr<Utils::Shader> Wall::mShader;
-std::vector<Utils::Texture> Wall::mTextures;
+std::shared_ptr<Core::Drawable> Wall::mDrawable;
+std::shared_ptr<Core::Shader> Wall::mShader;
+std::vector<Core::Texture> Wall::mTextures;
 
 std::vector<glm::vec3> Wall::mPositions {
     // Back
@@ -159,7 +159,7 @@ std::vector<glm::vec2> Wall::mTexCoords {
 };
 
 
-Wall::Wall() : Utils::GameObject(mDrawable, mShader) {
+Wall::Wall() : Core::GameObject(mDrawable, mShader) {
     // Call setup before constructor
 
     btBoxShape *wallShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
@@ -198,7 +198,7 @@ void Wall::setup() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-    mTextures.push_back(Utils::Texture { textureID, "texture_diffuse", texturePath });
-    mDrawable = std::make_shared<Utils::Mesh>(mPositions, mNormals, mTexCoords, mTextures);
+    mTextures.push_back(Core::Texture { textureID, "texture_diffuse", texturePath });
+    mDrawable = std::make_shared<Core::Mesh>(mPositions, mNormals, mTexCoords, mTextures);
     mShader = defaultShader;
 }

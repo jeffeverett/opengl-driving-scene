@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Utils/shader.hpp"
+#include "Core/shader.hpp"
 
-namespace Utils {
+namespace Core {
     class Drawable {
     public:
         virtual void draw(Shader shader) = 0;

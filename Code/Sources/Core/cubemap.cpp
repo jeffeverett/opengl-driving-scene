@@ -1,5 +1,5 @@
 // Local Headers
-#include "Utils/cubemap.hpp"
+#include "Core/cubemap.hpp"
 
 // System Headers
 #include <stb_image.h>
@@ -54,7 +54,7 @@ const float vertices[] = {
 };
 
 // Define Namespace
-namespace Utils
+namespace Core
 {
     CubeMap::CubeMap(std::vector<std::string> faces) {
         // Vertices
@@ -67,7 +67,7 @@ namespace Utils
         glEnableVertexAttribArray(0);
 
         // Shader
-        mShader = std::make_shared<Utils::Shader>(
+        mShader = std::make_shared<Core::Shader>(
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/cubemap.vert",
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/cubemap.frag"
         );
@@ -102,7 +102,7 @@ namespace Utils
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
 
-    std::shared_ptr<Utils::Shader> CubeMap::getShader() {
+    std::shared_ptr<Core::Shader> CubeMap::getShader() {
         return mShader;
     }
 

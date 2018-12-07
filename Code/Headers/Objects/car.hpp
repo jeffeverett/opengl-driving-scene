@@ -2,8 +2,8 @@
 
 // Local Headers
 #include "globals.hpp"
-#include "Utils/gameobject.hpp"
-#include "Utils/model.hpp"
+#include "Core/gameobject.hpp"
+#include "Core/model.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -22,7 +22,7 @@ const double WHEEL_TURN_RATE = 100;
 // Define Namespace
 namespace Objects
 {
-    class Car : public Utils::GameObject
+    class Car : public Core::GameObject
     {
     public:
 
@@ -49,7 +49,7 @@ namespace Objects
         static glm::vec3 mSpotlightOffset2;
         static glm::vec3 mTaillightOffset1;
         static glm::vec3 mTaillightOffset2;
-        static std::shared_ptr<Utils::Drawable> mDrawable;
-        static std::shared_ptr<Utils::Shader> mShader;
+        static std::shared_ptr<Core::Drawable> mDrawable;
+        static std::shared_ptr<Core::Shader> mShader;
     };
 }

@@ -1,9 +1,9 @@
 #pragma once
 
 // Local Headers
-#include "Utils/gameobject.hpp"
-#include "Utils/textrenderer.hpp"
-#include "Utils/model.hpp"
+#include "Core/gameobject.hpp"
+#include "Core/textrenderer.hpp"
+#include "Core/model.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -33,7 +33,7 @@ namespace Physics
 
     private:
         int mDebugMode;
-        std::shared_ptr<Utils::Shader> mShader;
+        std::shared_ptr<Core::Shader> mShader;
     };
 
 }

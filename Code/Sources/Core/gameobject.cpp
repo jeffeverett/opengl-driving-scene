@@ -1,11 +1,11 @@
 // Local Headers
-#include "Utils/gameobject.hpp"
+#include "Core/gameobject.hpp"
 
 // System Headers
 #include <glm/gtc/matrix_transform.hpp>
 
 // Define Namespace
-namespace Utils
+namespace Core
 {
     glm::vec3 GameObject::getPosition() {
         btVector3 origin = mRigidBody->getWorldTransform().getOrigin();
@@ -63,7 +63,7 @@ namespace Utils
         mScale *= scaleVector;
     }
 
-    std::shared_ptr<Utils::Shader> GameObject::getShader() {
+    std::shared_ptr<Core::Shader> GameObject::getShader() {
         return mShader;
     }
 

@@ -1,13 +1,13 @@
 // Local Headers
-#include "Utils/scene.hpp"
+#include "Core/scene.hpp"
 
 // Standard Headers
 #include <iostream>
 
 // Define Namespace
-namespace Utils
+namespace Core
 {
-    void Scene::setCamera(std::shared_ptr<Utils::Camera> camera) {
+    void Scene::setCamera(std::shared_ptr<Core::Camera> camera) {
         mCamera = camera;
     }
 
@@ -19,7 +19,7 @@ namespace Utils
         mCar = car;
     }
 
-    void Scene::setCubeMap(std::shared_ptr<Utils::CubeMap> cubeMap) {
+    void Scene::setCubeMap(std::shared_ptr<Core::CubeMap> cubeMap) {
         mShaders.insert(cubeMap->getShader());
         mCubeMap = cubeMap;
     }
@@ -149,7 +149,7 @@ namespace Utils
     }
 
 
-    void Scene::add(std::shared_ptr<Utils::GameObject> gameObject) {
+    void Scene::add(std::shared_ptr<Core::GameObject> gameObject) {
         mShaders.insert(gameObject->getShader());
         mGameObjects.push_back(gameObject);
     }

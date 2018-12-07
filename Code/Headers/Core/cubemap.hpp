@@ -1,7 +1,7 @@
 #pragma once
 
 // Local Headers
-#include "Utils/shader.hpp"
+#include "Core/shader.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -14,7 +14,7 @@
 
 
 // Define Namespace
-namespace Utils
+namespace Core
 {
     class CubeMap
     {
@@ -26,7 +26,7 @@ namespace Utils
 
 
         // Public Member Functions
-        std::shared_ptr<Utils::Shader> getShader();
+        std::shared_ptr<Core::Shader> getShader();
         void draw();
 
     private:
@@ -39,6 +39,6 @@ namespace Utils
         GLuint mVAO;
         GLuint mVBO;
         GLuint mTexture;
-        std::shared_ptr<Utils::Shader> mShader;
+        std::shared_ptr<Core::Shader> mShader;
     };
 }

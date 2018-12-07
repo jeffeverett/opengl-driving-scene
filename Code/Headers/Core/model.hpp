@@ -12,9 +12,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <Utils/drawable.hpp>
-#include <Utils/mesh.hpp>
-#include <Utils/shader.hpp>
+#include <Core/drawable.hpp>
+#include <Core/mesh.hpp>
+#include <Core/shader.hpp>
 
 
 #include <string>
@@ -25,7 +25,7 @@
 #include <vector>
 
 using namespace std;
-namespace Utils
+namespace Core
 {
     unsigned int TextureFromFile(const char *path, const string &directory);
 

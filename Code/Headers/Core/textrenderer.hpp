@@ -1,7 +1,7 @@
 #pragma once
 
 // Local Headers
-#include "Utils/shader.hpp"
+#include "Core/shader.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -14,7 +14,7 @@
 #include <map>
 
 // Define Namespace
-namespace Utils
+namespace Core
 {
     struct Character {
         GLuint     textureID;  // ID handle of the glyph texture
@@ -45,7 +45,7 @@ namespace Utils
         // Private Member Variables
         GLuint mVBO;
         GLuint mVAO;
-        std::shared_ptr<Utils::Shader> mShader;
+        std::shared_ptr<Core::Shader> mShader;
         std::map<GLchar, Character> mCharacters;
         int mVerticalOffset;
     };

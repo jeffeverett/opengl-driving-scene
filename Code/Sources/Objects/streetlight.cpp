@@ -7,9 +7,9 @@ using namespace Objects;
 
 glm::vec3 Streetlight::mPointlightOffset;
 
-std::shared_ptr<Utils::Drawable> Streetlight::mDrawable;
-std::shared_ptr<Utils::Shader> Streetlight::mShader;
-std::vector<Utils::Texture> Streetlight::mTextures;
+std::shared_ptr<Core::Drawable> Streetlight::mDrawable;
+std::shared_ptr<Core::Shader> Streetlight::mShader;
+std::vector<Core::Texture> Streetlight::mTextures;
 
 std::vector<glm::vec3> Streetlight::mPositions;
 std::vector<glm::vec3> Streetlight::mNormals;
@@ -22,7 +22,7 @@ const float TEXTURE_SCALE_T = 1;
 const int NR_POINT_LIGHTS = 6;
 const float SEPARATION_X = 3;
 
-Streetlight::Streetlight(float z, bool onLeft) : Utils::GameObject(mDrawable, mShader) {
+Streetlight::Streetlight(float z, bool onLeft) : Core::GameObject(mDrawable, mShader) {
     float x;
     float xScale;
     if (onLeft) {
@@ -238,8 +238,8 @@ void Streetlight::setup() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-    mTextures.push_back(Utils::Texture { textureID, "texture_diffuse", texturePath });
-    mDrawable = std::make_shared<Utils::Mesh>(mPositions, mNormals, mTexCoords, mTextures);
+    mTextures.push_back(Core::Texture { textureID, "texture_diffuse", texturePath });
+    mDrawable = std::make_shared<Core::Mesh>(mPositions, mNormals, mTexCoords, mTextures);
     mShader = defaultShader;
 
     mPointlightOffset = glm::vec3(x0-xMin,y0,0);

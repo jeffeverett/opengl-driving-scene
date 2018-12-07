@@ -2,9 +2,9 @@
 
 using namespace Objects;
 
-std::shared_ptr<Utils::Drawable> Terrain::mDrawable;
-std::shared_ptr<Utils::Shader> Terrain::mShader;
-std::vector<Utils::Texture> Terrain::mTextures;
+std::shared_ptr<Core::Drawable> Terrain::mDrawable;
+std::shared_ptr<Core::Shader> Terrain::mShader;
+std::vector<Core::Texture> Terrain::mTextures;
 std::vector<std::string> Terrain::mHeightMaps = {
         PROJECT_SOURCE_DIR "/Textures/HeightMaps/height_map0.jpg"
 };
@@ -12,7 +12,7 @@ std::shared_ptr<btHeightfieldTerrainShape> Terrain::mTerrainShape;
 unsigned char* Terrain::mTransposedHeightData;
 
 
-Terrain::Terrain() : Utils::GameObject(mDrawable, mShader) {
+Terrain::Terrain() : Core::GameObject(mDrawable, mShader) {
     // Call setup before constructor
 
     setOffset(glm::vec3(-SIZE_X/2, -SIZE_Y/2, -SIZE_Z/2));
@@ -55,7 +55,7 @@ void Terrain::setup() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    mTextures.push_back(Utils::Texture { textureID, "texture_diffuse", texturePath });
+    mTextures.push_back(Core::Texture { textureID, "texture_diffuse", texturePath });
 
     loadHeightMap(mHeightMaps[0]);
     mShader = defaultShader;
@@ -96,7 +96,7 @@ void Terrain::loadHeightMap(std::string heightMap)
             terrainNormals.push_back(glm::vec3(0, 1, 0));
             terrainTexCoords.push_back(glm::vec2(position[0]/SIZE_X*TEXTURE_REPEAT_X, position[2]/SIZE_Z*TEXTURE_REPEAT_Z));
         }
-        mDrawable = std::make_shared<Utils::Mesh>(terrainPositions, terrainNormals, terrainTexCoords, mTextures);
+        mDrawable = std::make_shared<Core::Mesh>(terrainPositions, terrainNormals, terrainTexCoords, mTextures);
 
         // Create Bullet terrain shape
         mTransposedHeightData = (unsigned char *) malloc(height*width*1);

@@ -1,6 +1,6 @@
-#include "Utils/model.hpp"
+#include "Core/model.hpp"
 
-namespace Utils {
+namespace Core {
     unsigned int TextureFromFile(const char *path, const string &directory) {
         string filename = string(path);
         filename = directory + '/' + filename;

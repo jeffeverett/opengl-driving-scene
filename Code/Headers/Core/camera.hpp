@@ -1,7 +1,7 @@
 #pragma once
 
 // Local Headers
-#include "Utils/gameobject.hpp"
+#include "Core/gameobject.hpp"
 
 
 // System Headers
@@ -20,7 +20,7 @@ const float RADIUS      =  10.0f;
 const float BOX_SIZE    =  25.0f;
 
 
-namespace Utils {
+namespace Core {
     // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
     enum CameraMovement {
         FORWARD,
@@ -51,7 +51,7 @@ namespace Utils {
         void cycleProjectionMode();
         void perFrame();
         void processInput(GLFWwindow *window, double deltaTime);
-        void setFollow(std::shared_ptr<Utils::GameObject> follow);
+        void setFollow(std::shared_ptr<Core::GameObject> follow);
 
     private:
         // Camera Attributes
@@ -62,7 +62,7 @@ namespace Utils {
         // Position is calculated once per frame and then stored here
         glm::vec3 mPosition;
 
-        std::shared_ptr<Utils::GameObject> mFollow;
+        std::shared_ptr<Core::GameObject> mFollow;
         ProjectionMode mProjectionMode;
     };
 }

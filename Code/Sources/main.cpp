@@ -1,11 +1,11 @@
 // Local Headers
 #include "globals.hpp"
-#include "Utils/camera.hpp"
-#include "Utils/textrenderer.hpp"
-#include "Utils/scene.hpp"
-#include "Utils/gameobject.hpp"
-#include "Utils/model.hpp"
-#include "Utils/shader.hpp"
+#include "Core/camera.hpp"
+#include "Core/textrenderer.hpp"
+#include "Core/scene.hpp"
+#include "Core/gameobject.hpp"
+#include "Core/model.hpp"
+#include "Core/shader.hpp"
 #include "Physics/debugdrawer.hpp"
 #include "Objects/car.hpp"
 #include "Objects/terrain.hpp"
@@ -33,14 +33,14 @@ const int FPS_ROLLING_FRAMES = 10;
 // Below used by other files
 GLfloat width = 1280;
 GLfloat height = 800;
-std::shared_ptr<Utils::Shader> defaultShader;
-std::shared_ptr<Utils::Shader> simpleShader;
-std::unique_ptr<Utils::TextRenderer> textRenderer;
+std::shared_ptr<Core::Shader> defaultShader;
+std::shared_ptr<Core::Shader> simpleShader;
+std::unique_ptr<Core::TextRenderer> textRenderer;
 std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 std::unique_ptr<Physics::DebugDrawer> debugDrawer;
 
 // Below local to translation unit
-Utils::Scene scene;
+Core::Scene scene;
 bool firstMouse = true;
 float lastX;
 float lastY;
@@ -111,9 +111,9 @@ int main(int argc, char * argv[]) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Initialize remaining globals
-    textRenderer = std::make_unique<Utils::TextRenderer>(PROJECT_SOURCE_DIR "/Fonts/arial.ttf");
+    textRenderer = std::make_unique<Core::TextRenderer>(PROJECT_SOURCE_DIR "/Fonts/arial.ttf");
 
-    defaultShader = std::make_shared<Utils::Shader>(
+    defaultShader = std::make_shared<Core::Shader>(
         PROJECT_SOURCE_DIR "/Shaders/VertexShaders/default.vert",
         PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/default.frag"
     );
@@ -121,7 +121,7 @@ int main(int argc, char * argv[]) {
     defaultShader->setVec3("dirLight.direction", glm::vec3(-1,-1,-1));
     defaultShader->setVec4("fogColor", glm::vec4(1,1,1,1));
 
-    simpleShader = std::make_shared<Utils::Shader>(
+    simpleShader = std::make_shared<Core::Shader>(
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/simple.vert",
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/simple.frag"
     );
@@ -136,7 +136,7 @@ int main(int argc, char * argv[]) {
     dynamicsWorld->setDebugDrawer(&(*debugDrawer));
 
     // Create camera
-    auto camera = std::make_shared<Utils::Camera>();
+    auto camera = std::make_shared<Core::Camera>();
 
     // Create cubemap
     std::vector<std::string> darkFaces {
@@ -147,7 +147,7 @@ int main(int argc, char * argv[]) {
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyFront2048.png",
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyBack2048.png"
     };
-    auto cubeMap = std::make_shared<Utils::CubeMap>(darkFaces);
+    auto cubeMap = std::make_shared<Core::CubeMap>(darkFaces);
 
     // Create scene
     scene.setCamera(camera);

@@ -2,8 +2,8 @@
 
 // Local Headers
 #include "globals.hpp"
-#include "Utils/gameobject.hpp"
-#include "Utils/mesh.hpp"
+#include "Core/gameobject.hpp"
+#include "Core/mesh.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -26,7 +26,7 @@ const float TEXTURE_REPEAT_Z = 30.0f;
 // Define Namespace
 namespace Objects
 {
-    class Terrain : public Utils::GameObject
+    class Terrain : public Core::GameObject
     {
     public:
 
@@ -47,9 +47,9 @@ namespace Objects
         Terrain & operator=(Terrain const &) = delete;
 
         // Private members
-        static std::shared_ptr<Utils::Drawable> mDrawable;
-        static std::shared_ptr<Utils::Shader> mShader;
-        static std::vector<Utils::Texture> mTextures;
+        static std::shared_ptr<Core::Drawable> mDrawable;
+        static std::shared_ptr<Core::Shader> mShader;
+        static std::vector<Core::Texture> mTextures;
         static std::vector<std::string> mHeightMaps;
         static std::shared_ptr<btHeightfieldTerrainShape> mTerrainShape;
         static unsigned char* mTransposedHeightData;
