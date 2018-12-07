@@ -56,7 +56,8 @@ namespace Core
     glm::vec3 GameObject::getWorldOffset(glm::vec3 localOffset) {
         btMatrix3x3 rotationMatrix = mRigidBody->getWorldTransform().getBasis();
         btVector3 worldOffset = rotationMatrix*glmVec32btVector3(localOffset);
-        return btVector32glmVec3(worldOffset)*mScale;
+        glm::vec3 offset = btVector32glmVec3(worldOffset)*mScale;
+        return glm::mat3(mRenderRotation)*offset;
     }
 
     void GameObject::translate(glm::vec3 translationVector) {
