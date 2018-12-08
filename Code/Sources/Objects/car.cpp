@@ -7,37 +7,152 @@ glm::vec3 Car::mSpotlightOffset1;
 glm::vec3 Car::mSpotlightOffset2;
 glm::vec3 Car::mTaillightOffset1;
 glm::vec3 Car::mTaillightOffset2;
+std::shared_ptr<Core::Mesh> Car::mWheelMesh;
 std::shared_ptr<Core::Drawable> Car::mDrawable;
 std::shared_ptr<Core::Shader> Car::mShader;
 
 
-Car::Car() : Core::GameObject(mDrawable, mShader), mWheelTurn(0) {
+const double SCALE_FACTOR = 1.0/400.0;
+const double ACCELERATION = 300.0;
+const double WHEEL_TURN_RATE = 2.0;
+
+const float MASS = 800.0f;
+
+const float CHASSIS_WIDTH = 0.25f;
+const float CHASSIS_LENGTH = 0.55f;
+const float CHASSIS_HEIGHT = 0.1f;
+
+const float CONNECTION_HEIGHT = 0.03f;
+
+const float WHEEL_WIDTH = 0.03f;
+const float WHEEL_RADIUS = 0.06f;
+
+const float STEERING_CLAMP = 0.3f;
+
+const float	WHEEL_FRICTION = 1000.0f;
+const float SUSPENSION_STIFFNESS = 20.f;
+const float SUSPENSION_DAMPING = 2.3f;
+const float SUSPENSION_COMPRESSION = 4.4f;
+const float SUSPENSION_REST_LENGTH = 0.4f;
+const float	ROLL_INFLUENCE = 0.1f;
+
+Car::Car() : Core::GameObject(mDrawable, mShader) {
     setOffset(glm::vec3(0, -0.1, 0));
     scale(glm::vec3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR));
 
-    btBoxShape *carShape = new btBoxShape(btVector3(btScalar(0.25), btScalar(0.1), btScalar(0.55)));
+    btBoxShape *chassisShape = new btBoxShape(btVector3(CHASSIS_WIDTH, CHASSIS_HEIGHT, CHASSIS_LENGTH));
+    btCompoundShape *compoundShape = new btCompoundShape();
+    btTransform localTrans;
+    localTrans.setIdentity();
+    //localTrans effectively shifts the center of mass with respect to the chassis
+    localTrans.setOrigin(btVector3(0,0.02,0));
+    compoundShape->addChildShape(localTrans,chassisShape);
+
     btTransform carTransform;
     carTransform.setIdentity();
-    carTransform.setOrigin(btVector3(-trackInnerA - (trackOuterA-trackInnerA)/2, 1, 0));
-    btScalar mass(1575.0);
+    carTransform.setOrigin(btVector3(-trackInnerA - (trackOuterA-trackInnerA)/2, 0.3, 0));
+    btScalar mass(MASS);
     btVector3 localInertia(0, 0, 0);
-    carShape->calculateLocalInertia(mass, localInertia);
+    compoundShape->calculateLocalInertia(mass, localInertia);
     btDefaultMotionState *myMotionState = new btDefaultMotionState(carTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, carShape, localInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, compoundShape, localInertia);
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
     dynamicsWorld->addRigidBody(&(*mRigidBody));
 
-    setRotation(180);
+    btCylinderShapeX *wheelShape = new btCylinderShapeX(btVector3(WHEEL_WIDTH, WHEEL_RADIUS, WHEEL_RADIUS));
+
+
+    btVehicleRaycaster *vehicleRayCaster = new btDefaultVehicleRaycaster(&(*dynamicsWorld));
+    btRaycastVehicle::btVehicleTuning tuning;
+    mVehicle = new btRaycastVehicle(tuning, &(*mRigidBody), vehicleRayCaster);
+    mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+    dynamicsWorld->addVehicle(mVehicle);
+
+    btVector3 wheelDirection(0,-1,0);
+    btVector3 wheelAxleCS(-1,0,0);
+    std::vector<btVector3> connectionPoints;
+    connectionPoints.push_back(btVector3(-CHASSIS_WIDTH+0.3*WHEEL_WIDTH, CONNECTION_HEIGHT, -CHASSIS_LENGTH+WHEEL_RADIUS));
+    connectionPoints.push_back(btVector3(CHASSIS_WIDTH-0.3*WHEEL_WIDTH, CONNECTION_HEIGHT, -CHASSIS_LENGTH+WHEEL_RADIUS));
+    connectionPoints.push_back(btVector3(-CHASSIS_WIDTH+0.3*WHEEL_WIDTH, CONNECTION_HEIGHT, CHASSIS_LENGTH-WHEEL_RADIUS));
+    connectionPoints.push_back(btVector3(CHASSIS_WIDTH-0.3*WHEEL_WIDTH, CONNECTION_HEIGHT, CHASSIS_LENGTH-WHEEL_RADIUS));
+
+    for (auto &connectionPoint : connectionPoints) {
+        mVehicle->addWheel(
+            connectionPoint,
+            wheelDirection,
+            wheelAxleCS,
+            SUSPENSION_REST_LENGTH,
+            WHEEL_RADIUS,
+            tuning,
+            connectionPoint[2] > 0
+        );
+    }
+
+    for (int i=0; i < mVehicle->getNumWheels(); i++) {
+        btWheelInfo& wheel = mVehicle->getWheelInfo(i);
+        wheel.m_suspensionStiffness = SUSPENSION_STIFFNESS;
+        wheel.m_wheelsDampingRelaxation = SUSPENSION_DAMPING;
+        wheel.m_wheelsDampingCompression = SUSPENSION_COMPRESSION;
+        wheel.m_frictionSlip = WHEEL_FRICTION;
+        wheel.m_rollInfluence = ROLL_INFLUENCE;
+    }
+
+    setSteering(0);
+    mVehicle->setCoordinateSystem(0, 1, 2);
 }
 
 Car::~Car() { }
 
+void Car::draw() {
+    mShader->use();
+
+    // Draw wheels
+    for (int i = 0; i < mVehicle->getNumWheels(); i++) {
+        btScalar transform[16];
+        mVehicle->getWheelInfo(i).m_worldTransform.getOpenGLMatrix(transform);
+        glm::vec3 worldOffset = getWorldOffset();
+        glm::mat4 model = btScalar2glmMat4(transform);
+
+        mShader->setMat4("model", model);
+        mWheelMesh->draw(*mShader);
+    }
+}
+
+void Car::createWheel(Core::MeshCreator &meshCreator) {
+    // Create circular faces
+    int thetaPartitions = 20;
+    float theta0 = 0;
+    for (int i = 1; i<= thetaPartitions; i++) {
+        float theta = glm::radians(360.0*i/thetaPartitions);
+
+        // Positions
+        glm::vec3 center(WHEEL_WIDTH, 0, 0);
+        glm::vec3 left(WHEEL_WIDTH, WHEEL_RADIUS*glm::sin(theta0), WHEEL_RADIUS*glm::cos(theta0));
+        glm::vec3 right(WHEEL_WIDTH, WHEEL_RADIUS*glm::sin(theta), WHEEL_RADIUS*glm::cos(theta));
+
+        // Create triangle
+        meshCreator.mPositions.push_back(left);
+        meshCreator.mPositions.push_back(center);
+        meshCreator.mPositions.push_back(right);
+        meshCreator.mNormals.push_back(glm::vec3(0, left[1], left[2]));
+        meshCreator.mNormals.push_back(glm::vec3(0, center[1], center[2]));
+        meshCreator.mNormals.push_back(glm::vec3(0, right[1], right[2]));
+        meshCreator.mTexCoords.push_back(glm::vec2(left[1]/WHEEL_RADIUS, left[2]/WHEEL_RADIUS));
+        meshCreator.mTexCoords.push_back(glm::vec2(center[1]/WHEEL_RADIUS, center[2]/WHEEL_RADIUS));
+        meshCreator.mTexCoords.push_back(glm::vec2(right[1]/WHEEL_RADIUS, right[2]/WHEEL_RADIUS));
+
+        theta0 = theta;
+    }
+}
 
 // Public Member Functions
 void Car::setup() {
-    mDrawable = std::make_shared<Core::Model>(
-        PROJECT_SOURCE_DIR "/Models/lambo/Lamborghini_Aventador.fbx"
-    );
+    // Create wheel
+    Core::MeshCreator wheelMeshCreator;
+    createWheel(wheelMeshCreator);
+    mWheelMesh = wheelMeshCreator.create();
+
+    mDrawable = mWheelMesh;
     mShader = defaultShader;
 
     defaultShader->use();
@@ -70,6 +185,32 @@ void Car::setup() {
     mSpotlightOffset2 = glm::vec3(1/SCALE_FACTOR)*glm::vec3(0.17,0.15,0.5);
     mTaillightOffset1 = glm::vec3(1/SCALE_FACTOR)*glm::vec3(-0.17,0.15,-0.5);
     mTaillightOffset2 = glm::vec3(1/SCALE_FACTOR)*glm::vec3(0.17,0.15,-0.5);
+}
+
+void Car::applyEngineForce(double force) {
+    for (int i=0; i < mVehicle->getNumWheels(); i++) {
+        btWheelInfo &wheel = mVehicle->getWheelInfo(i);
+        // 4WD
+        mVehicle->applyEngineForce(force, i);
+        std::cout << wheel.m_engineForce << std::endl;
+    }
+}
+
+void Car::setSteering(double steering) {
+    mSteering = steering;
+    if (mSteering > STEERING_CLAMP) {
+        mSteering = STEERING_CLAMP;
+    }
+    else if (mSteering < -STEERING_CLAMP) {
+        mSteering = -STEERING_CLAMP;
+    }
+    for (int i=0; i < mVehicle->getNumWheels(); i++) {
+        btWheelInfo &wheel = mVehicle->getWheelInfo(i);
+        // Steer with front wheels
+        if (wheel.m_bIsFrontWheel) {
+            mVehicle->setSteeringValue(mSteering, i);
+        }
+    }
 }
 
 void Car::updateLighting() {
@@ -110,17 +251,19 @@ void Car::processInput(GLFWwindow *window, double deltaTime) {
         mRigidBody->setAngularVelocity(btVector3(0,0,0));
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        applyForce(glm::vec3(glm::sin(glm::radians(mTheta))*ACCELERATION, 0, glm::cos(glm::radians(mTheta))*ACCELERATION));
+        applyEngineForce(ACCELERATION);
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        applyForce(glm::vec3(-glm::sin(glm::radians(mTheta))*ACCELERATION, 0, -glm::cos(glm::radians(mTheta))*ACCELERATION));
-
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        applyEngineForce(-ACCELERATION);
+    }
+    else {
+        applyEngineForce(0);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        mWheelTurn -= WHEEL_TURN_RATE * deltaTime;
+        setSteering(mSteering + WHEEL_TURN_RATE*deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        mWheelTurn += WHEEL_TURN_RATE * deltaTime;
+        setSteering(mSteering - WHEEL_TURN_RATE*deltaTime);
     }
 
     // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=12045

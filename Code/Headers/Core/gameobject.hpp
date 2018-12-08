@@ -45,7 +45,7 @@ namespace Core
         void applyForce(glm::vec3 vec);
         void scale(glm::vec3 scaleVector);
         std::shared_ptr<Core::Shader> getShader();
-        void draw();
+        virtual void draw();
         virtual void perFrame(double deltaTime) {};
         virtual void processInput(GLFWwindow *window, double deltaTime) {}
 
