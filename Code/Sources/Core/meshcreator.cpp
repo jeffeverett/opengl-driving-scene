@@ -1,4 +1,5 @@
 #include "Core/meshcreator.hpp"
+#include <stb_image.h>
 
 using namespace Core;
 

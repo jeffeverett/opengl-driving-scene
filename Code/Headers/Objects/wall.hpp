@@ -4,6 +4,7 @@
 #include "globals.hpp"
 #include "Core/gameobject.hpp"
 #include "Core/mesh.hpp"
+#include "Core/meshcreator.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -28,7 +29,7 @@ namespace Objects
 
 
         // Public Member Functions
-        static void addSegment(float a, float b, float theta1, float theta2);
+        static void addSegment(Core::MeshCreator &meshCreator, float a, float b, float theta1, float theta2);
         static void setup();
     private:
 
@@ -37,12 +38,8 @@ namespace Objects
         Wall & operator=(Wall const &) = delete;
 
         // Private members
+        static std::shared_ptr<Core::Mesh> mMesh;
         static std::shared_ptr<Core::Drawable> mDrawable;
         static std::shared_ptr<Core::Shader> mShader;
-        static std::vector<Core::Texture> mTextures;
-
-        static std::vector<glm::vec3> mPositions;
-        static std::vector<glm::vec3> mNormals;
-        static std::vector<glm::vec2> mTexCoords;
     };
 }

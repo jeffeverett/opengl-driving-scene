@@ -22,7 +22,7 @@ namespace Core
     public:
 
         // Implement Default Constructor and Destructor
-        MeshCreator();
+        MeshCreator() { }
         ~MeshCreator() { }
 
 
