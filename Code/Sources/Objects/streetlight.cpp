@@ -9,11 +9,17 @@ glm::vec3 Streetlight::mPointlightOffset;
 
 std::shared_ptr<Core::Drawable> Streetlight::mDrawable;
 std::shared_ptr<Core::Shader> Streetlight::mShader;
-std::vector<Core::Texture> Streetlight::mTextures;
 
-std::vector<glm::vec3> Streetlight::mPositions;
-std::vector<glm::vec3> Streetlight::mNormals;
-std::vector<glm::vec2> Streetlight::mTexCoords;
+std::vector<glm::vec3> Streetlight::mPostPositions;
+std::vector<glm::vec3> Streetlight::mPostNormals;
+std::vector<glm::vec2> Streetlight::mPostTexCoords;
+std::vector<Core::Texture> Streetlight::mPostTextures;
+
+std::vector<glm::vec3> Streetlight::mBulbPositions;
+std::vector<glm::vec3> Streetlight::mBulbNormals;
+std::vector<glm::vec2> Streetlight::mBulbTexCoords;
+std::vector<Core::Texture> Streetlight::mBulbTextures;
+
 
 const float RADIUS = 0.04f;
 const float HEIGHT = 5.5f;
@@ -55,26 +61,26 @@ int Streetlight::createOpenCylinder(float height1, float height2, float radius) 
         glm::vec3 rightBottom = glm::vec3(radius*glm::cos(glm::radians(i*theta/partitions)), height1, radius*glm::sin(glm::radians(i*theta/partitions)));
 
         // Create first triangle
-        mPositions.push_back(leftTop);
-        mPositions.push_back(leftBottom);
-        mPositions.push_back(rightBottom);
-        mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
-        mNormals.push_back(glm::vec3(leftBottom[0], 0, leftBottom[2]));
-        mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
-        mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_S*height2));
-        mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height1));
-        mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height1));
+        mPostPositions.push_back(leftTop);
+        mPostPositions.push_back(leftBottom);
+        mPostPositions.push_back(rightBottom);
+        mPostNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
+        mPostNormals.push_back(glm::vec3(leftBottom[0], 0, leftBottom[2]));
+        mPostNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
+        mPostTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_S*height2));
+        mPostTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height1));
+        mPostTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height1));
 
         // Create second triangle
-        mPositions.push_back(leftTop);
-        mPositions.push_back(rightBottom);
-        mPositions.push_back(rightTop);
-        mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
-        mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
-        mNormals.push_back(glm::vec3(rightTop[0], 0, rightTop[2]));
-        mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height2));
-        mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height1));
-        mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height2));
+        mPostPositions.push_back(leftTop);
+        mPostPositions.push_back(rightBottom);
+        mPostPositions.push_back(rightTop);
+        mPostNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
+        mPostNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
+        mPostNormals.push_back(glm::vec3(rightTop[0], 0, rightTop[2]));
+        mPostTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height2));
+        mPostTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height1));
+        mPostTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height2));
     }
 
     return 6*partitions;
@@ -82,45 +88,45 @@ int Streetlight::createOpenCylinder(float height1, float height2, float radius) 
 
 void Streetlight::createRotatedOpenCylinder(float height1, float height2, float radius, float x1, float x2, float angle1, float angle2) {
     int verticesUsed = createOpenCylinder(height1, height2, radius);
-    int startIdx = mPositions.size()-verticesUsed;
+    int startIdx = mPostPositions.size()-verticesUsed;
 
     // Rotate vertices created in previous call
     glm::mat3 rot1 = glm::eulerAngleZ(-angle1);
     glm::mat3 rot2 = glm::eulerAngleZ(-angle2);
-    for (int i = startIdx; i < mPositions.size(); i+=6) {
-        mPositions[i] -= glm::vec3(0, height2, 0);
-        mPositions[i] = rot2*mPositions[i];
-        mPositions[i] += glm::vec3(0, height2, 0);
+    for (int i = startIdx; i < mPostPositions.size(); i+=6) {
+        mPostPositions[i] -= glm::vec3(0, height2, 0);
+        mPostPositions[i] = rot2*mPostPositions[i];
+        mPostPositions[i] += glm::vec3(0, height2, 0);
 
-        mPositions[i+1] -= glm::vec3(0, height1, 0);
-        mPositions[i+1] = rot1*mPositions[i+1];
-        mPositions[i+1] += glm::vec3(0, height1, 0);
+        mPostPositions[i+1] -= glm::vec3(0, height1, 0);
+        mPostPositions[i+1] = rot1*mPostPositions[i+1];
+        mPostPositions[i+1] += glm::vec3(0, height1, 0);
 
-        mPositions[i+2] -= glm::vec3(0, height1, 0);
-        mPositions[i+2] = rot1*mPositions[i+2];
-        mPositions[i+2] += glm::vec3(0, height1, 0);
+        mPostPositions[i+2] -= glm::vec3(0, height1, 0);
+        mPostPositions[i+2] = rot1*mPostPositions[i+2];
+        mPostPositions[i+2] += glm::vec3(0, height1, 0);
 
-        mPositions[i+3] -= glm::vec3(0, height2, 0);
-        mPositions[i+3] = rot2*mPositions[i+3];
-        mPositions[i+3] += glm::vec3(0, height2, 0);
+        mPostPositions[i+3] -= glm::vec3(0, height2, 0);
+        mPostPositions[i+3] = rot2*mPostPositions[i+3];
+        mPostPositions[i+3] += glm::vec3(0, height2, 0);
 
-        mPositions[i+4] -= glm::vec3(0, height1, 0);
-        mPositions[i+4] = rot1*mPositions[i+4];
-        mPositions[i+4] += glm::vec3(0, height1, 0);
+        mPostPositions[i+4] -= glm::vec3(0, height1, 0);
+        mPostPositions[i+4] = rot1*mPostPositions[i+4];
+        mPostPositions[i+4] += glm::vec3(0, height1, 0);
 
-        mPositions[i+5] -= glm::vec3(0, height2, 0);
-        mPositions[i+5] = rot2*mPositions[i+5];
-        mPositions[i+5] += glm::vec3(0, height2, 0);
+        mPostPositions[i+5] -= glm::vec3(0, height2, 0);
+        mPostPositions[i+5] = rot2*mPostPositions[i+5];
+        mPostPositions[i+5] += glm::vec3(0, height2, 0);
     }
 
     // Apply x offset to vertices created in previous call
-    for (int i = startIdx; i < mPositions.size(); i+=6) {
-        mPositions[i] += glm::vec3(x2, 0, 0);
-        mPositions[i+1] += glm::vec3(x1, 0, 0);
-        mPositions[i+2] += glm::vec3(x1, 0, 0);
-        mPositions[i+3] += glm::vec3(x2, 0, 0);
-        mPositions[i+4] += glm::vec3(x1, 0, 0);
-        mPositions[i+5] += glm::vec3(x2, 0, 0);
+    for (int i = startIdx; i < mPostPositions.size(); i+=6) {
+        mPostPositions[i] += glm::vec3(x2, 0, 0);
+        mPostPositions[i+1] += glm::vec3(x1, 0, 0);
+        mPostPositions[i+2] += glm::vec3(x1, 0, 0);
+        mPostPositions[i+3] += glm::vec3(x2, 0, 0);
+        mPostPositions[i+4] += glm::vec3(x1, 0, 0);
+        mPostPositions[i+5] += glm::vec3(x2, 0, 0);
     }
 }
 
@@ -132,27 +138,42 @@ void Streetlight::createSphere(glm::vec3 offset, float radius) {
     float phi0 = 0;
 
     // Draw lowest partition
-    for (int i = 0; i <= thetaPartitions; i++) {
-        float theta = glm::radians(360.0*i/thetaPartitions);
-        float phi = glm::radians(360.0*1/phiPartitions);
+    for (int i = 0; i <= phiPartitions; i++) {
+        float phi = glm::radians(90.0*i/phiPartitions);
+        for (int j = 0; j <= thetaPartitions; j++) {
+            float theta = glm::radians(360.0*j/thetaPartitions);
+            // Positions
+            glm::vec3 leftTop = glm::vec3(radius*glm::sin(theta0)*glm::sin(phi), radius*glm::cos(phi), radius*glm::cos(theta0)*glm::sin(phi));
+            glm::vec3 rightTop = glm::vec3(radius*glm::sin(theta)*glm::sin(phi), radius*glm::cos(phi), radius*glm::cos(theta)*glm::sin(phi));
+            glm::vec3 leftBottom = glm::vec3(radius*glm::sin(theta0)*glm::sin(phi0), radius*glm::cos(phi0), radius*glm::cos(theta0)*glm::sin(phi0));
+            glm::vec3 rightBottom = glm::vec3(radius*glm::sin(theta)*glm::sin(phi0), radius*glm::cos(phi0), radius*glm::cos(theta)*glm::sin(phi0));
 
-        // Positions
-        glm::vec3 bottom = glm::vec3(0,-radius,0);
-        glm::vec3 leftTop = glm::vec3(radius*glm::cos(theta0)*glm::sin(phi), 0, radius*glm::sin(theta0)*glm::sin(phi));
-        glm::vec3 rightTop = glm::vec3(radius*glm::cos(theta)*glm::sin(phi), 0, radius*glm::sin(theta)*glm::sin(phi));
 
-        // Create triangle
-        mPositions.push_back(leftTop + offset);
-        mPositions.push_back(bottom + offset);
-        mPositions.push_back(rightTop);
-        mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
-        mNormals.push_back(glm::vec3(bottom[0], 0, bottom[2]));
-        mNormals.push_back(glm::vec3(rightTop[0], 0, rightTop[2]));
-        /*mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_S*height2));
-        mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height1));
-        mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height1));*/
+            // Create first triangle
+            mPostPositions.push_back(offset+leftTop);
+            mPostPositions.push_back(offset+leftBottom);
+            mPostPositions.push_back(offset+rightBottom);
+            mPostNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
+            mPostNormals.push_back(glm::vec3(leftBottom[0], 0, leftBottom[2]));
+            mPostNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
+            mPostTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), (90+phi)/glm::radians(180.0)));
+            mPostTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), (90+phi0)/glm::radians(180.0)));
+            mPostTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), (90+phi0)/glm::radians(180.0)));
 
-        theta0 = theta;
+            // Create second triangle
+            mPostPositions.push_back(offset+leftTop);
+            mPostPositions.push_back(offset+rightBottom);
+            mPostPositions.push_back(offset+rightTop);
+            mPostNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
+            mPostNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
+            mPostNormals.push_back(glm::vec3(rightTop[0], 0, rightTop[2]));
+            mPostTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), (90+phi)/glm::radians(180.0)));
+            mPostTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), (90+phi0)/glm::radians(180.0)));
+            mPostTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), (90+phi)/glm::radians(180.0)));
+
+            theta0 = theta;
+        }
+        phi0 = phi;
     }
 }
 
@@ -181,7 +202,7 @@ void Streetlight::setup() {
         defaultShader->setFloat("pointLights[" + number + "].quadratic", 0.032f);
     }
 
-    // Create main shaft
+    // Create post
     int partitions = 10;
     for (int i = 1; i <= partitions; i++) {
         createOpenCylinder((i-1)*HEIGHT/partitions, i*HEIGHT/partitions, RADIUS);
@@ -209,11 +230,11 @@ void Streetlight::setup() {
         y0 = y;
     }
 
-
     // Create bulb
+    createSphere(glm::vec3(x0-xMin, y0, 0), 0.2);
 
 
-
+    // Load post texture
     GLuint textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
@@ -236,8 +257,42 @@ void Streetlight::setup() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-    mTextures.push_back(Core::Texture { textureID, "texture_diffuse", texturePath });
-    mDrawable = std::make_shared<Core::Mesh>(mPositions, mNormals, mTexCoords, mTextures);
+    mPostTextures.push_back(Core::Texture { textureID, "texture_diffuse", texturePath });
+
+
+    // Load bulb texture
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    texturePath = PROJECT_SOURCE_DIR "/Textures/Streetlight/glass.jpg";
+    data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << texturePath << std::endl;
+        stbi_image_free(data);
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    mBulbTextures.push_back(Core::Texture { textureID, "texture_diffuse", texturePath });
+
+
+    // Construct model
+    std::shared_ptr<Core::Mesh> postMesh = std::make_shared<Core::Mesh>(mPostPositions, mPostNormals, mPostTexCoords, mPostTextures);
+    std::shared_ptr<Core::Mesh> bulbMesh = std::make_shared<Core::Mesh>(mBulbPositions, mBulbNormals, mBulbTexCoords, mBulbTextures);
+
+    std::shared_ptr<Core::Model> model = std::make_shared<Core::Model>();
+    model->meshes.push_back(*postMesh);
+    model->meshes.push_back(*bulbMesh);
+
+    mDrawable = model;
     mShader = defaultShader;
 
     mPointlightOffset = glm::vec3(x0-xMin,y0,0);

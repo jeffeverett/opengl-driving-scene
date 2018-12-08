@@ -46,10 +46,15 @@ namespace Objects
 
         static std::shared_ptr<Core::Drawable> mDrawable;
         static std::shared_ptr<Core::Shader> mShader;
-        static std::vector<Core::Texture> mTextures;
 
-        static std::vector<glm::vec3> mPositions;
-        static std::vector<glm::vec3> mNormals;
-        static std::vector<glm::vec2> mTexCoords;
+        static std::vector<glm::vec3> mPostPositions;
+        static std::vector<glm::vec3> mPostNormals;
+        static std::vector<glm::vec2> mPostTexCoords;
+        static std::vector<Core::Texture> mPostTextures;
+
+        static std::vector<glm::vec3> mBulbPositions;
+        static std::vector<glm::vec3> mBulbNormals;
+        static std::vector<glm::vec2> mBulbTexCoords;
+        static std::vector<Core::Texture> mBulbTextures;
     };
 }
