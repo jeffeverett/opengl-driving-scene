@@ -13,7 +13,7 @@ std::shared_ptr<Core::Drawable> Terrain::mDrawable;
 std::shared_ptr<Core::Shader> Terrain::mShader;
 std::vector<Core::Texture> Terrain::mTextures;
 std::vector<std::string> Terrain::mHeightMaps = {
-        PROJECT_SOURCE_DIR "/Textures/HeightMaps/height_map1.png"
+    PROJECT_SOURCE_DIR "/Textures/HeightMaps/height_map1.png"
 };
 std::shared_ptr<btHeightfieldTerrainShape> Terrain::mTerrainShape;
 unsigned char* Terrain::mTransposedHeightData;
@@ -41,69 +41,49 @@ Terrain::~Terrain() {
 }
 
 void Terrain::setup() {
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    // Generate mesh
+    Core::MeshCreator meshCreator;
+    loadHeightMap(meshCreator, mHeightMaps[0]);
+    meshCreator.addTexture(PROJECT_SOURCE_DIR "/Textures/Ground/rock.jpg");
+    mDrawable = meshCreator.create();
 
-    int width, height, nrChannels;
-    std::string texturePath = PROJECT_SOURCE_DIR "/Textures/Ground/rock.jpg";
-    unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Texture failed to load at path: " << texturePath << std::endl;
-        stbi_image_free(data);
-    }
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    mTextures.push_back(Core::Texture { textureID, "texture_diffuse", texturePath });
-
-    loadHeightMap(mHeightMaps[0]);
     mShader = defaultShader;
 }
 
-void Terrain::loadHeightMap(std::string heightMap)
+void Terrain::loadHeightMap(Core::MeshCreator &meshCreator, std::string heightMap)
 {
     int width, height, nrChannels;
     unsigned char *data = stbi_load(heightMap.c_str(), &width, &height, &nrChannels, 1);
     if (data)
     {
-        // Generate mesh
-        std::vector<glm::vec3> terrainPositions;
-        std::vector<glm::vec3> terrainNormals;
-        std::vector<glm::vec2> terrainTexCoords;
-
         for (int i = 1; i < height; i++) {
             for (int j = 1; j < width; j++) {
-                terrainPositions.insert(terrainPositions.end(), {
-                    // Bottom left
-                    glm::vec3((i-1)/(width-1.0)*SIZE_X, data[(i-1)*width + (j-1)]/255.0*SIZE_Y, (j-1)/(height-1.0)*SIZE_Z),
-                    // Top left
-                    glm::vec3(i/(width-1.0)*SIZE_X, data[i*width + (j-1)]/255.0*SIZE_Y, (j-1)/(height-1.0)*SIZE_Z),
-                    // Top right
-                    glm::vec3(i/(width-1.0)*SIZE_X, data[i*width + j]/255.0*SIZE_Y, j/(height-1.0)*SIZE_Z),
-
-                    // Bottom left
-                    glm::vec3((i-1)/(width-1.0)*SIZE_X, data[(i-1)*width + (j-1)]/255.0*SIZE_Y, (j-1)/(height-1.0)*SIZE_Z),
-                    // Top right
-                    glm::vec3(i/(width-1.0)*SIZE_X, data[i*width + j]/255.0*SIZE_Y, j/(height-1.0)*SIZE_Z),
-                    // Bottom right
-                    glm::vec3((i-1)/(width-1.0)*SIZE_X, data[(i-1)*width + j]/255.0*SIZE_Y, j/(height-1.0)*SIZE_Z),
-
+                // Positions
+                glm::vec3 topLeft(i/(width-1.0)*SIZE_X, data[i*width + (j-1)]/255.0*SIZE_Y, (j-1)/(height-1.0)*SIZE_Z);
+                glm::vec3 topRight(i/(width-1.0)*SIZE_X, data[i*width + j]/255.0*SIZE_Y, j/(height-1.0)*SIZE_Z);
+                glm::vec3 bottomLeft((i-1)/(width-1.0)*SIZE_X, data[(i-1)*width + (j-1)]/255.0*SIZE_Y, (j-1)/(height-1.0)*SIZE_Z);
+                glm::vec3 bottomRight((i-1)/(width-1.0)*SIZE_X, data[(i-1)*width + j]/255.0*SIZE_Y, j/(height-1.0)*SIZE_Z);
+                meshCreator.mPositions.insert(meshCreator.mPositions.end(), {
+                    topLeft, bottomLeft, bottomRight,
+                    topLeft, bottomRight, topRight
                 });
             }
         }
-        for (auto &position : terrainPositions) {
-            terrainNormals.push_back(glm::vec3(0, 1, 0));
-            terrainTexCoords.push_back(glm::vec2(position[0]/SIZE_X*TEXTURE_REPEAT_X, position[2]/SIZE_Z*TEXTURE_REPEAT_Z));
+
+        // Calculate normals
+        for (int i = 0; i < meshCreator.mPositions.size(); i+=3) {
+            glm::vec3 vec1 = meshCreator.mPositions[i+1]-meshCreator.mPositions[i];
+            glm::vec3 vec2 = meshCreator.mPositions[i+2]-meshCreator.mPositions[i+1];
+            glm::vec3 normal = glm::cross(vec1, vec2);
+
+            meshCreator.mNormals.insert(meshCreator.mNormals.end(), {
+                normal, normal, normal
+            });
         }
-        mDrawable = std::make_shared<Core::Mesh>(terrainPositions, terrainNormals, terrainTexCoords, mTextures);
+        // Determine texture coordinates
+        for (auto &position : meshCreator.mPositions) {
+            meshCreator.mTexCoords.push_back(glm::vec2(position[0]/SIZE_X*TEXTURE_REPEAT_X, position[2]/SIZE_Z*TEXTURE_REPEAT_Z));
+        }
 
         // Create Bullet terrain shape
         mTransposedHeightData = (unsigned char *) malloc(height*width*1);

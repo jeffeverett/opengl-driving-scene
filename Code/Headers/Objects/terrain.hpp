@@ -4,6 +4,7 @@
 #include "globals.hpp"
 #include "Core/gameobject.hpp"
 #include "Core/mesh.hpp"
+#include "Core/meshcreator.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -33,7 +34,7 @@ namespace Objects
 
     private:
 
-        static void loadHeightMap(std::string heightMap);
+        static void loadHeightMap(Core::MeshCreator &meshCreator, std::string heightMap);
 
         // Disable Copying and Assignment
         Terrain(Terrain const &) = delete;
