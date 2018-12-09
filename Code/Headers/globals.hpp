@@ -8,7 +8,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <btBulletDynamicsCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include <memory>
 
