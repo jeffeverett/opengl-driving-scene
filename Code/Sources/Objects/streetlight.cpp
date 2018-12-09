@@ -39,7 +39,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     setRenderRotation(theta);
 }
 
-int Streetlight::createOpenCylinder(Core::MeshCreator &meshCreator, float height1, float height2, float radius) {
+int Streetlight::createOpenCylinder(Core::MeshCreator &meshCreator, float tDiff, float height1, float height2, float radius) {
     int partitions = 10;
     float theta = 360;
     for (int i = 1; i <= partitions; i++) {
@@ -56,7 +56,7 @@ int Streetlight::createOpenCylinder(Core::MeshCreator &meshCreator, float height
         meshCreator.mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
         meshCreator.mNormals.push_back(glm::vec3(leftBottom[0], 0, leftBottom[2]));
         meshCreator.mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
-        meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height2));
+        meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*(height1+tDiff)));
         meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height1));
         meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height1));
 
@@ -67,16 +67,16 @@ int Streetlight::createOpenCylinder(Core::MeshCreator &meshCreator, float height
         meshCreator.mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
         meshCreator.mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
         meshCreator.mNormals.push_back(glm::vec3(rightTop[0], 0, rightTop[2]));
-        meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height2));
+        meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*(height1+tDiff)));
         meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height1));
-        meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height2));
+        meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*(height1+tDiff)));
     }
 
     return 6*partitions;
 }
 
 void Streetlight::createRotatedOpenCylinder(Core::MeshCreator &meshCreator, float height1, float height2, float radius, float x1, float x2, float angle1, float angle2) {
-    int verticesUsed = createOpenCylinder(meshCreator, height1, height2, radius);
+    int verticesUsed = createOpenCylinder(meshCreator, x2-x1, height1, height2, radius);
     int startIdx = meshCreator.mPositions.size()-verticesUsed;
 
     // Rotate vertices created in previous call
@@ -201,7 +201,7 @@ void Streetlight::setup() {
     // Create post
     int partitions = 10;
     for (int i = 1; i <= partitions; i++) {
-        createOpenCylinder(postMeshCreator, (i-1)*HEIGHT/partitions, i*HEIGHT/partitions, RADIUS);
+        createOpenCylinder(postMeshCreator, HEIGHT/partitions, (i-1)*HEIGHT/partitions, i*HEIGHT/partitions, RADIUS);
     }
 
     // Create curved head, following parabolic curve

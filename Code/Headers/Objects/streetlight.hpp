@@ -38,7 +38,7 @@ namespace Objects
         Streetlight & operator=(Streetlight const &) = delete;
 
         // Private Member functions
-        static int createOpenCylinder(Core::MeshCreator &meshCreator, float height1, float height2, float radius);
+        static int createOpenCylinder(Core::MeshCreator &meshCreator, float tDiff, float height1, float height2, float radius);
         static void createRotatedOpenCylinder(Core::MeshCreator &meshCreator, float height1, float height2, float radius, float x1, float x2, float angle1, float angle2);
         static void createSphere(Core::MeshCreator &meshCreator, float maxPhi, glm::vec3 offset, float radius, float rotation);
 

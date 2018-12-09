@@ -83,9 +83,9 @@ void Wall::addSegment(Core::MeshCreator &meshCreator, int segNumber, float a, fl
     meshCreator.mNormals.push_back(glm::vec3(leftTopBack[0], 0, leftTopBack[2]));
     meshCreator.mNormals.push_back(glm::vec3(leftBottomBack[0], 0, leftBottomBack[2]));
     meshCreator.mNormals.push_back(glm::vec3(rightBottomBack[0], 0, rightBottomBack[2]));
-    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3), TEXTURE_REPEAT_T*leftTopBack[1]));
-    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3), TEXTURE_REPEAT_T*leftBottomBack[1]));
-    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3+1), TEXTURE_REPEAT_T*rightBottomBack[1]));
+    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3+1), TEXTURE_REPEAT_T*leftTopBack[1]));
+    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3+1), TEXTURE_REPEAT_T*leftBottomBack[1]));
+    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3), TEXTURE_REPEAT_T*rightBottomBack[1]));
 
     // Back wall, second triangle
     meshCreator.mPositions.push_back(glm::vec3(1,WALL_HEIGHT,1)*leftTopBack);
@@ -94,9 +94,9 @@ void Wall::addSegment(Core::MeshCreator &meshCreator, int segNumber, float a, fl
     meshCreator.mNormals.push_back(glm::vec3(leftTopBack[0], 0, leftTopBack[2]));
     meshCreator.mNormals.push_back(glm::vec3(rightBottomBack[0], 0, rightBottomBack[2]));
     meshCreator.mNormals.push_back(glm::vec3(rightTopBack[0], 0, rightTopBack[2]));
-    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3), TEXTURE_REPEAT_T*leftTopBack[1]));
-    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3+1), TEXTURE_REPEAT_T*rightBottomBack[1]));
-    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3+1), TEXTURE_REPEAT_T*rightTopBack[1]));
+    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3+1), TEXTURE_REPEAT_T*leftTopBack[1]));
+    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3), TEXTURE_REPEAT_T*rightBottomBack[1]));
+    meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_REPEAT_S*(segNumber%3), TEXTURE_REPEAT_T*rightTopBack[1]));
 
     // Top, first triangle
     meshCreator.mPositions.push_back(glm::vec3(1,WALL_HEIGHT,1)*leftTopBack);
@@ -124,7 +124,7 @@ void Wall::addSegment(Core::MeshCreator &meshCreator, int segNumber, float a, fl
 void Wall::setup() {
     // Generate walls
     Core::MeshCreator meshCreator;
-    int segments = 60;
+    int segments = 70;
     float theta0 = 0;
     for (int i = 0; i <= segments; i++) {
         float theta = glm::radians(360.0)*i/segments;
