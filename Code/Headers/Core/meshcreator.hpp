@@ -28,7 +28,7 @@ namespace Core
 
         // Public Member Functions
         std::shared_ptr<Core::Mesh> create();
-        void addTexture(std::string filename);
+        void addTexture(std::string filename, bool flipVertically = false);
 
         // Public Member Variables
         std::vector<glm::vec3> mPositions;

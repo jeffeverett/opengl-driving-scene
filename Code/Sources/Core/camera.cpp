@@ -27,7 +27,7 @@ namespace Core {
             return glm::ortho(-BOX_SIZE, BOX_SIZE, -BOX_SIZE, BOX_SIZE, -BOX_SIZE, BOX_SIZE);
         }
         else {
-            return glm::perspective(glm::radians(30.0f), width/height, 0.1f, 300.0f);
+            return glm::perspective(glm::radians(30.0f), ((float) width)/height, 0.1f, 300.0f);
         }
     }
 

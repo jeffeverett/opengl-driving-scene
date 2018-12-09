@@ -47,6 +47,6 @@ namespace Core
         GLuint mVAO;
         std::shared_ptr<Core::Shader> mShader;
         std::map<GLchar, Character> mCharacters;
-        int mVerticalOffset;
+        float mVerticalOffset;
     };
 }

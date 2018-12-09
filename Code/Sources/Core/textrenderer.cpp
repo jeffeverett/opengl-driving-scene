@@ -98,7 +98,7 @@ namespace Core
         // Activate corresponding render state
         mShader->use();
         mShader->setVec3("textColor", color);
-        mShader->setMat4("projection", glm::ortho(0.0f, width, 0.0f, height));
+        mShader->setMat4("projection", glm::ortho(0.0f, (float) width, 0.0f, (float) height));
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(mVAO);
 

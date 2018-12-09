@@ -12,8 +12,8 @@
 
 #include <memory>
 
-extern GLfloat width;
-extern GLfloat height;
+extern GLsizei width;
+extern GLsizei height;
 
 extern GLfloat trackInnerA;
 extern GLfloat trackInnerB;

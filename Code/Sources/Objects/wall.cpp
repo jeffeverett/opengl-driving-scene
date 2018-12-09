@@ -34,7 +34,7 @@ Wall::Wall() : Core::GameObject(mDrawable, mShader) {
     btTransform wallTransform;
     wallTransform.setIdentity();
     wallTransform.setOrigin(btVector3(0, 0.0, 0));
-    btScalar mass(0.);
+    btScalar mass(0.0f);
     btVector3 localInertia(0, 0, 0);
     btDefaultMotionState *myMotionState = new btDefaultMotionState(wallTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, wallShape, localInertia);
@@ -127,7 +127,7 @@ void Wall::setup() {
     int segments = 70;
     float theta0 = 0;
     for (int i = 0; i <= segments; i++) {
-        float theta = glm::radians(360.0)*i/segments;
+        float theta = glm::radians(360.0f)*i/segments;
         // Outer wall
         addSegment(meshCreator, i, trackOuterA, trackOuterB, theta0, theta);
         // Inner wall
@@ -135,7 +135,7 @@ void Wall::setup() {
         theta0 = theta;
     }
 
-    meshCreator.addTexture(PROJECT_SOURCE_DIR "/Textures/Wall/logo.jpg");
+    meshCreator.addTexture(PROJECT_SOURCE_DIR "/Textures/Wall/logo.jpg", true);
 
     mMesh = meshCreator.create();
     mDrawable = mMesh;

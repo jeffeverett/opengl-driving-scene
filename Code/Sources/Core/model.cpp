@@ -1,3 +1,6 @@
+// Based on
+// https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h
+
 #include "Core/model.hpp"
 
 using namespace Core;
@@ -46,6 +49,7 @@ void Model::draw(Core::Shader shader) {
     for(unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].draw(shader);
     }
+
 }
 
 void Model::loadModel(string const &path) {
@@ -71,6 +75,7 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
         // the node object only contains indices to index the actual objects in the scene.
         // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+        std::cout << "adding mesh" << std::endl;
         meshes.push_back(processMesh(mesh, scene));
     }
     // after we've processed all of the meshes (if any) we then recursively process each of the children nodes

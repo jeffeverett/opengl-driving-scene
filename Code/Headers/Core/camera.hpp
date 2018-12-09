@@ -13,9 +13,9 @@
 #include <memory>
 
 const float THETA = 0.0f;
-const float PHI = 75.0f;
+const float PHI = 85.0f;
 const float SENSITIVITY = 60.0f;
-const float RADIUS = 10.0f;
+const float RADIUS = 6.0f;
 const float BOX_SIZE = 25.0f;
 
 namespace Core {

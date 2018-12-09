@@ -8,10 +8,12 @@ std::shared_ptr<Core::Mesh> MeshCreator::create() {
     return std::make_shared<Core::Mesh>(mPositions, mNormals, mTexCoords, mTextures);
 }
 
-void MeshCreator::addTexture(std::string filename) {
+void MeshCreator::addTexture(std::string filename, bool flipVertically) {
     GLuint textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
+
+    stbi_set_flip_vertically_on_load(flipVertically);
 
     int width, height, nrChannels;
     unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
@@ -31,4 +33,6 @@ void MeshCreator::addTexture(std::string filename) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     mTextures.push_back(Core::Texture { textureID, "texture_diffuse", filename });
+
+    stbi_set_flip_vertically_on_load(false);
 }

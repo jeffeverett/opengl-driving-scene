@@ -29,7 +29,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     btTransform streetlightTransform;
     streetlightTransform.setIdentity();
     streetlightTransform.setOrigin(btVector3(position[0], 0, position[2]));
-    btScalar mass(0.);
+    btScalar mass(0.0f);
     btVector3 localInertia(0, 0, 0);
     btDefaultMotionState *myMotionState = new btDefaultMotionState(streetlightTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, streetlightShape, localInertia);
@@ -77,12 +77,12 @@ int Streetlight::createOpenCylinder(Core::MeshCreator &meshCreator, float tDiff,
 
 void Streetlight::createRotatedOpenCylinder(Core::MeshCreator &meshCreator, float height1, float height2, float radius, float x1, float x2, float angle1, float angle2) {
     int verticesUsed = createOpenCylinder(meshCreator, x2-x1, height1, height2, radius);
-    int startIdx = meshCreator.mPositions.size()-verticesUsed;
+    unsigned long startIdx = meshCreator.mPositions.size()-verticesUsed;
 
     // Rotate vertices created in previous call
     glm::mat3 rot1 = glm::eulerAngleZ(-angle1);
     glm::mat3 rot2 = glm::eulerAngleZ(-angle2);
-    for (int i = startIdx; i < meshCreator.mPositions.size(); i+=6) {
+    for (unsigned long i = startIdx; i < meshCreator.mPositions.size(); i+=6) {
         meshCreator.mPositions[i] -= glm::vec3(0, height2, 0);
         meshCreator.mPositions[i] = rot2*meshCreator.mPositions[i];
         meshCreator.mPositions[i] += glm::vec3(0, height2, 0);
@@ -109,7 +109,7 @@ void Streetlight::createRotatedOpenCylinder(Core::MeshCreator &meshCreator, floa
     }
 
     // Apply x offset to vertices created in previous call
-    for (int i = startIdx; i < meshCreator.mPositions.size(); i+=6) {
+    for (unsigned long i = startIdx; i < meshCreator.mPositions.size(); i+=6) {
         meshCreator.mPositions[i] += glm::vec3(x2, 0, 0);
         meshCreator.mPositions[i+1] += glm::vec3(x1, 0, 0);
         meshCreator.mPositions[i+2] += glm::vec3(x1, 0, 0);
@@ -131,7 +131,7 @@ void Streetlight::createSphere(Core::MeshCreator &meshCreator, float maxPhi, glm
     for (int i = 0; i <= phiPartitions; i++) {
         float phi = glm::radians(maxPhi*i/phiPartitions);
         for (int j = 0; j <= thetaPartitions; j++) {
-            float theta = glm::radians(360.0*j/thetaPartitions);
+            float theta = glm::radians(360.0f*j/thetaPartitions);
             // Positions
             glm::vec3 leftTop = glm::vec3(radius*glm::sin(theta0)*glm::sin(phi0), radius*glm::cos(phi0), radius*glm::cos(theta0)*glm::sin(phi0));
             glm::vec3 rightTop = glm::vec3(radius*glm::sin(theta)*glm::sin(phi0), radius*glm::cos(phi0), radius*glm::cos(theta)*glm::sin(phi0));
@@ -146,9 +146,9 @@ void Streetlight::createSphere(Core::MeshCreator &meshCreator, float maxPhi, glm
             meshCreator.mNormals.push_back(leftTop);
             meshCreator.mNormals.push_back(leftBottom);
             meshCreator.mNormals.push_back(rightBottom);
-            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi0/glm::radians(maxPhi)));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi/glm::radians(maxPhi)));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi/glm::radians(maxPhi)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0f), phi0/glm::radians(maxPhi)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0f), phi/glm::radians(maxPhi)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0f), phi/glm::radians(maxPhi)));
 
             // Create second triangle
             meshCreator.mPositions.push_back(offset+rot*leftTop);
@@ -207,9 +207,9 @@ void Streetlight::setup() {
     // Create curved head, following parabolic curve
     // y = -Ax^2+C, where C is the constant s.t. y(xMin) = HEIGHT
     partitions = 15;
-    float A = 0.25;
-    float xMin = -0.25;
-    float xMax = 0.85;
+    float A = 0.25f;
+    float xMin = -0.25f;
+    float xMax = 0.85f;
     float C = HEIGHT + A*xMin*xMin;
     float x0 = xMin;
     float y0 = -A*xMin*xMin+C;

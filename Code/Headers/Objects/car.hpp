@@ -32,8 +32,8 @@ namespace Objects
         // Public Member Functions
         static void setup();
         virtual void draw() override;
-        void applyEngineForce(double force);
-        void setSteering(double steering);
+        void applyEngineForce(float force);
+        void setSteering(float steering);
         void updateLighting();
         void processInput(GLFWwindow *window, double deltaTime) override;
         void perFrame(double deltaTime) override;
@@ -45,16 +45,17 @@ namespace Objects
         Car & operator=(Car const &) = delete;
 
         // Private members
-        double mSteering;
+        float mSteering;
         btRaycastVehicle *mVehicle;
 
+        static void createCircularFace(Core::MeshCreator &meshCreator, float xOffset);
         static void createWheel(Core::MeshCreator &meshCreator);
 
         static glm::vec3 mSpotlightOffset1;
         static glm::vec3 mSpotlightOffset2;
         static glm::vec3 mTaillightOffset1;
         static glm::vec3 mTaillightOffset2;
-        static std::shared_ptr<Core::Mesh> mWheelMesh;
+        static std::shared_ptr<Core::Model> mModel;
         static std::shared_ptr<Core::Drawable> mDrawable;
         static std::shared_ptr<Core::Shader> mShader;
     };

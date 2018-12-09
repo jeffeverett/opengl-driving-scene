@@ -35,8 +35,8 @@
 const int FPS_ROLLING_FRAMES = 10;
 
 // Below used by other files
-GLfloat width = 1280;
-GLfloat height = 800;
+GLsizei width = 1280;
+GLsizei height = 800;
 GLfloat trackInnerA = 58;
 GLfloat trackInnerB = 58;
 GLfloat trackOuterA = 63;
@@ -50,8 +50,8 @@ std::unique_ptr<Physics::DebugDrawer> debugDrawer;
 // Below local to translation unit
 Core::Scene scene;
 bool firstMouse = true;
-float lastX;
-float lastY;
+double lastX;
+double lastY;
 
 
 void errorCallback(int error, const char* description) {
@@ -66,9 +66,9 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
         return;
     }
 
-    float xoffset = xpos - lastX;
+    double xoffset = xpos - lastX;
     // Reversed since y-coordinates range from bottom to top
-    float yoffset = lastY - ypos;
+    double yoffset = lastY - ypos;
     lastX = xpos;
     lastY = ypos;
 }
@@ -80,9 +80,6 @@ void framebufferSizeCallback(GLFWwindow* window, int newWidth, int newHeight) {
 }
 
 int main(int argc, char * argv[]) {
-    // Prep stb
-    stbi_set_flip_vertically_on_load(true);
-
     // Load GLFW
     glfwInit();
 
@@ -247,7 +244,7 @@ int main(int argc, char * argv[]) {
 #endif
 
         // Tick physics engine
-        dynamicsWorld->stepSimulation(deltaTime);
+        dynamicsWorld->stepSimulation((float) deltaTime);
 
         // Draw scene
         scene.draw();
