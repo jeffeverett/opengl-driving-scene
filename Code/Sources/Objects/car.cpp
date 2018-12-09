@@ -13,6 +13,7 @@ std::shared_ptr<Core::Shader> Car::mShader;
 
 
 const glm::vec3 START_POS(-trackInnerA - (trackOuterA-trackInnerA)/2, 3, 0);
+const float START_ROTATION = 180.0f;
 
 const double SCALE_FACTOR = 1.0/400.0;
 const double ENGINE_FORCE = 300.0;
@@ -99,6 +100,7 @@ Car::Car() : Core::GameObject(mDrawable, mShader) {
         wheel.m_rollInfluence = ROLL_INFLUENCE;
     }
 
+    setRotation(START_ROTATION);
     setSteering(0);
     mVehicle->setCoordinateSystem(0, 1, 2);
 }
@@ -248,7 +250,7 @@ void Car::updateLighting() {
 void Car::processInput(GLFWwindow *window, double deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         setPosition(START_POS);
-        setRotation(180);
+        setRotation(START_ROTATION);
         mRigidBody->setLinearVelocity(btVector3(0,0,0));
         mRigidBody->setAngularVelocity(btVector3(0,0,0));
     }

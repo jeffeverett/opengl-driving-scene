@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG
+//#define DEBUG
 
 #include "Core/textrenderer.hpp"
 #include "Core/shader.hpp"

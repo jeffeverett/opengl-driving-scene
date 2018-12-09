@@ -57,13 +57,17 @@ namespace Core {
 
         glm::vec3 followForward = mFollow->getWorldForward();
         glm::vec3 projectedForward = glm::normalize(glm::vec3(followForward[0], 0, followForward[2]));
-        double followTheta = glm::acos(projectedForward[0]);
-        double thetaRadians = glm::radians(mTheta);
+        double followTheta = glm::acos(projectedForward[2]);
+        if (projectedForward[0] < 0) {
+            followTheta = -followTheta;
+        }
+        std::cout << "FOLLOW THETA: " << glm::degrees(followTheta) << std::endl;
+        double thetaRadians = glm::radians(mTheta+180.0f)+followTheta;
         double phiRadians = glm::radians(mPhi);
         glm::vec3 offset(
-            -mRadius*glm::sin(thetaRadians)*glm::cos(phiRadians),
-            mRadius*glm::sin(phiRadians),
-            mRadius*glm::cos(thetaRadians)*cos(phiRadians)
+            mRadius*glm::sin(thetaRadians)*glm::sin(phiRadians),
+            mRadius*glm::cos(phiRadians),
+            mRadius*glm::cos(thetaRadians)*sin(phiRadians)
         );
         mPosition = mFollow->getPosition() + offset;
         defaultShader->use();
@@ -100,21 +104,21 @@ namespace Core {
             }
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-            mTheta += SENSITIVITY*deltaTime;
-        }
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
             mTheta -= SENSITIVITY*deltaTime;
         }
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+            mTheta += SENSITIVITY*deltaTime;
+        }
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-           mPhi += SENSITIVITY*deltaTime;
-           if (mPhi > 175) {
-               mPhi = 175;
-           }
+            mPhi -= SENSITIVITY*deltaTime;
+            if (mPhi < -85) {
+                mPhi = -85;
+            }
         }
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            mPhi -= SENSITIVITY*deltaTime;
-            if (mPhi < 5) {
-                mPhi = 5;
+            mPhi += SENSITIVITY*deltaTime;
+            if (mPhi > 85) {
+                mPhi = 85;
             }
         }
     }
