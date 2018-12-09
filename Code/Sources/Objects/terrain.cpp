@@ -2,11 +2,18 @@
 
 using namespace Objects;
 
+const float SIZE_X = 128.0f;
+const float SIZE_Y = 25.0f;
+const float SIZE_Z = 128.0f;
+
+const float TEXTURE_REPEAT_X = 30.0f;
+const float TEXTURE_REPEAT_Z = 30.0f;
+
 std::shared_ptr<Core::Drawable> Terrain::mDrawable;
 std::shared_ptr<Core::Shader> Terrain::mShader;
 std::vector<Core::Texture> Terrain::mTextures;
 std::vector<std::string> Terrain::mHeightMaps = {
-        PROJECT_SOURCE_DIR "/Textures/HeightMaps/height_map0.jpg"
+        PROJECT_SOURCE_DIR "/Textures/HeightMaps/height_map1.png"
 };
 std::shared_ptr<btHeightfieldTerrainShape> Terrain::mTerrainShape;
 unsigned char* Terrain::mTransposedHeightData;
@@ -19,7 +26,7 @@ Terrain::Terrain() : Core::GameObject(mDrawable, mShader) {
 
     btTransform groundTransform;
     groundTransform.setIdentity();
-    groundTransform.setOrigin(btVector3(0, 0, 0));
+    groundTransform.setOrigin(btVector3(0, SIZE_Y/2, 0));
     btScalar mass(0.);
     btVector3 localInertia(0, 0, 0);
     btDefaultMotionState *myMotionState = new btDefaultMotionState(groundTransform);
@@ -39,7 +46,7 @@ void Terrain::setup() {
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     int width, height, nrChannels;
-    std::string texturePath = PROJECT_SOURCE_DIR "/Textures/Ground/asphalt.jpg";
+    std::string texturePath = PROJECT_SOURCE_DIR "/Textures/Ground/rock.jpg";
     unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
     if (data)
     {

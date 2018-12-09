@@ -15,13 +15,6 @@
 #include <vector>
 #include <memory>
 
-const float SIZE_X = 128.0f;
-const float SIZE_Y = 3.0f;
-const float SIZE_Z = 128.0f;
-
-const float TEXTURE_REPEAT_X = 30.0f;
-const float TEXTURE_REPEAT_Z = 30.0f;
-
 
 // Define Namespace
 namespace Objects

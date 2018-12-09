@@ -27,12 +27,18 @@ namespace Core
         mRenderRotation = glm::eulerAngleY(theta);
     }
 
-    float GameObject::getTheta() {
-        return mTheta;
-    }
-
     void GameObject::setOffset(glm::vec3 offset) {
         mOffset = offset;
+    }
+
+    float GameObject::getYaw() {
+        btMatrix3x3 rotationMatrix = mRigidBody->getWorldTransform().getBasis();
+        btScalar yaw =0, pitch = 0, roll = 0;
+        rotationMatrix.getEulerZYX(yaw, pitch, roll);
+#ifdef DEBUG
+        std::cout << "Pitch: " << pitch << std::endl;
+#endif
+        return pitch;
     }
 
     glm::vec3 GameObject::getWorldOffset() {

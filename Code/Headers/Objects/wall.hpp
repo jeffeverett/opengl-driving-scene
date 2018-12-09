@@ -29,7 +29,7 @@ namespace Objects
 
 
         // Public Member Functions
-        static void addSegment(Core::MeshCreator &meshCreator, float a, float b, float theta1, float theta2);
+        static void addSegment(Core::MeshCreator &meshCreator, int segNumber, float a, float b, float theta1, float theta2);
         static void setup();
     private:
 

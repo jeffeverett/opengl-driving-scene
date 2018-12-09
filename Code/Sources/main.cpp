@@ -37,10 +37,10 @@ const int FPS_ROLLING_FRAMES = 10;
 // Below used by other files
 GLfloat width = 1280;
 GLfloat height = 800;
-GLfloat trackInnerA = 25;
-GLfloat trackInnerB = 10;
-GLfloat trackOuterA = 28;
-GLfloat trackOuterB = 13;
+GLfloat trackInnerA = 58;
+GLfloat trackInnerB = 58;
+GLfloat trackOuterA = 63;
+GLfloat trackOuterB = 63;
 std::shared_ptr<Core::Shader> defaultShader;
 std::shared_ptr<Core::Shader> simpleShader;
 std::unique_ptr<Core::TextRenderer> textRenderer;
@@ -80,6 +80,9 @@ void framebufferSizeCallback(GLFWwindow* window, int newWidth, int newHeight) {
 }
 
 int main(int argc, char * argv[]) {
+    // Prep stb
+    stbi_set_flip_vertically_on_load(true);
+
     // Load GLFW
     glfwInit();
 
@@ -178,7 +181,7 @@ int main(int argc, char * argv[]) {
     scene.add(car);
     auto terrain = std::make_shared<Objects::Terrain>();
     scene.add(terrain);
-    float streetlightOffset = 1.0f;
+    float streetlightOffset = 0.5f;
     int repetitions = 12;
     for (int i = 0; i < repetitions; i++) {
         float theta = glm::radians(360.0f)*i/repetitions;

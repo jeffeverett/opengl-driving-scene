@@ -35,8 +35,8 @@ namespace Core
         void setRotation(float theta);
         void setRenderRotation(float theta);
         void setPosition(glm::vec3 position);
-        float getTheta();
         void setOffset(glm::vec3 offset);
+        float getYaw();
         glm::vec3 getWorldOffset();
         glm::vec3 getWorldForward();
         glm::vec3 getWorldDown();
@@ -54,7 +54,6 @@ namespace Core
         glm::vec3 mScale = glm::vec3(1);
         glm::vec3 mOffset = glm::vec3(0);
         glm::mat4 mRenderRotation = glm::mat4(1);
-        float mTheta = 180;
 
         static glm::mat4 btScalar2glmMat4(btScalar* matrix);
         static glm::vec3 btVector32glmVec3(btVector3 matrix);

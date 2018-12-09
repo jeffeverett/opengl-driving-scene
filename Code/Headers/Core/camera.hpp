@@ -12,13 +12,11 @@
 #include <vector>
 #include <memory>
 
-// Default camera values
-const float THETA       =  180.0f;
-const float PHI         =  15.0f;
-const float SENSITIVITY =  60.0f;
-const float RADIUS      =  10.0f;
-const float BOX_SIZE    =  25.0f;
-
+const float THETA = -90.0f;
+const float PHI = 15.0f;
+const float SENSITIVITY = 60.0f;
+const float RADIUS = 10.0f;
+const float BOX_SIZE = 25.0f;
 
 namespace Core {
     // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods

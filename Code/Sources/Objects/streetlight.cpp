@@ -11,9 +11,10 @@ std::shared_ptr<Core::Drawable> Streetlight::mDrawable;
 std::shared_ptr<Core::Shader> Streetlight::mShader;
 
 const float RADIUS = 0.04f;
-const float HEIGHT = 5.5f;
-const float TEXTURE_SCALE_S = 0.2;
-const float TEXTURE_SCALE_T = 1;
+const float HEIGHT = 3.5f;
+const float ROTATION = glm::radians(150.0f);
+const float TEXTURE_SCALE_S = 1;
+const float TEXTURE_SCALE_T = 4;
 const int NR_POINT_LIGHTS = 6;
 
 Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::GameObject(mDrawable, mShader) {
@@ -27,7 +28,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     btCylinderShape *streetlightShape = new btCylinderShape(btVector3(RADIUS, HEIGHT, RADIUS));
     btTransform streetlightTransform;
     streetlightTransform.setIdentity();
-    streetlightTransform.setOrigin(btVector3(position[0], -4, position[2]));
+    streetlightTransform.setOrigin(btVector3(position[0], -1, position[2]));
     btScalar mass(0.);
     btVector3 localInertia(0, 0, 0);
     btDefaultMotionState *myMotionState = new btDefaultMotionState(streetlightTransform);
@@ -55,7 +56,7 @@ int Streetlight::createOpenCylinder(Core::MeshCreator &meshCreator, float height
         meshCreator.mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
         meshCreator.mNormals.push_back(glm::vec3(leftBottom[0], 0, leftBottom[2]));
         meshCreator.mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
-        meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_S*height2));
+        meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height2));
         meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*(i-1)/partitions, TEXTURE_SCALE_T*height1));
         meshCreator.mTexCoords.push_back(glm::vec2(TEXTURE_SCALE_S*i/partitions, TEXTURE_SCALE_T*height1));
 
@@ -118,7 +119,7 @@ void Streetlight::createRotatedOpenCylinder(Core::MeshCreator &meshCreator, floa
     }
 }
 
-void Streetlight::createHalfSphere(Core::MeshCreator &meshCreator, glm::vec3 offset, float radius) {
+void Streetlight::createSphere(Core::MeshCreator &meshCreator, float maxPhi, glm::vec3 offset, float radius, float rotation) {
     int thetaPartitions = 10;
     int phiPartitions = 10;
 
@@ -126,8 +127,9 @@ void Streetlight::createHalfSphere(Core::MeshCreator &meshCreator, glm::vec3 off
     float phi0 = 0;
 
     // Draw lowest partition
+    glm::mat3 rot = glm::eulerAngleZ(rotation);
     for (int i = 0; i <= phiPartitions; i++) {
-        float phi = glm::radians(90.0*i/phiPartitions);
+        float phi = glm::radians(maxPhi*i/phiPartitions);
         for (int j = 0; j <= thetaPartitions; j++) {
             float theta = glm::radians(360.0*j/thetaPartitions);
             // Positions
@@ -138,26 +140,26 @@ void Streetlight::createHalfSphere(Core::MeshCreator &meshCreator, glm::vec3 off
 
 
             // Create first triangle
-            meshCreator.mPositions.push_back(offset+leftTop);
-            meshCreator.mPositions.push_back(offset+leftBottom);
-            meshCreator.mPositions.push_back(offset+rightBottom);
+            meshCreator.mPositions.push_back(offset+rot*leftTop);
+            meshCreator.mPositions.push_back(offset+rot*leftBottom);
+            meshCreator.mPositions.push_back(offset+rot*rightBottom);
             meshCreator.mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
             meshCreator.mNormals.push_back(glm::vec3(leftBottom[0], 0, leftBottom[2]));
             meshCreator.mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), (90+phi)/glm::radians(180.0)));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), (90+phi0)/glm::radians(180.0)));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), (90+phi0)/glm::radians(180.0)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi/maxPhi));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi0/maxPhi));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi0/maxPhi));
 
             // Create second triangle
-            meshCreator.mPositions.push_back(offset+leftTop);
-            meshCreator.mPositions.push_back(offset+rightBottom);
-            meshCreator.mPositions.push_back(offset+rightTop);
+            meshCreator.mPositions.push_back(offset+rot*leftTop);
+            meshCreator.mPositions.push_back(offset+rot*rightBottom);
+            meshCreator.mPositions.push_back(offset+rot*rightTop);
             meshCreator.mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
             meshCreator.mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
             meshCreator.mNormals.push_back(glm::vec3(rightTop[0], 0, rightTop[2]));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), (90+phi)/glm::radians(180.0)));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), (90+phi0)/glm::radians(180.0)));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), (90+phi)/glm::radians(180.0)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi/maxPhi));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi0/maxPhi));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi/maxPhi));
 
             theta0 = theta;
         }
@@ -168,14 +170,15 @@ void Streetlight::createHalfSphere(Core::MeshCreator &meshCreator, glm::vec3 off
 void Streetlight::updateLighting(int lightIdx) {
     // Point light
     glm::vec3 pointlightPosition = getPosition()+getWorldOffset(mPointlightOffset);
-    glm::vec3 ponitlightDirection = getWorldDown();
+    glm::mat3 rot = glm::eulerAngleZ(glm::radians(180.0f)-ROTATION);
+    glm::vec3 pointlightDirection = getWorldOffset(rot*glm::vec3(0,-1,0));
 
     std::string lightNumber = std::to_string(lightIdx);
     defaultShader->use();
     defaultShader->setVec3("pointLights[" + lightNumber + "].position", pointlightPosition);
-    defaultShader->setVec3("spotLights[" + lightNumber + "].direction", ponitlightDirection);
+    defaultShader->setVec3("pointLights[" + lightNumber + "].direction", pointlightDirection);
 
-    debugDrawer->drawLine(glmVec32btVector3(pointlightPosition), glmVec32btVector3(pointlightPosition+glm::vec3(1)*ponitlightDirection), btVector3(1.0,0,0));
+    debugDrawer->drawLine(glmVec32btVector3(pointlightPosition), glmVec32btVector3(pointlightPosition+glm::vec3(1)*pointlightDirection), btVector3(1.0,0,0));
 }
 
 void Streetlight::setup() {
@@ -191,50 +194,59 @@ void Streetlight::setup() {
         defaultShader->setFloat("pointLights[" + number + "].quadratic", 0.032f);
     }
 
-    // Create mesh
-    Core::MeshCreator meshCreator;
+    // Create post mesh
+    Core::MeshCreator postMeshCreator;
 
 
     // Create post
     int partitions = 10;
     for (int i = 1; i <= partitions; i++) {
-        createOpenCylinder(meshCreator, (i-1)*HEIGHT/partitions, i*HEIGHT/partitions, RADIUS);
+        createOpenCylinder(postMeshCreator, (i-1)*HEIGHT/partitions, i*HEIGHT/partitions, RADIUS);
     }
 
     // Create curved head, following parabolic curve
-    // y = -2x^2+C, where C is the constant s.t. y(xMin) = HEIGHT
+    // y = -Ax^2+C, where C is the constant s.t. y(xMin) = HEIGHT
     partitions = 15;
+    float A = 0.25;
     float xMin = -0.25;
-    float xMax = 0.45;
-    float C = HEIGHT + 2*xMin*xMin;
+    float xMax = 0.85;
+    float C = HEIGHT + A*xMin*xMin;
     float x0 = xMin;
-    float y0 = -2*xMin*xMin+C;
+    float y0 = -A*xMin*xMin+C;
     for (int i = 0; i <= partitions; i++) {
         float x = xMin+i*(xMax-xMin)/partitions;
-        float y = -2*x*x+C;
+        float y = -A*x*x+C;
 
 #ifdef DEBUG
         std::cout << "x: " << x << ", y: " << y << std::endl;
 #endif
 
-        createRotatedOpenCylinder(meshCreator, y0, y, RADIUS, x0-xMin, x-xMin, glm::radians(180.0f)*(i-1)/partitions, glm::radians(180.0f)*i/partitions);
+        createRotatedOpenCylinder(postMeshCreator, y0, y, RADIUS, x0-xMin, x-xMin, ROTATION*(i-1)/partitions, ROTATION*i/partitions);
 
         x0 = x;
         y0 = y;
     }
 
     // Create bulb guard shape
-    createHalfSphere(meshCreator, glm::vec3(x0-xMin, y0, 0), 0.2);
+    createSphere(postMeshCreator, 90.0f, glm::vec3(x0-xMin, y0, 0), 0.2, glm::radians(180.0f)-ROTATION);
+
+    postMeshCreator.addTexture(PROJECT_SOURCE_DIR "/Textures/Streetlight/metal.jpg");
 
 
-    meshCreator.addTexture(PROJECT_SOURCE_DIR "/Textures/Streetlight/metal.jpg");
+    // Create bulb
+    Core::MeshCreator bulbMeshCreator;
+    createSphere(bulbMeshCreator, 180.0f, glm::vec3(x0-xMin, y0, 0), 0.18, 0);
+
+
+    bulbMeshCreator.addTexture(PROJECT_SOURCE_DIR "/Textures/Streetlight/glass.jpg");
 
 
     // Construct model
-    auto mesh = meshCreator.create();
-
+    auto postMesh = postMeshCreator.create();
+    auto bulbMesh = bulbMeshCreator.create();
     std::shared_ptr<Core::Model> model = std::make_shared<Core::Model>();
-    model->meshes.push_back(*mesh);
+    model->meshes.push_back(*postMesh);
+    model->meshes.push_back(*bulbMesh);
 
     mDrawable = model;
     mShader = defaultShader;

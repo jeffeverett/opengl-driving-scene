@@ -12,8 +12,10 @@ std::shared_ptr<Core::Drawable> Car::mDrawable;
 std::shared_ptr<Core::Shader> Car::mShader;
 
 
+const glm::vec3 START_POS(-trackInnerA - (trackOuterA-trackInnerA)/2, 3, 0);
+
 const double SCALE_FACTOR = 1.0/400.0;
-const double ACCELERATION = 300.0;
+const double ENGINE_FORCE = 300.0;
 const double WHEEL_TURN_RATE = 2.0;
 
 const float MASS = 800.0f;
@@ -50,7 +52,7 @@ Car::Car() : Core::GameObject(mDrawable, mShader) {
 
     btTransform carTransform;
     carTransform.setIdentity();
-    carTransform.setOrigin(btVector3(-trackInnerA - (trackOuterA-trackInnerA)/2, 0.3, 0));
+    carTransform.setOrigin(glmVec32btVector3(START_POS));
     btScalar mass(MASS);
     btVector3 localInertia(0, 0, 0);
     compoundShape->calculateLocalInertia(mass, localInertia);
@@ -239,22 +241,22 @@ void Car::updateLighting() {
     defaultShader->setVec3("spotLights[2].direction", taillightDirection);
     defaultShader->setVec3("spotLights[3].direction", taillightDirection);
 
-    debugDrawer->drawLine(glmVec32btVector3(taillightPosition1), glmVec32btVector3(taillightPosition1+glm::vec3(3)*taillightDirection), btVector3(1.0,0,0));
-    debugDrawer->drawLine(glmVec32btVector3(taillightPosition2), glmVec32btVector3(taillightPosition2+glm::vec3(3)*taillightDirection), btVector3(1.0,0,0));
+    debugDrawer->drawLine(glmVec32btVector3(taillightPosition1), glmVec32btVector3(taillightPosition1+glm::vec3(1)*taillightDirection), btVector3(1.0,0,0));
+    debugDrawer->drawLine(glmVec32btVector3(taillightPosition2), glmVec32btVector3(taillightPosition2+glm::vec3(1)*taillightDirection), btVector3(1.0,0,0));
 }
 
 void Car::processInput(GLFWwindow *window, double deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        setPosition(glm::vec3(-trackInnerA - (trackOuterA-trackInnerA)/2, 1, 0));
+        setPosition(START_POS);
         setRotation(180);
         mRigidBody->setLinearVelocity(btVector3(0,0,0));
         mRigidBody->setAngularVelocity(btVector3(0,0,0));
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        applyEngineForce(ACCELERATION);
+        applyEngineForce(ENGINE_FORCE);
     }
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        applyEngineForce(-ACCELERATION);
+        applyEngineForce(-ENGINE_FORCE);
     }
     else {
         applyEngineForce(0);
@@ -275,8 +277,4 @@ void Car::perFrame(double deltaTime) {
     glm::vec3 position = getPosition();
     cpOSS << std::fixed << std::setprecision(5) << "Car Pos: (" << position[0] << ", " << position[1] << ", " << position[2] << ")";
     textRenderer->renderText(cpOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
-
-    std::ostringstream ctOSS;
-    ctOSS << std::fixed << std::setprecision(5) << "Car Theta: " << fmod(mTheta, 360);
-    textRenderer->renderText(ctOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 }

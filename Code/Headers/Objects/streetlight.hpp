@@ -40,7 +40,7 @@ namespace Objects
         // Private Member functions
         static int createOpenCylinder(Core::MeshCreator &meshCreator, float height1, float height2, float radius);
         static void createRotatedOpenCylinder(Core::MeshCreator &meshCreator, float height1, float height2, float radius, float x1, float x2, float angle1, float angle2);
-        static void createHalfSphere(Core::MeshCreator &meshCreator, glm::vec3 offset, float radius);
+        static void createSphere(Core::MeshCreator &meshCreator, float maxPhi, glm::vec3 offset, float radius, float rotation);
 
         // Private members
         static glm::vec3 mPointlightOffset;

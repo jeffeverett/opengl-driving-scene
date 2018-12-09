@@ -11,9 +11,9 @@
 #include <sstream>
 #include <iomanip>
 
+
 namespace Core {
 
-    // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 Camera::getViewMatrix() {
         return glm::lookAt(
             mPosition,
@@ -22,7 +22,6 @@ namespace Core {
         );
     }
 
-    // Returns the projection matrix
     glm::mat4 Camera::getProjectionMatrix() {
         if (mProjectionMode == ORTHO) {
             return glm::ortho(-BOX_SIZE, BOX_SIZE, -BOX_SIZE, BOX_SIZE, -BOX_SIZE, BOX_SIZE);
@@ -32,7 +31,6 @@ namespace Core {
         }
     }
 
-    // Set projection mode
     void Camera::cycleProjectionMode() {
         if (mProjectionMode == ORTHO) {
             mProjectionMode = PERSPECTIVE;
@@ -57,7 +55,10 @@ namespace Core {
         }
         textRenderer->renderText(pmOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
 
-        double thetaRadians = glm::radians(mTheta-mFollow->getTheta());
+        glm::vec3 followForward = mFollow->getWorldForward();
+        glm::vec3 projectedForward = glm::normalize(glm::vec3(followForward[0], 0, followForward[2]));
+        double followTheta = glm::acos(projectedForward[0]);
+        double thetaRadians = glm::radians(mTheta);
         double phiRadians = glm::radians(mPhi);
         glm::vec3 offset(
             -mRadius*glm::sin(thetaRadians)*glm::cos(phiRadians),
