@@ -11,7 +11,7 @@ std::shared_ptr<Core::Drawable> Streetlight::mDrawable;
 std::shared_ptr<Core::Shader> Streetlight::mShader;
 
 const float RADIUS = 0.04f;
-const float HEIGHT = 3.5f;
+const float HEIGHT = 2.5f;
 const float ROTATION = glm::radians(150.0f);
 const float TEXTURE_SCALE_S = 1;
 const float TEXTURE_SCALE_T = 4;
@@ -28,7 +28,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     btCylinderShape *streetlightShape = new btCylinderShape(btVector3(RADIUS, HEIGHT, RADIUS));
     btTransform streetlightTransform;
     streetlightTransform.setIdentity();
-    streetlightTransform.setOrigin(btVector3(position[0], -1, position[2]));
+    streetlightTransform.setOrigin(btVector3(position[0], 0, position[2]));
     btScalar mass(0.);
     btVector3 localInertia(0, 0, 0);
     btDefaultMotionState *myMotionState = new btDefaultMotionState(streetlightTransform);
@@ -133,33 +133,33 @@ void Streetlight::createSphere(Core::MeshCreator &meshCreator, float maxPhi, glm
         for (int j = 0; j <= thetaPartitions; j++) {
             float theta = glm::radians(360.0*j/thetaPartitions);
             // Positions
-            glm::vec3 leftTop = glm::vec3(radius*glm::sin(theta0)*glm::sin(phi), radius*glm::cos(phi), radius*glm::cos(theta0)*glm::sin(phi));
-            glm::vec3 rightTop = glm::vec3(radius*glm::sin(theta)*glm::sin(phi), radius*glm::cos(phi), radius*glm::cos(theta)*glm::sin(phi));
-            glm::vec3 leftBottom = glm::vec3(radius*glm::sin(theta0)*glm::sin(phi0), radius*glm::cos(phi0), radius*glm::cos(theta0)*glm::sin(phi0));
-            glm::vec3 rightBottom = glm::vec3(radius*glm::sin(theta)*glm::sin(phi0), radius*glm::cos(phi0), radius*glm::cos(theta)*glm::sin(phi0));
+            glm::vec3 leftTop = glm::vec3(radius*glm::sin(theta0)*glm::sin(phi0), radius*glm::cos(phi0), radius*glm::cos(theta0)*glm::sin(phi0));
+            glm::vec3 rightTop = glm::vec3(radius*glm::sin(theta)*glm::sin(phi0), radius*glm::cos(phi0), radius*glm::cos(theta)*glm::sin(phi0));
+            glm::vec3 leftBottom = glm::vec3(radius*glm::sin(theta0)*glm::sin(phi), radius*glm::cos(phi), radius*glm::cos(theta0)*glm::sin(phi));
+            glm::vec3 rightBottom = glm::vec3(radius*glm::sin(theta)*glm::sin(phi), radius*glm::cos(phi), radius*glm::cos(theta)*glm::sin(phi));
 
 
             // Create first triangle
             meshCreator.mPositions.push_back(offset+rot*leftTop);
             meshCreator.mPositions.push_back(offset+rot*leftBottom);
             meshCreator.mPositions.push_back(offset+rot*rightBottom);
-            meshCreator.mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
-            meshCreator.mNormals.push_back(glm::vec3(leftBottom[0], 0, leftBottom[2]));
-            meshCreator.mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi/maxPhi));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi0/maxPhi));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi0/maxPhi));
+            meshCreator.mNormals.push_back(leftTop);
+            meshCreator.mNormals.push_back(leftBottom);
+            meshCreator.mNormals.push_back(rightBottom);
+            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi0/glm::radians(maxPhi)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi/glm::radians(maxPhi)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi/glm::radians(maxPhi)));
 
             // Create second triangle
             meshCreator.mPositions.push_back(offset+rot*leftTop);
             meshCreator.mPositions.push_back(offset+rot*rightBottom);
             meshCreator.mPositions.push_back(offset+rot*rightTop);
-            meshCreator.mNormals.push_back(glm::vec3(leftTop[0], 0, leftTop[2]));
-            meshCreator.mNormals.push_back(glm::vec3(rightBottom[0], 0, rightBottom[2]));
-            meshCreator.mNormals.push_back(glm::vec3(rightTop[0], 0, rightTop[2]));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi/maxPhi));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi0/maxPhi));
-            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi/maxPhi));
+            meshCreator.mNormals.push_back(leftTop);
+            meshCreator.mNormals.push_back(rightBottom);
+            meshCreator.mNormals.push_back(rightTop);
+            meshCreator.mTexCoords.push_back(glm::vec2(theta0/glm::radians(360.0), phi0/glm::radians(maxPhi)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi/glm::radians(maxPhi)));
+            meshCreator.mTexCoords.push_back(glm::vec2(theta/glm::radians(360.0), phi0/glm::radians(maxPhi)));
 
             theta0 = theta;
         }

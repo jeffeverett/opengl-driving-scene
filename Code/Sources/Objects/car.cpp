@@ -16,7 +16,7 @@ const glm::vec3 START_POS(-trackInnerA - (trackOuterA-trackInnerA)/2, 3, 0);
 
 const double SCALE_FACTOR = 1.0/400.0;
 const double ENGINE_FORCE = 300.0;
-const double WHEEL_TURN_RATE = 2.0;
+const double WHEEL_TURN_RATE = 1.5;
 
 const float MASS = 800.0f;
 
@@ -27,12 +27,12 @@ const float CHASSIS_HEIGHT = 0.1f;
 const float CONNECTION_HEIGHT = 0.03f;
 
 const float WHEEL_WIDTH = 0.03f;
-const float WHEEL_RADIUS = 0.06f;
+const float WHEEL_RADIUS = 0.08f;
 
 const float STEERING_CLAMP = 0.3f;
 
 const float	WHEEL_FRICTION = 1000.0f;
-const float SUSPENSION_STIFFNESS = 20.f;
+const float SUSPENSION_STIFFNESS = 10.f;
 const float SUSPENSION_DAMPING = 2.3f;
 const float SUSPENSION_COMPRESSION = 4.4f;
 const float SUSPENSION_REST_LENGTH = 0.4f;
