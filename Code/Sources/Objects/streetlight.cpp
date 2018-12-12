@@ -186,8 +186,8 @@ void Streetlight::setup() {
     // Setup lighting
     for (int i = 0; i < NR_POINT_LIGHTS; i++) {
         std::string number = std::to_string(i);
-        defaultShader->setVec3("pointLights[" + number + "].ambient", glm::vec3(0.3,0.3,0.3));
-        defaultShader->setVec3("pointLights[" + number + "].diffuse", glm::vec3(0.75,0.75,0.75));
+        defaultShader->setVec3("pointLights[" + number + "].ambient", glm::vec3(0.25,0.25,0.25));
+        defaultShader->setVec3("pointLights[" + number + "].diffuse", glm::vec3(0.60,0.60,0.60));
         defaultShader->setVec3("pointLights[" + number + "].specular", glm::vec3(1,1,1));
         defaultShader->setFloat("pointLights[" + number + "].constant", 1.0f);
         defaultShader->setFloat("pointLights[" + number + "].linear", 0.09f);

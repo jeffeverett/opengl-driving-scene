@@ -49,7 +49,7 @@ endif(BULLET_FOUND)
 # Find assimp
 find_package(ASSIMP REQUIRED)
 include_directories(${ASSIMP_INCLUDE_DIRS})
-link_directories(${ASSIMP_LIBRARY_DIR})
+link_directories(${assimp_LIBRARY_DIRS})
 
 if(ASSIMP_FOUND)
     message("assimp found")

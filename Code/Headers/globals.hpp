@@ -23,5 +23,6 @@ extern GLfloat trackOuterB;
 extern std::shared_ptr<Core::Shader> defaultShader;
 extern std::shared_ptr<Core::Shader> simpleShader;
 extern std::unique_ptr<Core::TextRenderer> textRenderer;
+extern glm::vec3 defaultTextColor;
 extern std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 extern std::unique_ptr<Physics::DebugDrawer> debugDrawer;

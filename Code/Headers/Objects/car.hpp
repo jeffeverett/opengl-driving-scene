@@ -33,6 +33,7 @@ namespace Objects
         static void setup();
         virtual void draw() override;
         void applyEngineForce(float force);
+        void setBrake(float force);
         void setSteering(float steering);
         void updateLighting();
         void processInput(GLFWwindow *window, double deltaTime) override;

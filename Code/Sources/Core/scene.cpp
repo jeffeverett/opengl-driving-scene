@@ -33,10 +33,12 @@ namespace Core
         if (val) {
             mFogEnabled = true;
             defaultShader->setFloat("fogDensity", 0.05f);
+            defaultTextColor = glm::vec3(0,0,0);
         }
         else {
             mFogEnabled = false;
             defaultShader->setFloat("fogDensity", 0.0f);
+            defaultTextColor = glm::vec3(1,1,1);
         }
     }
 
@@ -72,18 +74,6 @@ namespace Core
         if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
             setFog(false);
             setNightMode(true);
-        }
-
-        // Day w/fog
-        if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
-            setFog(true);
-            setNightMode(false);
-        }
-
-        // Day w/o fog
-        if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
-            setFog(false);
-            setNightMode(false);
         }
 
         // Camera movement

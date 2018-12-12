@@ -43,7 +43,7 @@ namespace Core {
     void Camera::perFrame() {
         std::ostringstream ypOSS;
         ypOSS << std::fixed << std::setprecision(5) << "Theta: " << fmod(mTheta, 360) << ", Phi: " << fmod(mPhi, 360) << ", Radius: " << mRadius;
-        textRenderer->renderText(ypOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
+        textRenderer->renderText(ypOSS.str(), 1, defaultTextColor);
 
         std::ostringstream pmOSS;
         pmOSS << std::fixed << std::setprecision(5) << "Projection Mode: ";
@@ -53,7 +53,7 @@ namespace Core {
         else {
             pmOSS << "PERSPECTIVE";
         }
-        textRenderer->renderText(pmOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
+        textRenderer->renderText(pmOSS.str(), 1, defaultTextColor);
 
         glm::vec3 followForward = mFollow->getWorldForward();
         glm::vec3 projectedForward = glm::normalize(glm::vec3(followForward[0], 0, followForward[2]));
@@ -61,7 +61,6 @@ namespace Core {
         if (projectedForward[0] < 0) {
             followTheta = -followTheta;
         }
-        std::cout << "FOLLOW THETA: " << glm::degrees(followTheta) << std::endl;
         double thetaRadians = glm::radians(mTheta+180.0f)+followTheta;
         double phiRadians = glm::radians(mPhi);
         glm::vec3 offset(
@@ -83,7 +82,7 @@ namespace Core {
     }
 
     void Camera::processInput(GLFWwindow *window, double deltaTime) {
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
             mTheta = THETA;
             mPhi = PHI;
             mRadius = RADIUS;

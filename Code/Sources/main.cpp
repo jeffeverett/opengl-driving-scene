@@ -44,6 +44,7 @@ GLfloat trackOuterB = 63;
 std::shared_ptr<Core::Shader> defaultShader;
 std::shared_ptr<Core::Shader> simpleShader;
 std::unique_ptr<Core::TextRenderer> textRenderer;
+glm::vec3 defaultTextColor;
 std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 std::unique_ptr<Physics::DebugDrawer> debugDrawer;
 
@@ -120,6 +121,7 @@ int main(int argc, char * argv[]) {
 
     // Initialize remaining globals
     textRenderer = std::make_unique<Core::TextRenderer>(PROJECT_SOURCE_DIR "/Fonts/arial.ttf");
+    defaultTextColor = glm::vec3(0,0,0);
 
     defaultShader = std::make_shared<Core::Shader>(
         PROJECT_SOURCE_DIR "/Shaders/VertexShaders/default.vert",
@@ -160,7 +162,7 @@ int main(int argc, char * argv[]) {
     // Create scene
     scene.setCamera(camera);
     scene.setCubeMap(cubeMap);
-    scene.setFog(true);
+    scene.setFog(false);
     scene.setNightMode(true);
 
     // Set up objects
@@ -228,7 +230,7 @@ int main(int argc, char * argv[]) {
         }
         else {
             float deltas = 0;
-            for (int i = 0; i <= FPS_ROLLING_FRAMES; i++) {
+            for (int i = 0; i < FPS_ROLLING_FRAMES; i++) {
                 deltas += latestFrameDeltas[i];
             }
             rollingFPS = FPS_ROLLING_FRAMES/deltas;
@@ -255,7 +257,7 @@ int main(int argc, char * argv[]) {
         // Render FPS as string
         std::ostringstream fpsOSS;
         fpsOSS << std::fixed << std::setprecision(5) << "FPS: " << rollingFPS;
-        textRenderer->renderText(fpsOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
+        textRenderer->renderText(fpsOSS.str(), 1, defaultTextColor);
 
         // Process input
         scene.processInput(window);

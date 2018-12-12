@@ -18,6 +18,7 @@ const float START_STEERING = 0.0f;
 
 const float SCALE_FACTOR = 1.0f/400.0f;
 const float ENGINE_FORCE = 500.0f;
+const float BRAKE_FORCE = 500.0f;
 const float WHEEL_TURN_RATE = 0.2f;
 
 const float MASS = 800.0f;
@@ -66,9 +67,6 @@ Car::Car() : Core::GameObject(mDrawable, mShader) {
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
     dynamicsWorld->addRigidBody(&(*mRigidBody));
 
-    btCylinderShapeX *wheelShape = new btCylinderShapeX(btVector3(WHEEL_WIDTH, WHEEL_RADIUS, WHEEL_RADIUS));
-
-
     btVehicleRaycaster *vehicleRayCaster = new btDefaultVehicleRaycaster(&(*dynamicsWorld));
     btRaycastVehicle::btVehicleTuning tuning;
     mVehicle = new btRaycastVehicle(tuning, &(*mRigidBody), vehicleRayCaster);
@@ -78,10 +76,10 @@ Car::Car() : Core::GameObject(mDrawable, mShader) {
     btVector3 wheelDirection(0,-1,0);
     btVector3 wheelAxleCS(-1,0,0);
     std::vector<btVector3> connectionPoints;
-    connectionPoints.push_back(btVector3(CHASSIS_WIDTH-WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, CHASSIS_LENGTH-WHEEL_OFFSET_FRONT));
-    connectionPoints.push_back(btVector3(-CHASSIS_WIDTH+WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, CHASSIS_LENGTH-WHEEL_OFFSET_FRONT));
-    connectionPoints.push_back(btVector3(CHASSIS_WIDTH-WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, -CHASSIS_LENGTH+WHEEL_OFFSET_BACK));
-    connectionPoints.push_back(btVector3(-CHASSIS_WIDTH+WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, -CHASSIS_LENGTH+WHEEL_OFFSET_BACK));
+    connectionPoints.push_back(btVector3(-CHASSIS_WIDTH-WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, CHASSIS_LENGTH-WHEEL_OFFSET_FRONT));
+    connectionPoints.push_back(btVector3(CHASSIS_WIDTH+WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, CHASSIS_LENGTH-WHEEL_OFFSET_FRONT));
+    connectionPoints.push_back(btVector3(-CHASSIS_WIDTH-WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, -CHASSIS_LENGTH+WHEEL_OFFSET_BACK));
+    connectionPoints.push_back(btVector3(CHASSIS_WIDTH+WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, -CHASSIS_LENGTH+WHEEL_OFFSET_BACK));
 
 
     for (auto &connectionPoint : connectionPoints) {
@@ -110,7 +108,7 @@ Car::Car() : Core::GameObject(mDrawable, mShader) {
     mVehicle->setCoordinateSystem(0, 1, 2);
 }
 
-Car::~Car() { }
+Car::~Car() {}
 
 void Car::setup() {
     // Create wheel
@@ -131,8 +129,8 @@ void Car::setup() {
     // Front spotlights
     for (int i = 0; i <= 1; i++) {
         std::string number = std::to_string(i);
-        defaultShader->setVec3("spotLights[" + number + "].ambient", glm::vec3(0.13,0.13,0.13));
-        defaultShader->setVec3("spotLights[" + number + "].diffuse", glm::vec3(0.55,0.55,0.55));
+        defaultShader->setVec3("spotLights[" + number + "].ambient", glm::vec3(0.2,0.2,0.2));
+        defaultShader->setVec3("spotLights[" + number + "].diffuse", glm::vec3(0.75,0.75,0.75));
         defaultShader->setVec3("spotLights[" + number + "].specular", glm::vec3(1,1,1));
         defaultShader->setFloat("spotLights[" + number + "].innerCutoff", glm::cos(glm::radians(12.5f)));
         defaultShader->setFloat("spotLights[" + number + "].outerCutoff", glm::cos(glm::radians(17.5f)));
@@ -228,6 +226,14 @@ void Car::applyEngineForce(float force) {
     }
 }
 
+void Car::setBrake(float force) {
+    for (int i=0; i < mVehicle->getNumWheels(); i++) {
+        btWheelInfo &wheel = mVehicle->getWheelInfo(i);
+        // 4WD
+        mVehicle->setBrake(force, i);
+    }
+}
+
 void Car::setSteering(float steering) {
     mSteering = steering;
     if (mSteering > STEERING_CLAMP) {
@@ -276,12 +282,20 @@ void Car::updateLighting() {
 }
 
 void Car::processInput(GLFWwindow *window, double deltaTime) {
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         setPosition(START_POS);
         setRotation(START_ROTATION);
         setSteering(START_STEERING);
         mRigidBody->setLinearVelocity(btVector3(0,0,0));
         mRigidBody->setAngularVelocity(btVector3(0,0,0));
+    }
+
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        setBrake(BRAKE_FORCE);
+    }
+    else {
+        setBrake(0);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         applyEngineForce(ENGINE_FORCE);
@@ -311,5 +325,5 @@ void Car::perFrame(double deltaTime) {
     std::ostringstream cpOSS;
     glm::vec3 position = getPosition();
     cpOSS << std::fixed << std::setprecision(5) << "Car Pos: (" << position[0] << ", " << position[1] << ", " << position[2] << ")";
-    textRenderer->renderText(cpOSS.str(), 1, glm::vec3(0.5,0.5,0.5));
+    textRenderer->renderText(cpOSS.str(), 1, defaultTextColor);
 }

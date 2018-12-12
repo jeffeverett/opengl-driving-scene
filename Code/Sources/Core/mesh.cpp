@@ -139,11 +139,9 @@ void Mesh::center() {
         totals += vertex.Position;
     }
     glm::vec3 center = totals/glm::vec3(vertices.size());
-    std::cout << "center is " << center[0] << ", " << center[1] << ", " << center[2] << std::endl;
 
     for (auto &vertex : vertices) {
         vertex.Position -= center;
-        std::cout << "new position is " << vertex.Position[0] << ", " << vertex.Position[1] << ", " << vertex.Position[2] << std::endl;
     }
 
     setupMesh();
