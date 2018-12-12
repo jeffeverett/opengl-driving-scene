@@ -17,7 +17,7 @@ const float START_ROTATION = 180.0f;
 const float START_STEERING = 0.0f;
 
 const float SCALE_FACTOR = 1.0f/400.0f;
-const float ENGINE_FORCE = 500.0f;
+const float ENGINE_FORCE = 600.0f;
 const float BRAKE_FORCE = 100.0f;
 const float WHEEL_TURN_RATE = 0.2f;
 

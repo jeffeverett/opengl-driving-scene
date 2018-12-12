@@ -18,6 +18,8 @@ const float SENSITIVITY = 60.0f;
 const float RADIUS = 9.0f;
 const float BOX_SIZE = 25.0f;
 
+const int FOLLOW_FRAMES = 25;
+
 namespace Core {
     // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
     enum CameraMovement {
@@ -43,7 +45,9 @@ namespace Core {
             mRadius(radius),
             mTheta(theta),
             mPhi(phi),
-            mRelativeAngle(true) {}
+            mRelativeAngle(true),
+            mFollowIdx(0),
+            mFollowFramesFull(false) {}
 
         glm::mat4 getViewMatrix();
         glm::mat4 getProjectionMatrix();
@@ -62,6 +66,10 @@ namespace Core {
 
         // Position is calculated once per frame and then stored here
         glm::vec3 mPosition;
+
+        int mFollowIdx;
+        bool mFollowFramesFull;
+        glm::vec3 mFollowFrames[FOLLOW_FRAMES];
 
         std::shared_ptr<Core::GameObject> mFollow;
         bool mRelativeAngle;

@@ -75,7 +75,29 @@ namespace Core {
             mRadius*glm::cos(phiRadians),
             mRadius*glm::cos(thetaRadians)*sin(phiRadians)
         );
-        mPosition = mFollow->getPosition() + offset;
+
+        mFollowFrames[mFollowIdx] = mFollow->getPosition();
+        mFollowIdx = (mFollowIdx + 1) % FOLLOW_FRAMES;
+        if (mFollowIdx == 0) {
+            mFollowFramesFull = true;
+        }
+
+        glm::vec3 followSum(0);
+        glm::vec3 followAvg;
+        if (mFollowFramesFull) {
+            for (int i = 0; i < FOLLOW_FRAMES; i++) {
+                followSum += mFollowFrames[i];
+            }
+            followAvg = followSum*glm::vec3(1.0f/FOLLOW_FRAMES);
+        }
+        else {
+            for (int i = 0; i < mFollowIdx; i++) {
+                followSum += mFollowFrames[i];
+            }
+            followAvg = followSum*glm::vec3(1.0f/mFollowIdx);
+        }
+
+        mPosition = followAvg + offset;
         defaultShader->use();
         defaultShader->setVec3("viewPos", mPosition);
 

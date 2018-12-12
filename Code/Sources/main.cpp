@@ -133,7 +133,6 @@ int main(int argc, char * argv[]) {
 
     // Create Context and Load OpenGL Functions
     glfwMakeContextCurrent(window);
-    glfwSwapInterval( 0 );
     gladLoadGL();
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
