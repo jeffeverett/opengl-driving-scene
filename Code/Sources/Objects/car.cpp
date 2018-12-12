@@ -26,11 +26,11 @@ const float MASS = 800.0f;
 const float CHASSIS_WIDTH = 0.25f;
 const float CHASSIS_LENGTH = 0.55f;
 const float CHASSIS_HEIGHT = 0.09f;
-const float WHEEL_OFFSET_FRONT = 0.22f;
+const float WHEEL_OFFSET_FRONT = 0.23f;
 const float WHEEL_OFFSET_BACK = 0.18f;
 const float WHEEL_OFFSET_SIDE = 0.02f;
 
-const float CONNECTION_HEIGHT = 0.13f;
+const float CONNECTION_HEIGHT = 0.16f;
 
 const float WHEEL_WIDTH = 0.03f;
 const float WHEEL_RADIUS = 0.095f;
@@ -113,11 +113,6 @@ Car::~Car() {
 }
 
 void Car::setup() {
-    // Create wheel
-    /*Core::MeshCreator wheelMeshCreator;
-    createWheel(wheelMeshCreator);
-    mWheelMesh = wheelMeshCreator.create();*/
-
     mModel = std::make_shared<Core::Model>(PROJECT_SOURCE_DIR "/Models/lambo/Lamborghini_Aventador.fbx");
     mDrawable = mModel;
     mShader = defaultShader;

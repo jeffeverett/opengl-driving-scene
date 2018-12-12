@@ -1,103 +1,136 @@
 Jeff Everett
 CSCI 4229
 Undergraduate
-11/29/2018
+12/12/2018
 
 Final Project
 
 Build Instructions:
+This project requires the following libraries:
+  * libbullet-dev
+  * libassimp-dev
+  * libfreetype6-dev
+    libglfw3-dev
+    libglm-dev
+Starred libraries correspond to those not listed on prinmath.com.
+For ease of use, you may copy the following line to install them:
+  sudo apt-get install libbullet-dev libassimp-dev libfreetype6-dev
+
 Simply running "make" should work. However, in case it doesn't,
-it should be noted that (1) the project is based off of the CMake meta-build
-system and (2) the project uses git submodules for the vendor libraries;
-these are not included in the zip file in order to make it small enough
-for the Moodle submission.
+it should be noted that the project is based off of the CMake meta-build
+system.
 
 If there are issues with the Makefile, please try running the following
 commands manually:
-- git submodule update --init --recursive
 - mkdir Build
 - cd Build
 - cmake ..
 - make
 - ./final
 
-Unfortunately, due to the setup's need to download and compile all of the vendor
-submodules, this process does take a long time.
 
 Keys:
 - ESC: Exit program
 - WASD: Car movement
-- SPACE: Reset scene
+- SPACE: Brake
+- R: Reset car and camera extrinsics and active forces
 - Arrow Keys: Rotate camera around car
-- Q/E: Increase/decrease radius of offset
-- F: enable fog (removes skybox)
-- G: remove fog (adds back skybox)
+- Q/E: Increase/decrease distance between camera and car
+- F: toggle fog (also toggles skybox and changes color of text)
+- T: toggle debug draw (Bullet physics engine debug lines, as well as custom ones for light positions/directions)
+- G: toggles relative rotational follow of camera and car
 - P: Change camera projection mode (although it no longer really makes sense
      to use anything besides perspective, which is the default)
 
 Acknowledgments:
 This program began by forking the Glitter project by GitHub user Polytonic.
 This repo is here: https://github.com/Polytonic/Glitter.
-This essentially provides the underlying CMake setup. It copies vendor libraries
-to subdirectories and appropriately incorporates those libraries into the CMake project.
-None of the non-vendor C++ code is used in the current version of this project.
+This essentially provided the underlying CMake setup. It copies vendor libraries
+to subdirectories and built them as static libraries to be linked with the main program.
+However, I have shifted from custom-built static libraries to using shared libraries found with
+CMake's FindPackage tool; as such, most of the functionality provided by this project has
+been replaced. Nonetheless, there are undoubtedly some remnants of the Glitter project within
+the CMakeLists.txt file.
 
-The other major code contributor is the website https://learnopengl.com/.
+The most significant code contributor besides myself is the website https://learnopengl.com/.
 This site provides a number of tutorials on modern OpenGL and provides utilities
 for tasks such as asset import and shader program compilation/linkage.
 The following is a list of files influenced by this site, as well as the modifications
 that I made to them:
-- Code/Headers/Utils/shader.hpp: Only very minor changes made.
-- Code/Headers/Utils/model.hpp & Code/Sources/Utils/model.cpp: Only very minor
-  changes made.
-- Code/Headers/Utils/mesh.hpp: Added code for creation of meshes based on
-  manually-specified lists of vertex positions, indices, texture coordinates, and
-  texture identifiers. This was to enable manually-created objects.
-- Cubemap files: Shaders and code for cubemap influenced by site. I wrapped
-  given code into a class that calls necessary OpenGL commands when appropriate
+- Shader manager (Utils/shader): Only very minor changes made.
+- Model manager (Utils/model): Minor changes to allow for the creation of
+  manually-generated models (as opposed to imported ones).
+- Mesh manager (Utils/mesh): Added code for creation of meshes based on
+  manually-specified lists of vertex attributes. Moreover, created mesh factory
+  class to ease the creation of these manually-created meshes.
+- Cubemap files: Shaders and code for cubemap significantly influenced by site.
+  I wrapped given code into a class that calls necessary OpenGL commands when appropriate
   when considered with the larger project structure that I created.
-- Text rendering files: Shaders and code for texture rendering influenced by site
-  (as well as incorporates the FreeType library for shader-based text rendering).
+- Text rendering files: Shaders and code for texture rendering influenced by site.
   Again took snippets of code and wrapped in class that called commands at the
-  appropriate times.
-- Lighting shader files: Default shader provides textures and lighting. These were
-  basically constructed by combining the tutorial for texturing and the tutorial
-  for lighting.
+  appropriate times. Also created a simple positional state manager for automatic
+  placement of text.
+- Lighting shader files: Concepts and code from multiple tutorials were combined
+  to serve as starting point for shader. Extended this starting point by adding fog,
+  multiple spot lights, and a toggle for specular highlights. Moreover, the determination
+  of lights' positions and directions was custom-done and somewhat involved. For example,
+  the scene places 24 streetlights, each of which have a corresponding point light. However,
+  it is computationally negligent to process all 24; instead, 6 point lights are allowed by the
+  shader and the set uniforms correspond to the 6 streetlights which are closest to the car.
 
 There have also been small snippets taken from various forums/Q&A sites.
 These are acknowledged in the source code at the location of their inclusion.
 
-Accomplishments:
-The main accomplishments for this project thus far have been:
-- Employing the programmable pipeline
-- Implementing collision detection
+None of the artwork is mine.
 
-The first of these was surprisingly difficult, even after deciding to utilize
-the above-mentioned resources. I kept making small errors that took hours to
-debug. This was somewhat alleviated after using RenderDoc for debugging purposes,
-but even this solution was limited in comparison to traditional debuggers.
-Specifically, it does not allow you to set breakpoints in the shader code and
-step through it line by line.
-
-The second was actually much easier, although admittedly I used a pre-existing
-physics engine (Bullet) for the task. Still, it's tedious to, for example, size
-the AABB for the objects in code (especially when compared the visual editing tools
-available in modern game engine editors). I did create a class which implements the
-debug drawing interface which they provide in order make this process easier
-(and because the lines drawn look neat).
-
-To Do:
-I didn't finish what I wanted for this. In the future, I will:
-- Create more complicated manually-generated geometry (specifically, street lights).
-- Fix whatever weirdness is currently happening with the texture mapping for
-  the imported car model.
-- Provide spotlights on car.
-- Use instancing to draw multiple copies of brick walls and street lights.
-- Remove warnings/optimize texture sizes.
-I have started some of these tasks already, but none of them are completed.
-
-Stretch:
-The collision detection works well, but the remainder of the physics does not.
-Currently, the car can rotate without acceleration, and the "gas" simply applies
-a force in the direction which the car is facing. Time permitting, I will try
-to create a more realistic physics environment.
+Why I deserve an "A":
+The main accomplishments for this project have been:
+- Employing the programmable pipeline: every rendered aspect of the program
+  (the skybox, the text, the debug lines, and the world geometry) is created using
+  shaders. While shaders provide an enormous amount of
+  flexibility, they also seem to add large amounts of complexity. Even with the
+  help of the above-mentioned code and tutorials, it took many hours before I
+  was able to render anything meaningful to the window. Shaders (and some other modern
+  OpenGL concepts such as VBOs, VAOs, etc.) were only briefly covered in class.
+- Integrating Bullet physics engine: each of the objects within the scene has
+  an associated rigidbody. Furthermore, each of these rigidbodies have associated
+  geometries used for collision detection. Specifically, the terrain uses a height
+  field, the walls use a geometry generated by the underlying triangle mesh, the
+  streetlights used cylinders, and the vehicle uses a compound geometry consisting
+  of a box for the chassis and cylinders for the tires. Bullet provides built-in
+  support for vehicle physics; as such, the results are fairly realistic. Physics engines
+  are something "extra" that we have not covered in class.
+- Asset import: The car model is imported. As mentioned in the acknowledgements,
+  much of the code for doing so was not written by me. However, there are always a
+  number of complexities that arise from using a non-commissioned model. For the
+  car model, I had to customize the rendering quite a bit. Specifically, I had to
+  (1) exclude the low-poly mesh that was meant for collision detection, (2) center
+  the wheels at the mesh level (i.e., vertex position attributes) by subtracting
+  the average vertex position from each vertex, and (3) obtain the OpenGL representation
+  of the model matrix from the Bullet vehicle for both the chassis and the individual
+  wheels and render all of them individually.
+- Usage of a height map to generate terrain: The mountainous terrain is generated
+  with a 256x256 height map. Each of the pixels corresponds to a height, and
+  the geometry and normals are constructed from this height data. The height
+  map was specifically chosen to have high-intensity pixels in the center and
+  low-intensity pixels on the edges; this provides the perfect setup for a race course
+  near the edge of the screen.
+- Custom-generated geometry: The vertex positions, normals, and texture coordinates for the streetlights and walls are
+  all generated programmatically. The streetlight uses two textures (one for the post, one for the bulb), but the
+  walls only use one (each "segment", which is a locally-linear approximation of the ellipse, contains one logo;
+  the texture contains three logos, so each segment has a range of 1/3 in the s-coordinate).
+- Debugging line drawer: The debug drawer extends the Bullet btIDebugDraw interface. It provides
+  a simple line drawing function; this function is consumed by Bullet to draw the AABB for
+  collision geometries. Moreover, I use this facility for my own purposes; right now,
+  the position and direction of each spotlight and point light are shown using these debug
+  lines.
+- Camera controller: The camera includes a number of subtle features. One is
+  "relative rotational follow". This works by calculating the Y-axis rotation
+  of the car and adding the theta and phi values (controlled using the arrow keys)
+  on top of that. This provides a more natural feeling while making turns, but still
+  gives ample freedom to the user. Another feature is a simplistic form of smoothing:
+  rather than simply following the car, the camera follows a moving-average of the car's
+  position. This reduces jitter and looks arguably looks nice when the scene is reset and
+  the camera smoothly returns to the starting position.
+- Project setup: Extensions of the utility files, creation of inheritable classes such as
+  GameObject, and debug drawing capabilities all culminate in a scalable project design.
