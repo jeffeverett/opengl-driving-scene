@@ -18,7 +18,7 @@ const float START_STEERING = 0.0f;
 
 const float SCALE_FACTOR = 1.0f/400.0f;
 const float ENGINE_FORCE = 500.0f;
-const float BRAKE_FORCE = 500.0f;
+const float BRAKE_FORCE = 100.0f;
 const float WHEEL_TURN_RATE = 0.2f;
 
 const float MASS = 800.0f;
@@ -48,30 +48,30 @@ Car::Car() : Core::GameObject(mDrawable, mShader) {
     setOffset(glm::vec3(0, -0.1, 0));
     scale(glm::vec3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR));
 
-    btBoxShape *chassisShape = new btBoxShape(btVector3(CHASSIS_WIDTH, CHASSIS_HEIGHT, CHASSIS_LENGTH));
-    btCompoundShape *compoundShape = new btCompoundShape();
+    mChassisShape = std::make_unique<btBoxShape>(btVector3(CHASSIS_WIDTH, CHASSIS_HEIGHT, CHASSIS_LENGTH));
+    mShape = std::make_unique<btCompoundShape>();
     btTransform localTrans;
     localTrans.setIdentity();
     //localTrans effectively shifts the center of mass with respect to the chassis
     localTrans.setOrigin(btVector3(0,0.02,0));
-    compoundShape->addChildShape(localTrans,chassisShape);
+    static_cast<btCompoundShape*>(&(*mShape))->addChildShape(localTrans, &(*mChassisShape));
 
     btTransform carTransform;
     carTransform.setIdentity();
     carTransform.setOrigin(glmVec32btVector3(START_POS));
     btScalar mass(MASS);
     btVector3 localInertia(0, 0, 0);
-    compoundShape->calculateLocalInertia(mass, localInertia);
-    btDefaultMotionState *myMotionState = new btDefaultMotionState(carTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, compoundShape, localInertia);
+    mShape->calculateLocalInertia(mass, localInertia);
+    mMotionState = std::make_unique<btDefaultMotionState>(carTransform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, &(*mMotionState), &(*mShape), localInertia);
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
     dynamicsWorld->addRigidBody(&(*mRigidBody));
 
-    btVehicleRaycaster *vehicleRayCaster = new btDefaultVehicleRaycaster(&(*dynamicsWorld));
+    mVehicleRaycaster = std::make_shared<btDefaultVehicleRaycaster>(&(*dynamicsWorld));
     btRaycastVehicle::btVehicleTuning tuning;
-    mVehicle = new btRaycastVehicle(tuning, &(*mRigidBody), vehicleRayCaster);
+    mVehicle = std::make_shared<btRaycastVehicle>(tuning, &(*mRigidBody), &(*mVehicleRaycaster));
     mRigidBody->setActivationState(DISABLE_DEACTIVATION);
-    dynamicsWorld->addVehicle(mVehicle);
+    dynamicsWorld->addVehicle(&(*mVehicle));
 
     btVector3 wheelDirection(0,-1,0);
     btVector3 wheelAxleCS(-1,0,0);
@@ -108,7 +108,9 @@ Car::Car() : Core::GameObject(mDrawable, mShader) {
     mVehicle->setCoordinateSystem(0, 1, 2);
 }
 
-Car::~Car() {}
+Car::~Car() {
+    dynamicsWorld->removeVehicle(&(*mVehicle));
+}
 
 void Car::setup() {
     // Create wheel

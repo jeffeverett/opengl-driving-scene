@@ -47,7 +47,9 @@ namespace Objects
 
         // Private members
         float mSteering;
-        btRaycastVehicle *mVehicle;
+        std::unique_ptr<btBoxShape> mChassisShape;
+        std::shared_ptr<btVehicleRaycaster> mVehicleRaycaster;
+        std::shared_ptr<btRaycastVehicle> mVehicle;
 
         static void createCircularFace(Core::MeshCreator &meshCreator, float xOffset);
         static void createWheel(Core::MeshCreator &meshCreator);

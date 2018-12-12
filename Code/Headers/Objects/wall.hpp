@@ -32,6 +32,8 @@ namespace Objects
         static void addSegment(Core::MeshCreator &meshCreator, int segNumber, float a, float b, float theta1, float theta2);
         static void setup();
     private:
+        // Private members
+        std::unique_ptr<btTriangleMesh> mTriangleMesh;
 
         // Disable Copying and Assignment
         Wall(Wall const &) = delete;

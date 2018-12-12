@@ -10,6 +10,10 @@
 // Define Namespace
 namespace Core
 {
+    GameObject::~GameObject() {
+        dynamicsWorld->removeRigidBody(&(*mRigidBody));
+    }
+
     glm::vec3 GameObject::getPosition() {
         btVector3 origin = mRigidBody->getWorldTransform().getOrigin();
         return btVector32glmVec3(origin)+getWorldOffset();

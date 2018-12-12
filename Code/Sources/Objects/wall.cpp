@@ -22,22 +22,22 @@ const float TEXTURE_REPEAT_T = 1.0f;
 
 Wall::Wall() : Core::GameObject(mDrawable, mShader) {
     Core::MeshCreator meshCreator;
-    btTriangleMesh *triangleMesh = new btTriangleMesh(false, false);
+    mTriangleMesh = std::make_unique<btTriangleMesh>(false, false);
     for (int i = 0; i < mMesh->vertices.size(); i+=3) {
-        triangleMesh->addTriangle(
+        mTriangleMesh->addTriangle(
             glmVec32btVector3(mMesh->vertices[i].Position),
             glmVec32btVector3(mMesh->vertices[i+1].Position),
             glmVec32btVector3(mMesh->vertices[i+2].Position)
         );
     }
-    btBvhTriangleMeshShape *wallShape = new btBvhTriangleMeshShape(triangleMesh, true);
+    mShape = std::make_unique<btBvhTriangleMeshShape>(&(*mTriangleMesh), true);
     btTransform wallTransform;
     wallTransform.setIdentity();
     wallTransform.setOrigin(btVector3(0, 0.0, 0));
     btScalar mass(0.0f);
     btVector3 localInertia(0, 0, 0);
-    btDefaultMotionState *myMotionState = new btDefaultMotionState(wallTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, wallShape, localInertia);
+    mMotionState = std::make_unique<btDefaultMotionState>(wallTransform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, &(*mMotionState), &(*mShape), localInertia);
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
     dynamicsWorld->addRigidBody(&(*mRigidBody));
 

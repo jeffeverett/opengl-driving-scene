@@ -29,8 +29,8 @@ Terrain::Terrain() : Core::GameObject(mDrawable, mShader) {
     groundTransform.setOrigin(btVector3(0, SIZE_Y/2, 0));
     btScalar mass(0.);
     btVector3 localInertia(0, 0, 0);
-    btDefaultMotionState *myMotionState = new btDefaultMotionState(groundTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, &(*mTerrainShape), localInertia);
+    mMotionState = std::make_unique<btDefaultMotionState>(groundTransform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, &(*mMotionState), &(*mTerrainShape), localInertia);
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
     dynamicsWorld->addRigidBody(&(*mRigidBody));
 
@@ -111,7 +111,7 @@ void Terrain::loadHeightMap(Core::MeshCreator &meshCreator, std::string heightMa
         std::cout << "Max AABB: " << "(" << aabbMax[0] << ", " << aabbMax[1] << ", " << aabbMax[2] << ")" << std::endl;
 #endif
 
-        //stbi_image_free(data);
+        stbi_image_free(data);
     }
     else
     {

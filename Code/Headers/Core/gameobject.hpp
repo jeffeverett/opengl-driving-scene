@@ -27,7 +27,7 @@ namespace Core
             mDrawable = drawable;
             mShader = shader;
         }
-        ~GameObject() {  }
+        ~GameObject();
 
 
         // Public Member Functions
@@ -51,6 +51,8 @@ namespace Core
 
     protected:
         std::unique_ptr<btRigidBody> mRigidBody;
+        std::unique_ptr<btCollisionShape> mShape;
+        std::unique_ptr<btDefaultMotionState> mMotionState;
         glm::vec3 mScale = glm::vec3(1);
         glm::vec3 mOffset = glm::vec3(0);
         glm::mat4 mRenderRotation = glm::mat4(1);

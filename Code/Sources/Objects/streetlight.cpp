@@ -25,14 +25,14 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
         scale(glm::vec3(-1, 1, 1));
     }
 
-    btCylinderShape *streetlightShape = new btCylinderShape(btVector3(RADIUS, HEIGHT, RADIUS));
+    mShape = std::make_unique<btCylinderShape>(btVector3(RADIUS, HEIGHT, RADIUS));
     btTransform streetlightTransform;
     streetlightTransform.setIdentity();
     streetlightTransform.setOrigin(btVector3(position[0], 0, position[2]));
     btScalar mass(0.0f);
     btVector3 localInertia(0, 0, 0);
-    btDefaultMotionState *myMotionState = new btDefaultMotionState(streetlightTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, streetlightShape, localInertia);
+    mMotionState = std::make_unique<btDefaultMotionState>(streetlightTransform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, &(*mMotionState), &(*mShape), localInertia);
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
     dynamicsWorld->addRigidBody(&(*mRigidBody));
 

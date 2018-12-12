@@ -49,6 +49,11 @@ std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 std::unique_ptr<Physics::DebugDrawer> debugDrawer;
 
 // Below local to translation unit
+btDefaultCollisionConfiguration collisionConfiguration;
+btCollisionDispatcher dispatcher(&collisionConfiguration);
+btDbvtBroadphase overlappingPairCache;
+btSequentialImpulseConstraintSolver solver;
+
 Core::Scene scene;
 bool firstMouse = true;
 double lastX;
@@ -136,10 +141,6 @@ int main(int argc, char * argv[]) {
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/simple.frag"
     );
 
-    btDefaultCollisionConfiguration collisionConfiguration;
-    btCollisionDispatcher dispatcher(&collisionConfiguration);
-    btDbvtBroadphase overlappingPairCache;
-    btSequentialImpulseConstraintSolver solver;
     dynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(&dispatcher, &overlappingPairCache, &solver, &collisionConfiguration);
     debugDrawer = std::make_unique<Physics::DebugDrawer>();
     debugDrawer->setDebugMode(2);
