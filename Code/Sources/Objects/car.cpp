@@ -25,12 +25,12 @@ const float MASS = 800.0f;
 
 const float CHASSIS_WIDTH = 0.25f;
 const float CHASSIS_LENGTH = 0.55f;
-const float CHASSIS_HEIGHT = 0.1f;
-const float WHEEL_OFFSET_FRONT = 0.25f;
+const float CHASSIS_HEIGHT = 0.09f;
+const float WHEEL_OFFSET_FRONT = 0.22f;
 const float WHEEL_OFFSET_BACK = 0.18f;
 const float WHEEL_OFFSET_SIDE = 0.02f;
 
-const float CONNECTION_HEIGHT = 0.03f;
+const float CONNECTION_HEIGHT = 0.13f;
 
 const float WHEEL_WIDTH = 0.03f;
 const float WHEEL_RADIUS = 0.095f;
@@ -53,7 +53,7 @@ Car::Car() : Core::GameObject(mDrawable, mShader) {
     btTransform localTrans;
     localTrans.setIdentity();
     //localTrans effectively shifts the center of mass with respect to the chassis
-    localTrans.setOrigin(btVector3(0,0.02,0));
+    localTrans.setOrigin(btVector3(0,0.15,0));
     static_cast<btCompoundShape*>(&(*mShape))->addChildShape(localTrans, &(*mChassisShape));
 
     btTransform carTransform;
@@ -174,6 +174,10 @@ void Car::draw() {
     btScalar modelTransform[16];
     mRigidBody->getWorldTransform().getOpenGLMatrix(modelTransform);
     glm::mat4 modelMtx = btScalar2glmMat4(modelTransform);
+    glm::vec3 worldOffset = getWorldOffset();
+    modelTransform[12] += worldOffset[0];
+    modelTransform[13] += worldOffset[1];
+    modelTransform[14] += worldOffset[2];
     modelMtx = glm::scale(modelMtx, mScale);
     mShader->setMat4("model", modelMtx);
 
