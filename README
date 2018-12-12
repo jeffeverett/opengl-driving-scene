@@ -13,19 +13,18 @@ This project requires the following libraries:
     libglfw3-dev
     libglm-dev
 Starred libraries correspond to those not listed on prinmath.com.
-For ease of use, you may copy the following line to install them:
+For ease-of-use, you may copy the following line to install them:
   sudo apt-get install libbullet-dev libassimp-dev libfreetype6-dev
 
-Simply running "make" should work. However, in case it doesn't,
+After installing the above, simply running "make" should work. However, in case it doesn't,
 it should be noted that the project is based off of the CMake meta-build
-system.
-
-If there are issues with the Makefile, please try running the following
+system. If there are issues with the Makefile, please try running the following
 commands manually:
 - mkdir Build
 - cd Build
 - cmake ..
 - make
+- cd final
 - ./final
 
 
@@ -45,7 +44,7 @@ Keys:
 Acknowledgments:
 This program began by forking the Glitter project by GitHub user Polytonic.
 This repo is here: https://github.com/Polytonic/Glitter.
-This essentially provided the underlying CMake setup. It copies vendor libraries
+This essentially provided a start for the underlying CMake setup. It copied vendor libraries
 to subdirectories and built them as static libraries to be linked with the main program.
 However, I have shifted from custom-built static libraries to using shared libraries found with
 CMake's FindPackage tool; as such, most of the functionality provided by this project has
@@ -71,12 +70,14 @@ that I made to them:
   appropriate times. Also created a simple positional state manager for automatic
   placement of text.
 - Lighting shader files: Concepts and code from multiple tutorials were combined
-  to serve as starting point for shader. Extended this starting point by adding fog,
-  multiple spot lights, and a toggle for specular highlights. Moreover, the determination
-  of lights' positions and directions was custom-done and somewhat involved. For example,
+  to serve as starting point for shader. Extended this starting point by adding fog
+  and support for multiple spot lights. Moreover, the determination
+  of uniform values was custom-done and somewhat involved. For example,
   the scene places 24 streetlights, each of which have a corresponding point light. However,
   it is computationally negligent to process all 24; instead, 6 point lights are allowed by the
   shader and the set uniforms correspond to the 6 streetlights which are closest to the car.
+  Also, the offsets of the spotlights and tail lights must be translated to world space,
+  along with the front/back vectors representing their respective directions.
 
 There have also been small snippets taken from various forums/Q&A sites.
 These are acknowledged in the source code at the location of their inclusion.
@@ -134,3 +135,7 @@ The main accomplishments for this project have been:
   the camera smoothly returns to the starting position.
 - Project setup: Extensions of the utility files, creation of inheritable classes such as
   GameObject, and debug drawing capabilities all culminate in a scalable project design.
+
+
+Time Taken:
+  100-150 hours

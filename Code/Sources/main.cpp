@@ -273,7 +273,7 @@ int main(int argc, char * argv[]) {
 #endif
 
         // Tick physics engine
-        dynamicsWorld->stepSimulation((float) deltaTime);
+        dynamicsWorld->stepSimulation((float) deltaTime, 5);
 
         // Draw scene
         scene.draw();
