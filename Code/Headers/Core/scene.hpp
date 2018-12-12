@@ -34,9 +34,11 @@ namespace Core
         void addStreetlight(std::shared_ptr<Objects::Streetlight> streetlight);
         void setCamera(std::shared_ptr<Core::Camera> camera);
         std::shared_ptr<Core::Camera> getCamera();
+        void cycleFog();
         void setFog(bool val);
         void setNightMode(bool val);
         void setCar(std::shared_ptr<Objects::Car> car);
+        std::shared_ptr<Objects::Car> getCar();
         void setCubeMap(std::shared_ptr<Core::CubeMap> cubeMap);
         void setDeltaTime(double deltaTime);
         void updateLighting();

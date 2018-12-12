@@ -32,6 +32,7 @@ namespace Objects
         // Public Member Functions
         static void setup();
         virtual void draw() override;
+        void restoreDefaults();
         void applyEngineForce(float force);
         void setBrake(float force);
         void setSteering(float steering);

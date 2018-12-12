@@ -5,11 +5,19 @@
 using namespace Physics;
 
 
-DebugDrawer::DebugDrawer() {
+DebugDrawer::DebugDrawer() : mWillDraw(true) {
     mShader = simpleShader;
 }
 
+void DebugDrawer::cycleWillDraw() {
+    mWillDraw = !mWillDraw;
+}
+
 void DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color) {
+    if (!mWillDraw) {
+        return;
+    }
+
 #ifdef DEBUG
     //std::cout << "Drawing line with color (" << color[0] << ", " << color[1] << ", " << color[2] << ")" << std::endl;
 #endif

@@ -19,6 +19,10 @@ namespace Core
         mCar = car;
     }
 
+    std::shared_ptr<Objects::Car> Scene::getCar() {
+        return mCar;
+    }
+
     void Scene::setCubeMap(std::shared_ptr<Core::CubeMap> cubeMap) {
         mShaders.insert(cubeMap->getShader());
         mCubeMap = cubeMap;
@@ -26,6 +30,10 @@ namespace Core
 
     void Scene::setDeltaTime(double deltaTime) {
         mDeltaTime = deltaTime;
+    }
+
+    void Scene::cycleFog() {
+        setFog(!mFogEnabled);
     }
 
     void Scene::setFog(bool val) {
@@ -59,23 +67,6 @@ namespace Core
     }
 
     void Scene::processInput(GLFWwindow *window) {
-        // Window close
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-            glfwSetWindowShouldClose(window, true);
-        }
-
-        // Night w/fog
-        if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-            setFog(true);
-            setNightMode(true);
-        }
-
-        // Night w/o fog
-        if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-            setFog(false);
-            setNightMode(true);
-        }
-
         // Camera movement
         mCamera->processInput(window, mDeltaTime);
 

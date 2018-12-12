@@ -42,11 +42,14 @@ namespace Core {
             mProjectionMode(PERSPECTIVE),
             mRadius(radius),
             mTheta(theta),
-            mPhi(phi) {}
+            mPhi(phi),
+            mRelativeAngle(true) {}
 
         glm::mat4 getViewMatrix();
         glm::mat4 getProjectionMatrix();
+        void cycleRelativeAngle();
         void cycleProjectionMode();
+        void restoreDefaults();
         void perFrame();
         void processInput(GLFWwindow *window, double deltaTime);
         void setFollow(std::shared_ptr<Core::GameObject> follow);
@@ -61,6 +64,7 @@ namespace Core {
         glm::vec3 mPosition;
 
         std::shared_ptr<Core::GameObject> mFollow;
+        bool mRelativeAngle;
         ProjectionMode mProjectionMode;
     };
 }

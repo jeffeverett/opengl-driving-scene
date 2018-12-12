@@ -31,6 +31,10 @@ namespace Core {
         }
     }
 
+    void Camera::cycleRelativeAngle() {
+        mRelativeAngle = !mRelativeAngle;
+    }
+
     void Camera::cycleProjectionMode() {
         if (mProjectionMode == ORTHO) {
             mProjectionMode = PERSPECTIVE;
@@ -61,7 +65,10 @@ namespace Core {
         if (projectedForward[0] < 0) {
             followTheta = -followTheta;
         }
-        double thetaRadians = glm::radians(mTheta+180.0f)+followTheta;
+        double thetaRadians = glm::radians(mTheta);
+        if (mRelativeAngle) {
+            thetaRadians += followTheta + glm::radians(180.0f);
+        }
         double phiRadians = glm::radians(mPhi);
         glm::vec3 offset(
             mRadius*glm::sin(thetaRadians)*glm::sin(phiRadians),
@@ -81,15 +88,13 @@ namespace Core {
         mFollow = follow;
     }
 
+    void Camera::restoreDefaults() {
+        mTheta = THETA;
+        mPhi = PHI;
+        mRadius = RADIUS;
+    }
+
     void Camera::processInput(GLFWwindow *window, double deltaTime) {
-        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-            mTheta = THETA;
-            mPhi = PHI;
-            mRadius = RADIUS;
-        }
-        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-            cycleProjectionMode();
-        }
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
             mRadius += SENSITIVITY*deltaTime;
             if (mRadius > 100) {

@@ -64,6 +64,31 @@ void errorCallback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
 }
 
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    // Process-once key events should happen here
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+
+    if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+        scene.getCamera()->cycleProjectionMode();
+    }
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+        scene.getCamera()->restoreDefaults();
+        scene.getCar()->restoreDefaults();
+    }
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        scene.cycleFog();
+    }
+    if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+        debugDrawer->cycleWillDraw();
+    }
+    if (key == GLFW_KEY_G && action == GLFW_PRESS) {
+        scene.getCamera()->cycleRelativeAngle();
+    }
+}
+
+
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     if (firstMouse) {
         lastX = xpos;
@@ -108,6 +133,7 @@ int main(int argc, char * argv[]) {
 
     // Create Context and Load OpenGL Functions
     glfwMakeContextCurrent(window);
+    glfwSwapInterval( 0 );
     gladLoadGL();
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
@@ -198,6 +224,7 @@ int main(int argc, char * argv[]) {
     }
 
     // Register remaining callbacks
+    glfwSetKeyCallback(window, keyCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 

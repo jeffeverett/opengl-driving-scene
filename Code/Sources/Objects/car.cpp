@@ -160,6 +160,14 @@ void Car::setup() {
 
 }
 
+void Car::restoreDefaults() {
+    setPosition(START_POS);
+    setRotation(START_ROTATION);
+    setSteering(START_STEERING);
+    mRigidBody->setLinearVelocity(btVector3(0,0,0));
+    mRigidBody->setAngularVelocity(btVector3(0,0,0));
+}
+
 void Car::draw() {
     mShader->use();
 
@@ -284,15 +292,6 @@ void Car::updateLighting() {
 }
 
 void Car::processInput(GLFWwindow *window, double deltaTime) {
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        setPosition(START_POS);
-        setRotation(START_ROTATION);
-        setSteering(START_STEERING);
-        mRigidBody->setLinearVelocity(btVector3(0,0,0));
-        mRigidBody->setAngularVelocity(btVector3(0,0,0));
-    }
-
-
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         setBrake(BRAKE_FORCE);
     }
