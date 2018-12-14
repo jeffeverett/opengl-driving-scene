@@ -1,20 +1,27 @@
+# Introduction
+This is a driving scene created in OpenGL. This was created as a computer graphics project
+for CSCI 4229 at CU Boulder. The following is a screenshot of the running
+program:
+
+![screenshot](Screenshots/screenshot1.png)
+
 # Build Instructions:
 This project requires the following libraries:
-- libbullet-dev
-- libassimp-dev
-- libfreetype6-dev
-- libglfw3-dev
-- libglm-dev
+- `libbullet-dev`
+- `libassimp-dev`
+- `libfreetype6-dev`
+- `libglfw3-dev`
+- `libglm-dev`
 
 After installing the above, use the following commands to build the program:
-- mkdir Build
-- cd Build
-- cmake ..
-- make
+- `mkdir Build`
+- `cd Build`
+- `cmake ..`
+- `make`
 
 Then run the program like so:
-- cd final
-- ./final
+- `cd final`
+- `./final`
 
 
 # Keys:
@@ -22,7 +29,7 @@ Then run the program like so:
 - `WASD`: Car movement
 - `SPACE`: Brake
 - `R`: Reset car and camera extrinsics and active forces
-- Arrow Keys: Rotate camera around car
+- `Arrow Keys`: Rotate camera around car
 - `Q`/`E`: Increase/decrease distance between camera and car
 - `F`: toggle fog (also toggles skybox and changes color of text)
 - `T`: toggle debug draw (Bullet physics engine debug lines, as well as custom ones for light positions/directions)
