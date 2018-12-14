@@ -1,116 +1,53 @@
-Jeff Everett
-CSCI 4229
-Undergraduate
-12/12/2018
-
-Final Project
-
-Build Instructions:
+# Build Instructions:
 This project requires the following libraries:
-  * libbullet-dev
-  * libassimp-dev
-  * libfreetype6-dev
-    libglfw3-dev
-    libglm-dev
-Starred libraries correspond to those not listed on prinmath.com.
-For ease-of-use, you may copy the following line to install them:
-  sudo apt-get install libbullet-dev libassimp-dev libfreetype6-dev
+- libbullet-dev
+- libassimp-dev
+- libfreetype6-dev
+- libglfw3-dev
+- libglm-dev
 
-After installing the above, simply running "make" should work. However, in case it doesn't,
-it should be noted that the project is based off of the CMake meta-build
-system. If there are issues with the Makefile, please try running the following
-commands manually:
+After installing the above, use the following commands to build the program:
 - mkdir Build
 - cd Build
 - cmake ..
 - make
+
+Then run the program like so:
 - cd final
 - ./final
 
 
-Keys:
-- ESC: Exit program
-- WASD: Car movement
-- SPACE: Brake
+# Keys:
+- `ESC`: Exit program
+- `WASD`: Car movement
+- `SPACE`: Brake
 - R: Reset car and camera extrinsics and active forces
 - Arrow Keys: Rotate camera around car
-- Q/E: Increase/decrease distance between camera and car
-- F: toggle fog (also toggles skybox and changes color of text)
-- T: toggle debug draw (Bullet physics engine debug lines, as well as custom ones for light positions/directions)
-- G: toggles relative rotational follow of camera and car
-- P: Change camera projection mode (although it no longer really makes sense
+- `Q`/`E`: Increase/decrease distance between camera and car
+- `F`: toggle fog (also toggles skybox and changes color of text)
+- `T`: toggle debug draw (Bullet physics engine debug lines, as well as custom ones for light positions/directions)
+- `G`: toggles relative rotational follow of camera and car
+- `P`: Change camera projection mode (although it no longer really makes sense
      to use anything besides perspective, which is the default)
 
-Acknowledgments:
-This program began by forking the Glitter project by GitHub user Polytonic.
-This repo is here: https://github.com/Polytonic/Glitter.
-This essentially provided a start for the underlying CMake setup. It copied vendor libraries
-to subdirectories and built them as static libraries to be linked with the main program.
-However, I have shifted from custom-built static libraries to using shared libraries found with
-CMake's FindPackage tool; as such, most of the functionality provided by this project has
-been replaced. Nonetheless, there are undoubtedly some remnants of the Glitter project within
-the CMakeLists.txt file.
-
-The most significant code contributor besides myself is the website https://learnopengl.com/.
-This site provides a number of tutorials on modern OpenGL and provides utilities
-for tasks such as asset import and shader program compilation/linkage.
-The following is a list of files influenced by this site, as well as the modifications
-that I made to them:
-- Shader manager (Utils/shader): Only very minor changes made.
-- Model manager (Utils/model): Minor changes to allow for the creation of
-  manually-generated models (as opposed to imported ones).
-- Mesh manager (Utils/mesh): Added code for creation of meshes based on
-  manually-specified lists of vertex attributes. Moreover, created mesh factory
-  class to ease the creation of these manually-created meshes.
-- Cubemap files: Shaders and code for cubemap significantly influenced by site.
-  I wrapped given code into a class that calls necessary OpenGL commands when appropriate
-  when considered with the larger project structure that I created.
-- Text rendering files: Shaders and code for texture rendering influenced by site.
-  Again took snippets of code and wrapped in class that called commands at the
-  appropriate times. Also created a simple positional state manager for automatic
-  placement of text.
-- Lighting shader files: Concepts and code from multiple tutorials were combined
-  to serve as starting point for shader. Extended this starting point by adding fog
-  and support for multiple spot lights. Moreover, the determination
-  of uniform values was custom-done and somewhat involved. For example,
-  the scene places 24 streetlights, each of which have a corresponding point light. However,
-  it is computationally negligent to process all 24; instead, 6 point lights are allowed by the
-  shader and the set uniforms correspond to the 6 streetlights which are closest to the car.
-  Also, the offsets of the spotlights and tail lights must be translated to world space,
-  along with the front/back vectors representing their respective directions.
-
-There have also been small snippets taken from various forums/Q&A sites.
-These are acknowledged in the source code at the location of their inclusion.
-
-None of the artwork is mine.
-
-Why I deserve an "A":
-The main accomplishments for this project have been:
-- Employing the programmable pipeline: every rendered aspect of the program
+# Functionality:
+- Shaders: every rendered aspect of the program
   (the skybox, the text, the debug lines, and the world geometry) is created using
-  shaders. While shaders provide an enormous amount of
-  flexibility, they also seem to add large amounts of complexity. Even with the
-  help of the above-mentioned code and tutorials, it took many hours before I
-  was able to render anything meaningful to the window. Shaders (and some other modern
-  OpenGL concepts such as VBOs, VAOs, etc.) were only briefly covered in class.
-- Integrating Bullet physics engine: each of the objects within the scene has
+  shaders.
+- Bullet physics engine: each of the objects within the scene has
   an associated rigidbody. Furthermore, each of these rigidbodies have associated
   geometries used for collision detection. Specifically, the terrain uses a height
   field, the walls use a geometry generated by the underlying triangle mesh, the
   streetlights used cylinders, and the vehicle uses a compound geometry consisting
   of a box for the chassis and cylinders for the tires. Bullet provides built-in
-  support for vehicle physics; as such, the results are fairly realistic. Physics engines
-  are something "extra" that we have not covered in class.
-- Asset import: The car model is imported. As mentioned in the acknowledgements,
-  much of the code for doing so was not written by me. However, there are always a
-  number of complexities that arise from using a non-commissioned model. For the
-  car model, I had to customize the rendering quite a bit. Specifically, I had to
-  (1) exclude the low-poly mesh that was meant for collision detection, (2) center
+  support for vehicle physics; as such, the results are fairly realistic.
+- Asset import: The car model is imported. Importing is done using `assimp`. Rendering involves
+  (1) excluding the low-poly mesh that was meant for collision detection, (2) centering
   the wheels at the mesh level (i.e., vertex position attributes) by subtracting
-  the average vertex position from each vertex, and (3) obtain the OpenGL representation
+  the average vertex position from each vertex, and (3) obtaining the OpenGL representation
   of the model matrix from the Bullet vehicle for both the chassis and the individual
   wheels and render all of them individually.
-- Usage of a height map to generate terrain: The mountainous terrain is generated
+- Height map: The mountainous terrain is generated
   with a 256x256 height map. Each of the pixels corresponds to a height, and
   the geometry and normals are constructed from this height data. The height
   map was specifically chosen to have high-intensity pixels in the center and
@@ -137,7 +74,12 @@ The main accomplishments for this project have been:
   GameObject, and debug drawing capabilities all culminate in a scalable project design.
 
 
-Note: the program is unfortunately not very optimized. It runs at 400FPS on my desktop but only ~10FPS
+# Acknowledgments:
+- Portions of code taken from `https://learnopengl.com/`.
+- None of the artwork is mine.
+
+# Note
+The program is unfortunately not very optimized. It runs at 400FPS on my desktop but only ~10FPS
 on my laptop. If you experience FPS problems, one potential solution is to disable the debugging lines (press t).
 Each line creates a draw call, which is highly inefficient (the more efficient solution would be to
 accumulate line geometry for each frame and then create a single draw call at the end).
@@ -148,6 +90,3 @@ the cap exists to ensure that the program does not get caught in the cycle of ta
 time to perform each substep which results in a large time difference that causes the next frame to have even
 more substeps to perform. With all that being said, the physics are reasonable (if not perfect) at 10FPS.
 Moreover, they behave as expected under high FPS situations.
-
-Time Taken:
-  100-150 hours
