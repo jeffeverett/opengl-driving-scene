@@ -21,7 +21,6 @@ const float TEXTURE_REPEAT_T = 1.0f;
 
 
 Wall::Wall() : Core::GameObject(mDrawable, mShader) {
-    Core::MeshCreator meshCreator;
     mTriangleMesh = std::make_unique<btTriangleMesh>(false, false);
     for (int i = 0; i < mMesh->vertices.size(); i+=3) {
         mTriangleMesh->addTriangle(
