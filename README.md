@@ -21,7 +21,7 @@ Then run the program like so:
 - `ESC`: Exit program
 - `WASD`: Car movement
 - `SPACE`: Brake
-- R: Reset car and camera extrinsics and active forces
+- `R`: Reset car and camera extrinsics and active forces
 - Arrow Keys: Rotate camera around car
 - `Q`/`E`: Increase/decrease distance between camera and car
 - `F`: toggle fog (also toggles skybox and changes color of text)
