@@ -88,8 +88,14 @@ include_directories(SYSTEM Code/Vendor/glad/include/ Code/Vendor/stb/)
 
 
 file(GLOB VENDORS_SOURCES Code/Vendor/glad/src/glad.c)
-file(GLOB PROJECT_HEADERS Code/Headers/*.hpp Code/Headers/Core/*.hpp Code/Headers/Objects/*.hpp Code/Headers/Physics/*.hpp)
-file(GLOB PROJECT_SOURCES Code/Sources/*.cpp Code/Sources/Core/*.cpp Code/Sources/Objects/*.cpp Code/Sources/Physics/*.cpp)
+file(GLOB PROJECT_HEADERS
+    Code/Headers/*.hpp Code/Headers/Assets/*.hpp Code/Headers/Components/*.hpp
+    Code/Headers/Core/*.hpp Code/Headers/Objects/*.hpp Code/Headers/Physics/*.hpp
+    Code/Headers/Rendering/*.hpp Code/Headers/Scripts/*.hpp Code/Headers/Utils/*.hpp)
+file(GLOB PROJECT_SOURCES
+    Code/Sources/*.cpp Code/Sources/Assets/*.cpp Code/Sources/Components/*.cpp
+    Code/Sources/Core/*.cpp Code/Sources/Objects/*.cpp Code/Sources/Physics/*.cpp
+    Code/Sources/Rendering/*.cpp Code/Sources/Scripts/*.cpp Code/Sources/Utils/*.cpp)
 file(GLOB PROJECT_SHADERS
         Code/Shaders/*.comp
         Code/Shaders/*.frag

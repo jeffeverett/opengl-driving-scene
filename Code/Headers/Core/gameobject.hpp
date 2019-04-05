@@ -1,74 +1,49 @@
 #pragma once
 
-// Local Headers
-#include "globals.hpp"
-#include "Core/drawable.hpp"
-#include "Core/shader.hpp"
+#include "Core/transform.hpp"
+#include "Components/component.hpp"
 
-// System Headers
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <bullet/btBulletDynamicsCommon.h>
-
-// Standard Headers
 #include <vector>
 #include <memory>
+#include <typeinfo>
+#include <unordered_map>
 
-// Define Namespace
+// Forward declaration
+namespace Components {
+    class Component;
+}
+
 namespace Core
 {
     class GameObject
     {
     public:
-
-        // Implement Default Constructor and Destructor
-        GameObject(std::shared_ptr<Core::Drawable> drawable, std::shared_ptr<Core::Shader> shader) {
-            mDrawable = drawable;
-            mShader = shader;
-        }
+        GameObject(glm::vec3 position = glm::vec3(0));
         ~GameObject();
 
+        void addChild(std::shared_ptr<GameObject> gameObject);
+        void addComponent(std::shared_ptr<Components::Component> component);
+        
+        template <typename T>
+        std::vector<std::shared_ptr<T>> getComponents() const
+        {
+            const std::type_info &ti = typeid(T);
+            if (mComponentsHash.find(ti.hash_code()) != mComponentsHash.end()) {
+                auto components = mComponentsHash.at(ti.hash_code());
+                std::vector<std::shared_ptr<T>> componentsToReturn;
+                for (auto component : components) {
+                    componentsToReturn.push_back(std::static_pointer_cast<T>(component));
+                }
+                return componentsToReturn;
+            }
+            return std::vector<std::shared_ptr<T>>();
+        }
 
-        // Public Member Functions
-        glm::vec3 getPosition();
-        void setRotation(float theta);
-        void setRenderRotation(float theta);
-        void setPosition(glm::vec3 position);
-        void setOffset(glm::vec3 offset);
-        float getYaw();
-        glm::vec3 getWorldOffset();
-        glm::vec3 getWorldForward();
-        glm::vec3 getWorldDown();
-        glm::vec3 getWorldOffset(glm::vec3 localOffset);
-        void translate(glm::vec3 translationVector);
-        void applyForce(glm::vec3 vec);
-        void scale(glm::vec3 scaleVector);
-        std::shared_ptr<Core::Shader> getShader();
-        virtual void draw();
-        virtual void perFrame(double deltaTime) {};
-        virtual void processInput(GLFWwindow *window, double deltaTime) {}
-
-    protected:
-        std::unique_ptr<btRigidBody> mRigidBody;
-        std::unique_ptr<btCollisionShape> mShape;
-        std::unique_ptr<btDefaultMotionState> mMotionState;
-        glm::vec3 mScale = glm::vec3(1);
-        glm::vec3 mOffset = glm::vec3(0);
-        glm::mat4 mRenderRotation = glm::mat4(1);
-
-        static glm::mat4 btScalar2glmMat4(btScalar* matrix);
-        static glm::vec3 btVector32glmVec3(btVector3 matrix);
-        static btVector3 glmVec32btVector3(glm::vec3 vec);
+        std::shared_ptr<Transform> mTransform;
+        std::vector<std::shared_ptr<Components::Component>> mComponents;
+        std::vector<std::shared_ptr<GameObject>> mChildren;
 
     private:
-
-        // Disable Copying and Assignment
-        GameObject(GameObject const &) = delete;
-        GameObject & operator=(GameObject const &) = delete;
-
-        // Private Member Variables
-        std::shared_ptr<Core::Drawable> mDrawable;
-        std::shared_ptr<Core::Shader> mShader;
+        std::unordered_map<std::size_t, std::vector<std::shared_ptr<Components::Component>>> mComponentsHash; 
     };
 }
