@@ -72,7 +72,7 @@ endif(FREETYPE_FOUND)
 
 # Find OpenGL
 set(OpenGL_GL_PREFERENCE "GLVND")
-find_package(OpenGL 3.3 REQUIRED)
+find_package(OpenGL 4.0 REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 link_directories(${OPENGL_LIBRARY_DIRS})
 add_definitions(${OPENGL_DEFINITIONS})

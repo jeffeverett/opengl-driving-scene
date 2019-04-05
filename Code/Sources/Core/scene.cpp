@@ -7,6 +7,7 @@ namespace Core
 {
     void Scene::add(std::shared_ptr<GameObject> gameObject)
     {
+        std::cout << "adding gameobject to scene" << std::endl;
         mGameObjects.push_back(gameObject);
         addComponents(gameObject);
     }
@@ -14,7 +15,7 @@ namespace Core
     void Scene::addComponents(std::shared_ptr<GameObject> gameObject)
     {
         for (auto &component : gameObject->mComponents) {
-            std::cout << "adding component" << std::endl;
+            std::cout << "adding component to scene" << std::endl;
             const std::type_info &ti = typeid(*component);
             if (mComponentsHash.find(ti.hash_code()) == mComponentsHash.end()) {
                 mComponentsHash[ti.hash_code()] = std::vector<std::shared_ptr<Components::Component>>();

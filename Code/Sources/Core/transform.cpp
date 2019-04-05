@@ -4,6 +4,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/euler_angles.hpp>
 
+#include <iostream>
+
 namespace Core
 {
   Transform::Transform() : mScale(glm::vec3(1)), mTranslation(glm::vec3(0)), mRotation(glm::vec3(0)),
@@ -36,10 +38,12 @@ namespace Core
   void Transform::updateModelMatrix(glm::mat4 startingMatrix)
   {
     // Update model matrix
-    glm::mat4 matrix = glm::scale(startingMatrix, mTranslation);
-    matrix = glm::translate(matrix, mScale);
+    glm::mat4 matrix = glm::scale(startingMatrix, mScale);
+    matrix = glm::translate(matrix, mTranslation);
     glm::mat4 rotationMatrix = glm::orientate4(mRotation);
     mModelMatrix = rotationMatrix * matrix;
+
+    std::cout << "Element 0 is " << matrix[0][0] << std::endl;
 
     // No longer dirty
     mIsDirty = false;

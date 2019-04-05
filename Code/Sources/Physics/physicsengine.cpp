@@ -1,5 +1,7 @@
 #include "Physics/physicsengine.hpp"
 
+#include <iostream>
+
 namespace Physics
 {
     PhysicsEngine::PhysicsEngine()

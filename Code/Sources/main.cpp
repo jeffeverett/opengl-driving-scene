@@ -73,8 +73,15 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
-
-    if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+    else if (key == GLFW_KEY_M && action == GLFW_PRESS) {
+        if (scene.mRenderSettings.mRenderMode == Rendering::RenderMode::DEBUG) {
+            scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEFERRED_SHADING;
+        }
+        else {
+            scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEBUG;
+        }
+    }
+    else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
         scene.mRenderSettings.mPhysicsDebug = !scene.mRenderSettings.mPhysicsDebug;
     }
 }
@@ -112,23 +119,23 @@ int main(int argc, char * argv[])
     glfwSetErrorCallback(errorCallback);
 
     // Create a window
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     auto window = glfwCreateWindow(INIT_WIDTH, INIT_HEIGHT, "Driving Scene - Jeffrey Everett", nullptr, nullptr);
 
-    // Check for Valid Context
+    // Check for valid context
     if (window == nullptr) {
-        fprintf(stderr, "Failed to Create OpenGL Context");
-        return EXIT_FAILURE;
+        std::cout << "Failed to create OpenGL context. Exiting." << std::endl;
+        exit(1);
     }
 
-    // Create Context and Load OpenGL Functions
+    // Create Context and load OpenGL Functions
     glfwMakeContextCurrent(window);
     gladLoadGL();
-    fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
+    std::cout << "Using OpenGL " << glGetString(GL_VERSION) << std::endl;
 
     // Initialize GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -161,7 +168,7 @@ int main(int argc, char * argv[])
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyBack2048.png"
     };
     scene.mCubeMap.setFaces(darkFaces);
-    scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEBUG;
+    scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEFERRED_SHADING;
     scene.mRenderSettings.mScreenWidth = INIT_WIDTH;
     scene.mRenderSettings.mScreenHeight = INIT_HEIGHT;
 
@@ -202,7 +209,7 @@ int main(int argc, char * argv[])
         scene.update(deltaTime);
 
         // Tick physics engine
-        //physicsEngine.updateScene(scene, deltaTime);
+        physicsEngine.updateScene(scene, deltaTime);
 
         // Draw scene
         renderingEngine.renderScene(scene, fps);

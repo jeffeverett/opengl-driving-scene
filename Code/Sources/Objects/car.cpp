@@ -47,7 +47,10 @@ namespace Objects
 
     Car::Car(glm::vec3 position, const Physics::PhysicsEngine &physicsEngine) : Core::GameObject(position)
     {
-        // **** CREATE COMPONENTS ***
+        // **** SETUP TRANSFORM ****
+        mTransform->scale(glm::vec3(SCALE_FACTOR));
+
+        // **** CREATE COMPONENTS ****
         // Create mesh filter for main chassis
         auto chassisMeshFilter = std::make_shared<Components::MeshFilter>(*this);
         chassisMeshFilter->mMesh = mModel->mMeshes[0];
@@ -134,13 +137,13 @@ namespace Objects
 
         // **** CREATE GAMEOBJECT WITH CAMERA TO FOLLOW CAR ****
         // Create gameobject
-        auto cameraGameObject = std::make_shared<Core::GameObject>(glm::vec3(0, 0, -5));
+        auto cameraGameObject = std::make_shared<Core::GameObject>(glm::vec3(0, 0, -2));
         addChild(cameraGameObject);
         
         // Create camera
         auto camera = std::make_shared<Components::Camera>(*cameraGameObject);
         camera->mProjectionMode = Components::ProjectionMode::ORTHO;
-        camera->mOrthoBoxSize = 7.0f;
+        camera->mOrthoBoxSize = 3.0f;
         cameraGameObject->addComponent(camera);
     }
 
