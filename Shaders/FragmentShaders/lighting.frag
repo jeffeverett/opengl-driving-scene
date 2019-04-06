@@ -2,7 +2,7 @@
 
 out vec4 FragColor;
 
-in vec2 TexCoord;
+in vec2 TexCoords;
 
 struct DirLight {
     vec3 direction;
@@ -68,10 +68,10 @@ void main()
 {
     // Determine gBuffer inputs from textures
     GBufferInputs gBufferInputs;
-    gBufferInputs.position = texture(positionTexture, TexCoord).rgb;
-    gBufferInputs.normal = texture(normalTexture, TexCoord).rgb;
-    gBufferInputs.albedo = texture(albedoSpecTexture, TexCoord).rgb;
-    gBufferInputs.specular = texture(albedoSpecTexture, TexCoord).a;
+    gBufferInputs.position = texture(positionTexture, TexCoords).rgb;
+    gBufferInputs.normal = texture(normalTexture, TexCoords).rgb;
+    gBufferInputs.albedo = texture(albedoSpecTexture, TexCoords).rgb;
+    gBufferInputs.specular = texture(albedoSpecTexture, TexCoords).a;
 
     // Convencence calculations
     vec3 viewDir = normalize(viewPos - gBufferInputs.position);

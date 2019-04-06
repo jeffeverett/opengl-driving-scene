@@ -168,7 +168,7 @@ int main(int argc, char * argv[])
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyBack2048.png"
     };
     scene.mCubeMap.setFaces(darkFaces);
-    scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEFERRED_SHADING;
+    scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEBUG;
     scene.mRenderSettings.mScreenWidth = INIT_WIDTH;
     scene.mRenderSettings.mScreenHeight = INIT_HEIGHT;
 

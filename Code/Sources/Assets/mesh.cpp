@@ -83,6 +83,7 @@ namespace Assets
     {
         glBindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
     }
 
     void Mesh::setupMesh()
@@ -115,6 +116,8 @@ namespace Assets
         // Vertex bitangent
         glEnableVertexAttribArray(4);
         glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+        glBindVertexArray(0);
     }
 
     void Mesh::center()
