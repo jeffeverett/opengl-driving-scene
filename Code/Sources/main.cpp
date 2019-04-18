@@ -168,7 +168,7 @@ int main(int argc, char * argv[])
         PROJECT_SOURCE_DIR "/Textures/CubeMaps/DarkStormy/DarkStormyBack2048.png"
     };
     scene.mCubeMap.setFaces(darkFaces);
-    scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEBUG;
+    scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEFERRED_SHADING;
     scene.mRenderSettings.mScreenWidth = INIT_WIDTH;
     scene.mRenderSettings.mScreenHeight = INIT_HEIGHT;
 
@@ -184,8 +184,12 @@ int main(int argc, char * argv[])
     scene.add(car);
 
     // Add streetlights
-    auto streetlight = std::make_shared<Objects::Streetlight>(glm::vec3(0), 0, false);
+    auto streetlight = std::make_shared<Objects::Streetlight>(glm::vec3(0), 0, true);
     scene.add(streetlight);
+
+    // Add terrain
+    auto terrain = std::make_shared<Objects::Terrain>();
+    scene.add(terrain);
 
     //******* Register remaining callbacks *******
     glfwSetKeyCallback(window, keyCallback);
@@ -206,7 +210,7 @@ int main(int argc, char * argv[])
 #endif
 
         // Handle input
-        scene.update(deltaTime);
+        scene.update(window, deltaTime);
 
         // Tick physics engine
         physicsEngine.updateScene(scene, deltaTime);

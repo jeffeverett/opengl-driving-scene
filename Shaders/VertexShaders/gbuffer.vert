@@ -7,7 +7,7 @@ layout (location = 4) in vec3 aBitangent;
 
 out vec3 vFragPos;
 out vec2 vTexCoords;
-out mat3 vTBN;
+flat out mat3 vTBN;
 
 uniform mat4 model;
 uniform mat4 view;

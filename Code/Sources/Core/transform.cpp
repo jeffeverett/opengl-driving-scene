@@ -1,8 +1,6 @@
 #include "Core/transform.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/euler_angles.hpp>
 
 #include <iostream>
 
@@ -29,9 +27,9 @@ namespace Core
     mIsDirty = true;
   }
 
-  void Transform::rotate(const glm::vec3 &rotateVector)
+  void Transform::rotate(const glm::quat &quaternion)
   {
-    mRotation += rotateVector;
+    mRotation = quaternion;
     mIsDirty = true;
   }
 
@@ -40,7 +38,7 @@ namespace Core
     // Update model matrix
     glm::mat4 matrix = glm::scale(startingMatrix, mScale);
     matrix = glm::translate(matrix, mTranslation);
-    glm::mat4 rotationMatrix = glm::orientate4(mRotation);
+    glm::mat4 rotationMatrix = glm::toMat4(mRotation);
     mModelMatrix = rotationMatrix * matrix;
 
     std::cout << "Element 0 is " << matrix[0][0] << std::endl;

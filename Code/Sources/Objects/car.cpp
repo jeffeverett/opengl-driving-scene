@@ -4,8 +4,11 @@
 #include "Components/meshfilter.hpp"
 #include "Components/meshrenderer.hpp"
 #include "Components/spotlight.hpp"
+#include "Scripts/carscript.hpp"
 #include "Utils/meshcreator.hpp"
 #include "Utils/transformconversions.hpp"
+
+#include <iostream>
 
 using namespace Objects;
 
@@ -13,9 +16,6 @@ const float START_ROTATION = 180.0f;
 const float START_STEERING = 0.0f;
 
 const float SCALE_FACTOR = 1.0f/400.0f;
-const float ENGINE_FORCE = 600.0f;
-const float BRAKE_FORCE = 100.0f;
-const float WHEEL_TURN_RATE = 0.2f;
 
 const float MASS = 800.0f;
 
@@ -30,8 +30,6 @@ const float CONNECTION_HEIGHT = 0.16f;
 
 const float WHEEL_WIDTH = 0.03f;
 const float WHEEL_RADIUS = 0.095f;
-
-const float STEERING_CLAMP = 0.3f;
 
 const float	WHEEL_FRICTION = 1000.0f;
 const float SUSPENSION_STIFFNESS = 50.f;
@@ -90,7 +88,16 @@ namespace Objects
         btRaycastVehicle::btVehicleTuning tuning;
         carPhysicsBody->mVehicle = std::make_unique<btRaycastVehicle>(tuning, &(*carPhysicsBody->mRigidBody), &(*carPhysicsBody->mVehicleRaycaster));
         carPhysicsBody->mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+
+        physicsEngine.mDynamicsWorld->addRigidBody(&(*carPhysicsBody->mRigidBody));
+        physicsEngine.mDynamicsWorld->addVehicle(&(*carPhysicsBody->mVehicle));
+
+        addComponent<Components::PhysicsBody>(carPhysicsBody);
         addComponent(carPhysicsBody);
+
+        // Create car script
+        auto carScript = std::make_shared<Scripts::CarScript>(*this);
+        addComponent<Components::Script>(carScript);
 
         // **** CREATE SPOTLIGHTS AND TAILLIGHTS ****
         // Create child gameobjects
@@ -111,7 +118,7 @@ namespace Objects
             auto spotLight = std::make_shared<Components::SpotLight>(*spotLightGameObject); 
             spotLight->mAmbient = glm::vec3(0.2,0.2,0.2);
             spotLight->mDiffuse = glm::vec3(0.75,0.75,0.75);
-            spotLight->mSpecular = 1.0f;
+            spotLight->mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
             spotLight->mInnerCutoff = glm::cos(glm::radians(12.5f));
             spotLight->mOuterCutoff = glm::cos(glm::radians(17.5f));
             spotLight->mConstant = 1.0f;
@@ -124,9 +131,9 @@ namespace Objects
         auto tailLightGameObjects = { leftTailLightGameObject, rightTailLightGameObject };
         for (auto tailLightGameObject : tailLightGameObjects) {
             auto tailLight = std::make_shared<Components::SpotLight>(*leftSpotLightGameObject);
-            tailLight->mAmbient = glm::vec3(0.23,0.06,0.06);
-            tailLight->mDiffuse = glm::vec3(0.75,0.15,0.15);
-            tailLight->mSpecular = 1.0f;
+            tailLight->mAmbient = glm::vec3(0.23f, 0.06f, 0.06f);
+            tailLight->mDiffuse = glm::vec3(0.75f, 0.15f, 0.15f);
+            tailLight->mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
             tailLight->mInnerCutoff = glm::cos(glm::radians(12.5f));
             tailLight->mOuterCutoff = glm::cos(glm::radians(17.5f));
             tailLight->mConstant = 1.0f;
@@ -137,7 +144,7 @@ namespace Objects
 
         // **** CREATE GAMEOBJECT WITH CAMERA TO FOLLOW CAR ****
         // Create gameobject
-        auto cameraGameObject = std::make_shared<Core::GameObject>(glm::vec3(0, 0, -2));
+        auto cameraGameObject = std::make_shared<Core::GameObject>(glm::vec3(0, 0, 2));
         addChild(cameraGameObject);
         
         // Create camera

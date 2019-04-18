@@ -14,13 +14,14 @@ namespace Core
 
     void Scene::addComponents(std::shared_ptr<GameObject> gameObject)
     {
-        for (auto &component : gameObject->mComponents) {
+        for (auto it = gameObject->mComponentsHash.begin(); it != gameObject->mComponentsHash.end(); it++) {
             std::cout << "adding component to scene" << std::endl;
-            const std::type_info &ti = typeid(*component);
-            if (mComponentsHash.find(ti.hash_code()) == mComponentsHash.end()) {
-                mComponentsHash[ti.hash_code()] = std::vector<std::shared_ptr<Components::Component>>();
+            size_t hashCode = it->first;
+            if (mComponentsHash.find(hashCode) == mComponentsHash.end()) {
+                mComponentsHash[hashCode] = std::vector<std::shared_ptr<Components::Component>>();
             }
-            mComponentsHash[ti.hash_code()].push_back(component);
+            mComponentsHash[hashCode].reserve(mComponentsHash[hashCode].size() + it->second.size());
+            mComponentsHash[hashCode].insert(mComponentsHash[hashCode].end(), it->second.begin(), it->second.end());
         }
 
         for (auto &childGameObject : gameObject->mChildren) {
@@ -28,13 +29,10 @@ namespace Core
         }
     }
 
-    void Scene::update(float deltaTime)
+    void Scene::update(GLFWwindow *window, float deltaTime)
     {
-        for (auto gameObject : mGameObjects) {
-            auto scripts = gameObject->getComponents<Components::Script>();
-            for (auto script : scripts) {
-                script->onUpdate();
-            }
+        for (auto script : getComponents<Components::Script>()) {
+            script->onUpdate(window, deltaTime);
         }
     }
 }

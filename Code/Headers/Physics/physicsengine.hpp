@@ -16,6 +16,10 @@ namespace Physics
         void updateDirtyTransforms(std::shared_ptr<Core::GameObject> gameObject, glm::mat4 matrix, bool parentDirty);
         void connectDebugRenderer(btIDebugDraw *debugRenderer);
 
+        std::unique_ptr<btDefaultCollisionConfiguration> mCollisionConfiguration;
+        std::unique_ptr<btCollisionDispatcher> mDispatcher;
+        std::unique_ptr<btDbvtBroadphase> mOverlappingPairCache;
+        std::unique_ptr<btSequentialImpulseConstraintSolver> mSolver;
         std::unique_ptr<btDiscreteDynamicsWorld> mDynamicsWorld;
 
     private:

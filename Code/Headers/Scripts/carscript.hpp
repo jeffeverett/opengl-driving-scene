@@ -11,6 +11,6 @@ namespace Scripts
         virtual ~CarScript();
 
         virtual void onStart() override;
-        virtual void onUpdate() override;
+        virtual void onUpdate(GLFWwindow *window, float deltaTime) override;
     };
 }

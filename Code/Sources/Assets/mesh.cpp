@@ -39,26 +39,51 @@ namespace Assets
         std::vector<glm::vec3> bitangents;
 
         for (int i = 0; i < positions.size(); i += 3) {
-            glm::vec3 edge1 = positions[i+1] - positions[i];
-            glm::vec3 edge2 = positions[i+2] - positions[i];
-            glm::vec2 deltaUV1 = texCoords[i+1] - texCoords[i];
-            glm::vec2 deltaUV2 = texCoords[i+2] - texCoords[i]; 
+            glm::highp_dvec3 hpPosition1 = positions[i];
+            glm::highp_dvec3 hpPosition2 = positions[i+1];
+            glm::highp_dvec3 hpPosition3 = positions[i+2];
+
+            glm::highp_dvec2 hpUV1 = texCoords[i];
+            glm::highp_dvec2 hpUV2 = texCoords[i+1];
+            glm::highp_dvec2 hpUV3 = texCoords[i+2];
+
+            glm::highp_dvec3 edge1 = hpPosition2 - hpPosition1;
+            glm::highp_dvec3 edge2 = hpPosition3 - hpPosition1;
+            glm::highp_dvec2 deltaUV1 = hpUV2 - hpUV1;
+            glm::highp_dvec2 deltaUV2 = hpUV3 - hpUV1; 
             
-            float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+            double f = 1.0 / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
             glm::vec3 tangent;
             tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
             tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
             tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
             tangent = glm::normalize(tangent);
-            tangents.push_back(tangent);
 
             glm::vec3 bitangent;
             bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
             bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
             bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
             bitangent = glm::normalize(bitangent);  
-            bitangents.push_back(bitangent);
+
+
+            // Check for invalid values
+            if (tangent[0] != tangent[0] || tangent[1] != tangent[1] || tangent[2] != tangent[2] ||
+                bitangent[0] != bitangent[0] || bitangent[1] != bitangent[1] || bitangent[2] != bitangent[2]) {
+                // Theoretically, this will only be invalid when not using normal maps, no tangent/bitangent doesn't matter
+                tangents.push_back(glm::vec3(1, 0, 0));
+                bitangents.push_back(glm::vec3(0, 1, 0));
+            }
+            // Check for values that were not properly normalized
+            else if (glm::length(tangent) < 0.9 || glm::length(bitangent) < 0.9) {
+                // Theoretically, this will only be zero when not using normal maps, no tangent/bitangent doesn't matter
+                tangents.push_back(glm::vec3(1, 0, 0));
+                bitangents.push_back(glm::vec3(0, 1, 0));
+            }
+            else {
+                tangents.push_back(glm::vec3(1, 0, 0));
+                bitangents.push_back(glm::vec3(0, 1, 0));
+            }
         }
 
         // Create vertices

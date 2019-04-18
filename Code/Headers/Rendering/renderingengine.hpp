@@ -23,17 +23,22 @@ namespace Rendering
         RenderingEngine(RenderingEngine const &) = delete;
         RenderingEngine & operator=(RenderingEngine const &) = delete;
 
+        void calculateCameraUniforms(Core::Scene const &scene);
         void prepareMaterialForRender(std::shared_ptr<Assets::Material> material);
-        void setCameraUniforms(std::shared_ptr<Assets::Material> material, Core::Scene const &scene);
-        void setModelUniforms(std::shared_ptr<Assets::Material> material, Core::Scene const &scene, const Core::GameObject &gameObject);
+        void setCameraUniforms(std::shared_ptr<Assets::Shader> shader);
+        void setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, const Core::GameObject &gameObject);
+        void setLightingUniforms(Core::Scene const &scene);
         void drawQuad();
+
+        glm::mat4 mProjectionMtx;
+        glm::mat4 mViewMtx;
 
         std::unique_ptr<TextRenderer> mTextRenderer;
 
         int mDrawCalls;
 
         GLuint mGBufferID;
-        GLuint mGPositionID, mGNormalID, mGAlbedoSpecID;
+        GLuint mGDepthID, mGPositionID, mGNormalID, mGAlbedoSpecID;
 
         float mTexWidth;
         float mTexHeight;

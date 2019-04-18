@@ -8,7 +8,10 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include <iomanip>
+#include <Components/pointlight.hpp>
+#include <Components/spotlight.hpp>
 
 float quadVertices[] = {
     -1.0f, 1.0f,
@@ -43,6 +46,14 @@ namespace Rendering
     // Create gBuffer
     glGenFramebuffers(1, &mGBufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, mGBufferID);
+
+    // Create depth buffer
+    glGenTextures(1, &mGDepthID);
+    glBindTexture(GL_TEXTURE_2D, mGDepthID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mTexWidth, mTexHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, mGDepthID, 0);
 
     // Create position color buffer
     glGenTextures(1, &mGPositionID);
@@ -134,10 +145,14 @@ namespace Rendering
     mDrawCalls = 0;
 
     // ***** SETUP *****
+    // Handle viewport changes
     glViewport(0, 0, scene.mRenderSettings.mScreenWidth, scene.mRenderSettings.mScreenHeight);
     if (scene.mRenderSettings.mScreenWidth != mTexWidth || scene.mRenderSettings.mScreenHeight != mTexHeight) {
       mTexWidth = scene.mRenderSettings.mScreenWidth;
       mTexHeight = scene.mRenderSettings.mScreenHeight;
+
+      glBindTexture(GL_TEXTURE_2D, mGDepthID);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mTexWidth, mTexHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
       glBindTexture(GL_TEXTURE_2D, mGPositionID);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, mTexWidth, mTexHeight, 0, GL_RGB, GL_FLOAT, NULL);
@@ -148,6 +163,9 @@ namespace Rendering
       glBindTexture(GL_TEXTURE_2D, mGAlbedoSpecID);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mTexWidth, mTexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     }
+
+    // Calculate common uniforms
+    calculateCameraUniforms(scene);
 
     // ***** GEOMETRY PASS *****
     glEnable(GL_DEPTH_TEST);
@@ -167,8 +185,8 @@ namespace Rendering
       // Prepare for draw
       auto material = meshRenderer->mMaterial;
       prepareMaterialForRender(material);
-      setCameraUniforms(material, scene);
-      setModelUniforms(material, scene, meshRenderer->mGameObject);
+      setCameraUniforms(material->mGeometryShader);
+      setModelUniforms(material->mGeometryShader, scene, meshRenderer->mGameObject);
       
       // Draw
       auto meshFilters = meshRenderer->mGameObject.getComponents<Components::MeshFilter>();
@@ -203,6 +221,7 @@ namespace Rendering
 
       // Draw normals in top-right
       mDebugNormalShader->use();
+      mDebugNormalShader->setMat4("view", mViewMtx);
       mDebugNormalShader->setInt("normalTexture", 1);
       mDebugNormalShader->setVec2("scale", 0.5f, 0.5f);
       mDebugNormalShader->setVec2("offset", 0.5f, 0.5f);
@@ -232,6 +251,7 @@ namespace Rendering
       mLightingShader->setInt("albedoSpecTexture", 2);
       mLightingShader->setVec2("scale", 1.0f, 1.0f);
       mLightingShader->setVec2("offset", 0.0f, 0.0f);
+      setLightingUniforms(scene);
       drawQuad();
 
       // Draw physics debugging lines if enabled
@@ -258,6 +278,21 @@ namespace Rendering
     std::ostringstream drawCallsOSS;
     drawCallsOSS << std::fixed << std::setprecision(5) << "Draw Calls: " << mDrawCalls;
     mTextRenderer->renderText(drawCallsOSS.str(), 1, scene.mRenderSettings.mScreenWidth, scene.mRenderSettings.mScreenHeight, glm::vec3(0.5f, 0.5f, 0.5f));
+  }
+
+  void RenderingEngine::calculateCameraUniforms(Core::Scene const &scene)
+  {
+    auto camera = scene.getComponents<Components::Camera>()[0];
+
+    // Set projection matrix
+    float aspectRatio = scene.mRenderSettings.mScreenWidth / scene.mRenderSettings.mScreenHeight;
+    mProjectionMtx = camera->getProjectionMatrix(aspectRatio);
+
+    // Set view matrix
+    glm::vec3 position = camera->mGameObject.mTransform->mTranslation;
+    glm::vec3 target = glm::vec3(0);
+    glm::vec3 up = glm::vec3(0, 1, 0);
+    mViewMtx = camera->getViewMatrix(position, target, up);
   }
 
   void RenderingEngine::prepareMaterialForRender(std::shared_ptr<Assets::Material> material)
@@ -294,24 +329,72 @@ namespace Rendering
     }
   }
 
-  void RenderingEngine::setCameraUniforms(std::shared_ptr<Assets::Material> material, Core::Scene const &scene)
+  void RenderingEngine::setCameraUniforms(std::shared_ptr<Assets::Shader> shader)
   {
-    auto camera = scene.getComponents<Components::Camera>()[0];
-
-    // Set projection matrix
-    float aspectRatio = scene.mRenderSettings.mScreenWidth / scene.mRenderSettings.mScreenHeight;
-    material->mGeometryShader->setMat4("projection", camera->getProjectionMatrix(aspectRatio));
-
-    // Set view matrix
-    glm::vec3 position = camera->mGameObject.mTransform->mTranslation;
-    glm::vec3 target = glm::vec3(0);
-    glm::vec3 up = glm::vec3(0, 1, 0);
-    material->mGeometryShader->setMat4("view", camera->getViewMatrix(position, target, up));
+    shader->setMat4("projection", mProjectionMtx);
+    shader->setMat4("view", mViewMtx);
   }
 
-  void RenderingEngine::setModelUniforms(std::shared_ptr<Assets::Material> material, Core::Scene const &scene, const Core::GameObject &gameObject)
+  void RenderingEngine::setLightingUniforms(Core::Scene const &scene)
+  {
+    // Set view position
+    auto camera = scene.getComponents<Components::Camera>()[0];
+    auto cameraPos = camera->mGameObject.mTransform->mTranslation;
+    mLightingShader->setVec3("viewPos", cameraPos);
+
+    // Set directional light uniforms
+    mLightingShader->setVec3("dirLight.direction", glm::vec3(0.3f, -0.7f, 0.648f));
+    mLightingShader->setVec3("dirLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+    mLightingShader->setVec3("dirLight.diffuse", glm::vec3(0.25f, 0.25f, 0.25f));
+    mLightingShader->setVec3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    // Set point light uniforms
+    auto pointLights = scene.getComponents<Components::PointLight>();
+    std::map<float, std::shared_ptr<Components::PointLight>> distancesMap;
+    for (int i = 0; i < pointLights.size(); i++) {
+      glm::vec3 pointLightPos = pointLights[i]->mGameObject.mTransform->mTranslation;
+      float distance = glm::length(cameraPos-pointLightPos);
+      distancesMap[distance] = pointLights[i];
+    }
+    auto iter = distancesMap.begin();
+    for (int i = 0; i < std::min((size_t) 6, distancesMap.size()); i++) {
+      std::string number = std::to_string(i);
+      auto pointLight = iter->second;
+      mLightingShader->setVec3("pointLights[" + number + "].position", pointLight->mGameObject.mTransform->mTranslation);
+      mLightingShader->setVec3("pointLights[" + number + "].ambient", pointLight->mAmbient);
+      mLightingShader->setVec3("pointLights[" + number + "].diffuse", pointLight->mDiffuse);
+      mLightingShader->setVec3("pointLights[" + number + "].specular", pointLight->mSpecular);
+      mLightingShader->setFloat("pointLights[" + number + "].constant", pointLight->mConstant);
+      mLightingShader->setFloat("pointLights[" + number + "].linear", pointLight->mLinear);
+      mLightingShader->setFloat("pointLights[" + number + "].quadratic", pointLight->mQuadratic);
+      iter++;
+    }
+
+    // Set spot light uniforms
+    auto spotLights = scene.getComponents<Components::SpotLight>();
+    for (int i = 0; i < spotLights.size(); i++) {
+        std::string number = std::to_string(i);
+        auto spotLight = spotLights[i];
+
+        auto modelMatrix = spotLight->mGameObject.mTransform->mModelMatrix;
+        glm::vec3 lightDirection(modelMatrix[0][2], modelMatrix[1][2], modelMatrix[2][2]);
+
+        mLightingShader->setVec3("spotLights[" + number + "].position", spotLight->mGameObject.mTransform->mTranslation);
+        mLightingShader->setVec3("spotLights[" + number + "].direction", lightDirection);
+        mLightingShader->setVec3("spotLights[" + number + "].ambient", spotLight->mAmbient);
+        mLightingShader->setVec3("spotLights[" + number + "].diffuse", spotLight->mDiffuse);
+        mLightingShader->setVec3("spotLights[" + number + "].specular", spotLight->mSpecular);
+        mLightingShader->setFloat("spotLights[" + number + "].innerCutoff", spotLight->mInnerCutoff);
+        mLightingShader->setFloat("spotLights[" + number + "].outerCutoff", spotLight->mOuterCutoff);
+        mLightingShader->setFloat("spotLights[" + number + "].constant", spotLight->mConstant);
+        mLightingShader->setFloat("spotLights[" + number + "].linear", spotLight->mLinear);
+        mLightingShader->setFloat("spotLights[" + number + "].quadratic", spotLight->mQuadratic);
+    }
+  }
+
+  void RenderingEngine::setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, const Core::GameObject &gameObject)
   {
     // Set model matrix
-    material->mGeometryShader->setMat4("model", gameObject.mTransform->mModelMatrix);
+    shader->setMat4("model", gameObject.mTransform->mModelMatrix);
   }
 }

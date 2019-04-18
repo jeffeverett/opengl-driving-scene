@@ -21,7 +21,7 @@ namespace Core
         ~Scene() { }
 
         void add(std::shared_ptr<Core::GameObject> gameObject);
-        void update(float deltaTime);
+        void update(GLFWwindow *window, float deltaTime);
 
         template <typename T>
         std::vector<std::shared_ptr<T>> getComponents() const

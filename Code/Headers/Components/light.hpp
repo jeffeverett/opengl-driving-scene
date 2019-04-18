@@ -12,7 +12,7 @@ namespace Components
 
         glm::vec3 mAmbient;
         glm::vec3 mDiffuse;
-        float mSpecular;
+        glm::vec3 mSpecular;
     private:
         Light(Light const &) = delete;
         Light &operator=(Light const &) = delete;

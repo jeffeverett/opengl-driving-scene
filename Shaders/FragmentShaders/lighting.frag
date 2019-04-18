@@ -51,11 +51,14 @@ uniform sampler2D positionTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D albedoSpecTexture;
 
+// Lights
 uniform DirLight dirLight;
 #define NR_POINT_LIGHTS 6
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 #define NR_SPOT_LIGHTS 4
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
+
+// Other inputs
 uniform vec3 viewPos;
 uniform vec4 fogColor;
 uniform float fogDensity;
@@ -78,21 +81,24 @@ void main()
 
     // Phase 1: Directional lighting
     vec3 result = CalcDirLight(dirLight, viewDir, gBufferInputs);
-    // Phase 2: Point lights
+    /*// Phase 2: Point lights
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], viewDir, gBufferInputs);
     // Phase 3: Spot light
     for (int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], viewDir, gBufferInputs);
-
+    */
     vec4 objectColor = vec4(result, 1.0);
+    FragColor = objectColor;
 
+    /*
     // Phase 4: Apply fog
     float distance = length(viewPos - gBufferInputs.position);
     // Note: same as GL_EXP
     float f = exp(-fogDensity*distance);
 
     FragColor = f*objectColor + (1-f)*fogColor;
+    */
 }
 
 vec3 CalcDirLight(DirLight light, vec3 viewDir, GBufferInputs gBufferInputs)
@@ -107,7 +113,7 @@ vec3 CalcDirLight(DirLight light, vec3 viewDir, GBufferInputs gBufferInputs)
     vec3 ambient  = light.ambient  * gBufferInputs.albedo;
     vec3 diffuse  = light.diffuse  * diff * gBufferInputs.albedo;
     vec3 specular = light.specular * spec * vec3(gBufferInputs.specular);
-    return (ambient);
+    return (ambient + diff);
 }
 
 vec3 CalcPointLight(PointLight light, vec3 viewDir, GBufferInputs gBufferInputs)
@@ -129,7 +135,7 @@ vec3 CalcPointLight(PointLight light, vec3 viewDir, GBufferInputs gBufferInputs)
     ambient  *= attenuation;
     diffuse  *= attenuation;
     specular *= attenuation;
-    return (ambient + diffuse);
+    return (ambient + diffuse + specular);
 }
 
 vec3 CalcSpotLight(SpotLight light, vec3 viewDir, GBufferInputs gBufferInputs)
@@ -154,5 +160,5 @@ vec3 CalcSpotLight(SpotLight light, vec3 viewDir, GBufferInputs gBufferInputs)
     ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
-    return (ambient);
+    return (ambient + diffuse + specular);
 }

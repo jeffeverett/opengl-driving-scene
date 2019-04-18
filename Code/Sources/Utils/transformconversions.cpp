@@ -20,4 +20,9 @@ namespace Utils
     {
         return btVector3(vec[0], vec[1], vec[2]);
     }
+
+    glm::quat TransformConversions::btQuaternion2glmQuat(btQuaternion quaternion)
+    {
+        return glm::quat(quaternion.x(), quaternion.y(), quaternion.z(), quaternion.w());
+    }
 }

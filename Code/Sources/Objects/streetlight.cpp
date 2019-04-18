@@ -28,7 +28,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     else {
         mTransform->scale(glm::vec3(-1, 1, 1));
     }
-    mTransform->rotate(glm::vec3(0, theta, 0));
+    //mTransform->rotate(glm::vec3(0, theta, 0));
 
     // **** CREATE COMPONENTS ***
     // Create mesh filter for post
@@ -71,9 +71,9 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
 
     // Create point light
     auto pointLight = std::make_shared<Components::PointLight>(*bulbGameObject);
-    pointLight->mAmbient = glm::vec3(0.25,0.25,0.25);
-    pointLight->mDiffuse = glm::vec3(0.60,0.60,0.60);
-    pointLight->mSpecular = 1.0f;
+    pointLight->mAmbient = glm::vec3(0.25f, 0.25f, 0.25f);
+    pointLight->mDiffuse = glm::vec3(0.60f, 0.60f, 0.60f);
+    pointLight->mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
     pointLight->mConstant = 1.0f;
     pointLight->mLinear = 0.09f;
     pointLight->mQuadratic = 0.032f;

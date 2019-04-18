@@ -3,9 +3,11 @@
 #include "Core/transform.hpp"
 #include "Components/component.hpp"
 
+#include <iostream>
 #include <vector>
 #include <memory>
 #include <typeinfo>
+
 #include <unordered_map>
 
 // Forward declaration
@@ -22,7 +24,19 @@ namespace Core
         ~GameObject();
 
         void addChild(std::shared_ptr<GameObject> gameObject);
-        void addComponent(std::shared_ptr<Components::Component> component);
+
+        template <typename T>
+        void addComponent(std::shared_ptr<T> component)
+        {
+            mComponents.push_back(component);
+
+            const std::type_info &ti = typeid(T);
+            std::cout << ti.name() << std::endl;
+            if (mComponentsHash.find(ti.hash_code()) == mComponentsHash.end()) {
+                mComponentsHash[ti.hash_code()] = std::vector<std::shared_ptr<Components::Component>>();
+            }
+            mComponentsHash[ti.hash_code()].push_back(component);
+        }
         
         template <typename T>
         std::vector<std::shared_ptr<T>> getComponents() const
@@ -42,8 +56,7 @@ namespace Core
         std::shared_ptr<Transform> mTransform;
         std::vector<std::shared_ptr<Components::Component>> mComponents;
         std::vector<std::shared_ptr<GameObject>> mChildren;
-
-    private:
+        
         std::unordered_map<std::size_t, std::vector<std::shared_ptr<Components::Component>>> mComponentsHash; 
     };
 }

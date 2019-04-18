@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace Core
 {
@@ -12,13 +14,13 @@ namespace Core
 
         void scale(const glm::vec3 &scaleVector);
         void translate(const glm::vec3 &translationVector);
-        void rotate(const glm::vec3 &rotateVector);
+        void rotate(const glm::quat &quaternion);
 
         void updateModelMatrix(glm::mat4 startingMatrix);
 
         glm::vec3 mScale;
         glm::vec3 mTranslation;
-        glm::vec3 mRotation;
+        glm::quat mRotation;
 
         glm::mat4 mModelMatrix;
 
