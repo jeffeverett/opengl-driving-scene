@@ -1,5 +1,6 @@
 #include "Objects/terrain.hpp"
 #include "Components/physicsbody.hpp"
+#include "Components/terrainrenderer.hpp"
 #include "Utils/meshcreator.hpp"
 
 #include <stb_image.h>
@@ -17,11 +18,13 @@ const float TEXTURE_REPEAT_Z = 30.0f;
 
 namespace Objects
 {
+    std::shared_ptr<Assets::Material> Terrain::mMaterial;
+
     int Terrain::mHeightmapWidth;
     int Terrain::mHeightmapHeight;
     unsigned char *Terrain::mTransposedHeightData;
 
-    Terrain::Terrain() : Core::GameObject()
+    Terrain::Terrain(glm::vec3 position, const Physics::PhysicsEngine &physicsEngine) : Core::GameObject(position)
     {
         // **** CREATE COMPONENTS ****
         // Create physics body
@@ -52,7 +55,18 @@ namespace Objects
         physicsBody->mMotionState = std::make_unique<btDefaultMotionState>(terrainTransform);
         btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, &(*physicsBody->mMotionState), &(*physicsBody->mShape), localInertia);
         physicsBody->mRigidBody = std::make_unique<btRigidBody>(rbInfo);
+        physicsEngine.mDynamicsWorld->addRigidBody(&(*physicsBody->mRigidBody));
         addComponent(physicsBody);
+
+        // Create terrain renderer
+        auto terrainRenderer = std::make_shared<Components::TerrainRenderer>(*this);
+        terrainRenderer->mMaterial = mMaterial;
+        terrainRenderer->mHeightScale = SIZE_Y;
+        terrainRenderer->mPatchesZ = 16;
+        terrainRenderer->mPatchesX = 16;
+        terrainRenderer->mScaleZ = SIZE_Z/16;
+        terrainRenderer->mScaleX = SIZE_X/16;
+        addComponent(terrainRenderer);
     }
 
     Terrain::~Terrain()
@@ -60,9 +74,21 @@ namespace Objects
         delete [] mTransposedHeightData;
     }
 
-    void Terrain::setup()
+    void Terrain::setup(std::shared_ptr<Assets::Shader> terrainShader)
     {
+        // ***** LOAD HEIGHTMAP *****
         loadHeightMap(PROJECT_SOURCE_DIR "/Textures/HeightMaps/height_map1.png");
+
+        // ***** CREATE MATERIAL *****
+        auto terrainMaterial = std::make_shared<Assets::Material>();
+        terrainMaterial->mGeometryShader = terrainShader;
+        terrainMaterial->mAlbedoMap = std::make_shared<Assets::Texture>(
+            PROJECT_SOURCE_DIR "/Textures/Ground/rock.jpg"
+        );
+        terrainMaterial->mHeightMap = std::make_shared<Assets::Texture>(
+            PROJECT_SOURCE_DIR "/Textures/HeightMaps/height_map1.png"
+        );
+        mMaterial = terrainMaterial;
     }
 
     void Terrain::loadHeightMap(std::string heightMap)

@@ -17,7 +17,7 @@ namespace Rendering
 
         void renderScene(Core::Scene const &scene, double rollingFPS);
 
-        std::unique_ptr<PhysicsDebugRenderer> mPhysicsDebugRenderer;
+        std::unique_ptr<PhysicsDebugRenderer> mDebugRenderer;
         
     private:
         RenderingEngine(RenderingEngine const &) = delete;

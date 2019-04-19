@@ -18,6 +18,7 @@ namespace Assets
         std::shared_ptr<Texture> mAlbedoMap;
         std::shared_ptr<Texture> mSpecularMap;
         std::shared_ptr<Texture> mNormalMap;
+        std::shared_ptr<Texture> mHeightMap;
 
         std::shared_ptr<Shader> mGeometryShader;
     };

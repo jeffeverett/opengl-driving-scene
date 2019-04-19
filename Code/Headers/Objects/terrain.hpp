@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/gameobject.hpp"
+#include "Physics/physicsengine.hpp"
 #include "Assets/mesh.hpp"
 #include "Assets/material.hpp"
 
@@ -14,11 +15,11 @@ namespace Objects
     class Terrain : public Core::GameObject
     {
     public:
-        Terrain();
+        Terrain(glm::vec3 position, const Physics::PhysicsEngine &physicsEngine);
         ~Terrain();
 
 
-        static void setup();
+        static void setup(std::shared_ptr<Assets::Shader> terrainShader);
 
     private:
         Terrain(Terrain const &) = delete;

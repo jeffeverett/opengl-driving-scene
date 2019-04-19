@@ -1,0 +1,58 @@
+#version 400
+
+layout(quads, equal_spacing, cw) in;
+
+// Input
+in vec3 tcPosition[];
+in vec2 tcTexCoords[];
+
+// Ouput
+out vec3 tePosition;
+out vec2 teTexCoords;
+out vec3 tePatchDistance;
+
+// Uniforms
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+uniform float heightScale;
+
+uniform int gridSizeX;
+uniform int gridSizeZ;
+
+uniform sampler2D heightMap;
+
+vec3 interpolate3(in vec3 v0, in vec3 v1, in vec3 v2, in vec3 v3)
+{
+	vec3 a = mix(v0, v1, gl_TessCoord.x);
+	vec3 b = mix(v3, v2, gl_TessCoord.x);
+	return mix(a, b, gl_TessCoord.y);
+}
+
+
+vec2 interpolate2(in vec2 v0, in vec2 v1, in vec2 v2, in vec2 v3)
+{
+	vec2 a = mix(v0, v1, gl_TessCoord.x);
+	vec2 b = mix(v3, v2, gl_TessCoord.x);
+	return mix(a, b, gl_TessCoord.y);
+}
+
+void main()
+{
+   // Distance to edge of patch for interpolation
+   tePatchDistance = gl_TessCoord;
+
+   // Interpolate position and UV
+   vec3 position = interpolate3(tcPosition[0], tcPosition[1], tcPosition[2], tcPosition[3]);
+   teTexCoords = interpolate2(tcTexCoords[0], tcTexCoords[1], tcTexCoords[2], tcTexCoords[3]);
+
+   // Sample heightMap with new coordinates
+   float height = texture(heightMap, teTexCoords).r * heightScale;
+
+   // Write position
+   tePosition = vec3(position.x, height, position.z);
+
+   // Project vertex
+   gl_Position = projection * view * model * vec4(tePosition, 1);
+}

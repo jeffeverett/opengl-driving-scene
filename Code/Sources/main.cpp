@@ -82,7 +82,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
         }
     }
     else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
-        scene.mRenderSettings.mPhysicsDebug = !scene.mRenderSettings.mPhysicsDebug;
+        scene.mRenderSettings.mDrawDebugLines = !scene.mRenderSettings.mDrawDebugLines;
     }
 }
 
@@ -149,12 +149,19 @@ int main(int argc, char * argv[])
     Rendering::RenderingEngine renderingEngine;
 
     // Make necessary connections
-    physicsEngine.connectDebugRenderer(&(*renderingEngine.mPhysicsDebugRenderer));
+    physicsEngine.connectDebugRenderer(&(*renderingEngine.mDebugRenderer));
     
     
     //******* CREATE REUSABLE ASSETS *******
     auto defaultGeometryShader = std::make_shared<Assets::Shader>(
         PROJECT_SOURCE_DIR "/Shaders/VertexShaders/gbuffer.vert",
+        PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/gbuffer.frag"
+    );
+    auto defaultTerrainShader = std::make_shared<Assets::Shader>(
+        PROJECT_SOURCE_DIR "/Shaders/VertexShaders/terrain.vert",
+        PROJECT_SOURCE_DIR "/Shaders/TessCtrlShaders/terrain.tcs",
+        PROJECT_SOURCE_DIR "/Shaders/TessEvalShaders/terrain.tes",
+        PROJECT_SOURCE_DIR "/Shaders/GeometryShaders/terrain.geom",
         PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/gbuffer.frag"
     );
 
@@ -169,6 +176,7 @@ int main(int argc, char * argv[])
     };
     scene.mCubeMap.setFaces(darkFaces);
     scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEFERRED_SHADING;
+    scene.mRenderSettings.mDrawDebugLines = true;
     scene.mRenderSettings.mScreenWidth = INIT_WIDTH;
     scene.mRenderSettings.mScreenHeight = INIT_HEIGHT;
 
@@ -176,7 +184,7 @@ int main(int argc, char * argv[])
     // Setup objects
     Objects::Wall::setup();
     Objects::Car::setup(defaultGeometryShader);
-    Objects::Terrain::setup();
+    Objects::Terrain::setup(defaultTerrainShader);
     Objects::Streetlight::setup(defaultGeometryShader);
 
     // Add car
@@ -188,7 +196,7 @@ int main(int argc, char * argv[])
     scene.add(streetlight);
 
     // Add terrain
-    auto terrain = std::make_shared<Objects::Terrain>();
+    auto terrain = std::make_shared<Objects::Terrain>(glm::vec3(0), physicsEngine);
     scene.add(terrain);
 
     //******* Register remaining callbacks *******

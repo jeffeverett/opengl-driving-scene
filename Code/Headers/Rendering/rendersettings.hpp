@@ -13,7 +13,7 @@ namespace Rendering
 
   struct RenderSettings {
     RenderMode mRenderMode;
-    bool mPhysicsDebug;
+    bool mDrawDebugLines;
     
     float mScreenWidth;
     float mScreenHeight;

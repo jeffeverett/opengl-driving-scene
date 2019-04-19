@@ -10,11 +10,13 @@ namespace Assets
     class Shader
     {
     public:
-        Shader(const char* vertexPath, const char* fragmentPath);
+        Shader(std::string vertexPath, std::string fragmentPath);
+        Shader(std::string vertexPath, std::string tcsPath, std::string tesPath, std::string geomPath, std::string fragmentPath);
         ~Shader();
 
-        void use() const;
+        void attachShader(GLuint shaderType, std::string shaderPath, std::string shaderTypeStr);
         void checkCompileErrors(GLuint shader, std::string type);
+        void use() const;
 
         void setBool(const std::string &name, bool value) const;
         void setInt(const std::string &name, int value) const;

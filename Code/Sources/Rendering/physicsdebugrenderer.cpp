@@ -1,6 +1,7 @@
 #include "Rendering/physicsdebugrenderer.hpp"
 #include "Utils/transformconversions.hpp"
 
+#define DEBUG
 #include <iostream>
 
 namespace Rendering
@@ -42,9 +43,9 @@ namespace Rendering
 
     void PhysicsDebugRenderer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
     {
-    #ifdef DEBUG
-        //std::cout << "Drawing line with color (" << color[0] << ", " << color[1] << ", " << color[2] << ")" << std::endl;
-    #endif
+        #ifdef DEBUG
+            std::cout << "Drawing line with color (" << color[0] << ", " << color[1] << ", " << color[2] << ")" << std::endl;
+        #endif
 
         Vertex fromVertex = {
             Utils::TransformConversions::btVector32glmVec3(from),

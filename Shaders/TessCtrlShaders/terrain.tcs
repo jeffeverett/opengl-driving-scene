@@ -1,0 +1,33 @@
+#version 400
+
+layout(vertices = 4) out;
+
+// Input
+in vec3 vPosition[];
+in vec2 vTexCoords[]; 
+
+// Output
+out vec3 tcPosition[];
+out vec2 tcTexCoords[];
+
+// Tesselation control parameters
+uniform float innerTL;
+uniform float outerTL;
+
+void main()
+{
+   //  Coordinate passthrough
+   tcPosition[gl_InvocationID] = vPosition[gl_InvocationID];
+   tcTexCoords[gl_InvocationID] = vTexCoords[gl_InvocationID];
+
+   //  Only the first vertex per patch needs to set the patch parameters
+   if (gl_InvocationID == 0)
+   {
+      gl_TessLevelInner[0] = innerTL;
+      gl_TessLevelInner[1] = innerTL;
+      gl_TessLevelOuter[0] = outerTL;
+      gl_TessLevelOuter[1] = outerTL;
+      gl_TessLevelOuter[2] = outerTL;
+      gl_TessLevelOuter[3] = outerTL;
+   }
+}

@@ -5,7 +5,7 @@ layout (location = 2) in vec2 aTexCoords;
 layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBitangent;
 
-out vec3 vFragPos;
+out vec3 vPosition;
 out vec2 vTexCoords;
 flat out mat3 vTBN;
 
@@ -16,7 +16,7 @@ uniform mat4 projection;
 void main()
 {
     vec4 worldPos = model * vec4(aPos, 1.0);
-    vFragPos = worldPos.xyz; 
+    vPosition = worldPos.xyz; 
     vTexCoords = aTexCoords;
 
     mat3 normalMatrix = transpose(inverse(mat3(model)));

@@ -1,9 +1,11 @@
 #include "Rendering/renderingengine.hpp"
 #include "Rendering/rendersettings.hpp"
 #include "Components/meshrenderer.hpp"
+#include "Components/terrainrenderer.hpp"
 #include "Components/meshfilter.hpp"
 #include "Components/camera.hpp"
 #include "Utils/openglerrors.hpp"
+#include "Utils/transformconversions.hpp"
 #include "globals.hpp"
 
 #include <vector>
@@ -31,7 +33,8 @@ namespace Rendering
     mTextRenderer = std::make_unique<TextRenderer>(
       PROJECT_SOURCE_DIR "/Fonts/arial.ttf"
     );
-    mPhysicsDebugRenderer = std::make_unique<PhysicsDebugRenderer>();
+    mDebugRenderer = std::make_unique<PhysicsDebugRenderer>();
+    mDebugRenderer->setDebugMode(2);
 
     // Set initial width/height of textures
     mTexWidth = INIT_WIDTH;
@@ -196,6 +199,29 @@ namespace Rendering
       }
     }
 
+    // Render terrains
+    glBindVertexArray(mQuadVAO);
+    auto terrainRenderers = scene.getComponents<Components::TerrainRenderer>();
+    for (auto terrainRenderer : terrainRenderers) {
+      // Prepare for draw
+      auto material = terrainRenderer->mMaterial;
+      prepareMaterialForRender(material);
+      setCameraUniforms(material->mGeometryShader);
+      setModelUniforms(material->mGeometryShader, scene, terrainRenderer->mGameObject);
+      
+      // Draw
+      material->mGeometryShader->setFloat("heightScale", terrainRenderer->mHeightScale);
+      material->mGeometryShader->setInt("gridSizeX", terrainRenderer->mPatchesX*terrainRenderer->mScaleX);
+      material->mGeometryShader->setInt("gridSizeZ", terrainRenderer->mPatchesZ*terrainRenderer->mScaleZ);
+      for (int i = -terrainRenderer->mPatchesZ/2; i < terrainRenderer->mPatchesZ/2; i++) {
+        material->mGeometryShader->setInt("startZ", i*terrainRenderer->mScaleZ);
+        for (int j = -terrainRenderer->mPatchesX/2; j < terrainRenderer->mPatchesX/2; j++) {     
+          material->mGeometryShader->setInt("startX", j*terrainRenderer->mScaleX);
+          glDrawArrays(GL_PATCHES, 0, 4);
+        }
+      }
+    }
+
     // ***** SECOND PASS PREP *****
     // Set framebuffer and clear
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -255,10 +281,19 @@ namespace Rendering
       drawQuad();
 
       // Draw physics debugging lines if enabled
-      if (scene.mRenderSettings.mPhysicsDebug) {
-        mPhysicsDebugRenderer->drawAccumulated();
+      if (scene.mRenderSettings.mDrawDebugLines) {
+        // Add debug lines for spot lights
+        for (auto &spotLight : scene.getComponents<Components::SpotLight>()) {
+          auto transform = spotLight->mGameObject.mTransform;
+          mDebugRenderer->drawLine(
+            Utils::TransformConversions::glmVec32btVector3(transform->mTranslation),
+            Utils::TransformConversions::glmVec32btVector3(transform->mTranslation + spotLight->getDirection()),
+            btVector3(0, 1.0, 0));
+        }
+
+        mDebugRenderer->drawAccumulated();
       }
-      mPhysicsDebugRenderer->clear();
+      mDebugRenderer->clear();
     }
 
 
@@ -327,6 +362,12 @@ namespace Rendering
     else {
       glBindTexture(GL_TEXTURE_2D, mDefaultSpecularTexture->mID);
     }
+
+    glActiveTexture(GL_TEXTURE3);
+    material->mGeometryShader->setInt("heightMap", 3);
+    if (material->mHeightMap) {
+      glBindTexture(GL_TEXTURE_2D, material->mHeightMap->mID);
+    }
   }
 
   void RenderingEngine::setCameraUniforms(std::shared_ptr<Assets::Shader> shader)
@@ -376,11 +417,8 @@ namespace Rendering
         std::string number = std::to_string(i);
         auto spotLight = spotLights[i];
 
-        auto modelMatrix = spotLight->mGameObject.mTransform->mModelMatrix;
-        glm::vec3 lightDirection(modelMatrix[0][2], modelMatrix[1][2], modelMatrix[2][2]);
-
         mLightingShader->setVec3("spotLights[" + number + "].position", spotLight->mGameObject.mTransform->mTranslation);
-        mLightingShader->setVec3("spotLights[" + number + "].direction", lightDirection);
+        mLightingShader->setVec3("spotLights[" + number + "].direction", spotLight->getDirection());
         mLightingShader->setVec3("spotLights[" + number + "].ambient", spotLight->mAmbient);
         mLightingShader->setVec3("spotLights[" + number + "].diffuse", spotLight->mDiffuse);
         mLightingShader->setVec3("spotLights[" + number + "].specular", spotLight->mSpecular);
