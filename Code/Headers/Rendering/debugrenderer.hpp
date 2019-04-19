@@ -17,10 +17,10 @@ namespace Rendering
         glm::vec3 color;
     };
 
-    class PhysicsDebugRenderer : public btIDebugDraw
+    class DebugRenderer : public btIDebugDraw
     {
     public:
-        PhysicsDebugRenderer();
+        DebugRenderer();
 
         void drawAccumulated();
         void clear();

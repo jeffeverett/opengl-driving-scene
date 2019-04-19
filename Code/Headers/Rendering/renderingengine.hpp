@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Rendering/textrenderer.hpp"
-#include "Rendering/physicsdebugrenderer.hpp"
+#include "Rendering/debugrenderer.hpp"
 #include "Assets/material.hpp"
 #include "Core/scene.hpp"
 
@@ -17,7 +17,7 @@ namespace Rendering
 
         void renderScene(Core::Scene const &scene, double rollingFPS);
 
-        std::unique_ptr<PhysicsDebugRenderer> mDebugRenderer;
+        std::unique_ptr<DebugRenderer> mDebugRenderer;
         
     private:
         RenderingEngine(RenderingEngine const &) = delete;

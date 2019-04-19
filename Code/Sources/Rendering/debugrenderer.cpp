@@ -1,12 +1,13 @@
-#include "Rendering/physicsdebugrenderer.hpp"
+#include "Rendering/debugrenderer.hpp"
 #include "Utils/transformconversions.hpp"
+#include "Utils/logger.hpp"
 
 #define DEBUG
 #include <iostream>
 
 namespace Rendering
 {
-    PhysicsDebugRenderer::PhysicsDebugRenderer()
+    DebugRenderer::DebugRenderer()
     {
         // Create shader
         mShader = std::make_unique<Assets::Shader>(
@@ -27,7 +28,7 @@ namespace Rendering
         setDebugMode(2);
     }
 
-    void PhysicsDebugRenderer::drawAccumulated()
+    void DebugRenderer::drawAccumulated()
     {
         mShader->use();
         glBindVertexArray(mVAO);
@@ -36,15 +37,16 @@ namespace Rendering
         glDrawArrays(GL_LINES, 0, mVertices.size());
     }
 
-    void PhysicsDebugRenderer::clear()
+    void DebugRenderer::clear()
     {
         mVertices.clear();
     }
 
-    void PhysicsDebugRenderer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
+    void DebugRenderer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
     {
         #ifdef DEBUG
-            std::cout << "Drawing line with color (" << color[0] << ", " << color[1] << ", " << color[2] << ")" << std::endl;
+            Utils::Logger::log("from", from);
+            Utils::Logger::log("to", to); 
         #endif
 
         Vertex fromVertex = {
@@ -60,27 +62,27 @@ namespace Rendering
         mVertices.push_back(toVertex);
     }
 
-    void PhysicsDebugRenderer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color)
+    void DebugRenderer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color)
     {
         //TODO
     }
 
-    void PhysicsDebugRenderer::draw3dText (const btVector3 &location, const char *textString)
+    void DebugRenderer::draw3dText (const btVector3 &location, const char *textString)
     {
         //TODO
     }
 
-    void PhysicsDebugRenderer::reportErrorWarning(const char *warningString)
+    void DebugRenderer::reportErrorWarning(const char *warningString)
     {
         std::cerr << warningString << std::endl;
     }
 
-    void PhysicsDebugRenderer::setDebugMode(int debugMode)
+    void DebugRenderer::setDebugMode(int debugMode)
     {
         mDebugMode = debugMode;
     }
 
-    int PhysicsDebugRenderer::getDebugMode() const
+    int DebugRenderer::getDebugMode() const
     {
         return mDebugMode;
     }

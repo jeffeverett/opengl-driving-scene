@@ -33,7 +33,7 @@ namespace Rendering
     mTextRenderer = std::make_unique<TextRenderer>(
       PROJECT_SOURCE_DIR "/Fonts/arial.ttf"
     );
-    mDebugRenderer = std::make_unique<PhysicsDebugRenderer>();
+    mDebugRenderer = std::make_unique<DebugRenderer>();
     mDebugRenderer->setDebugMode(2);
 
     // Set initial width/height of textures
