@@ -35,4 +35,11 @@ namespace Core
             script->onUpdate(window, deltaTime);
         }
     }
+
+    void Scene::initialize()
+    {
+        for (auto script : getComponents<Components::Script>()) {
+            script->onStart();
+        }
+    }
 }

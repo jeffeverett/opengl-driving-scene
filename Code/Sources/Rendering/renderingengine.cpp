@@ -324,10 +324,8 @@ namespace Rendering
     mProjectionMtx = camera->getProjectionMatrix(aspectRatio);
 
     // Set view matrix
-    glm::vec3 position = camera->mGameObject.mTransform->mTranslation;
-    glm::vec3 target = glm::vec3(0);
     glm::vec3 up = glm::vec3(0, 1, 0);
-    mViewMtx = camera->getViewMatrix(position, target, up);
+    mViewMtx = camera->getViewMatrix(up);
   }
 
   void RenderingEngine::prepareMaterialForRender(std::shared_ptr<Assets::Material> material)

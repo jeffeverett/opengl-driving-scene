@@ -204,6 +204,9 @@ int main(int argc, char * argv[])
     glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
+    //******* Initialize scene *******
+    scene.initialize();
+
     //******* Game loop *******
     double lastFrame = glfwGetTime();
     while (glfwWindowShouldClose(window) == 0) {

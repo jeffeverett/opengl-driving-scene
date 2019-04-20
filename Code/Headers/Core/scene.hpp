@@ -22,6 +22,7 @@ namespace Core
 
         void add(std::shared_ptr<Core::GameObject> gameObject);
         void update(GLFWwindow *window, float deltaTime);
+        void initialize();
 
         template <typename T>
         std::vector<std::shared_ptr<T>> getComponents() const

@@ -5,6 +5,7 @@
 #include "Components/meshrenderer.hpp"
 #include "Components/spotlight.hpp"
 #include "Scripts/carscript.hpp"
+#include "Scripts/camerascript.hpp"
 #include "Utils/meshcreator.hpp"
 #include "Utils/transformconversions.hpp"
 
@@ -149,9 +150,14 @@ namespace Objects
         
         // Create camera
         auto camera = std::make_shared<Components::Camera>(*cameraGameObject);
-        camera->mProjectionMode = Components::ProjectionMode::ORTHO;
+        camera->mFollowTransform = mTransform;
+        camera->mProjectionMode = Components::ProjectionMode::PERSPECTIVE;
         camera->mOrthoBoxSize = 3.0f;
         cameraGameObject->addComponent(camera);
+
+        // Create camera script
+        auto cameraScript = std::make_shared<Scripts::CameraScript>(*cameraGameObject);
+        cameraGameObject->addComponent<Components::Script>(cameraScript);
     }
 
     Car::~Car()

@@ -2,6 +2,8 @@
 
 #include "Components/script.hpp"
 
+#include <Components/carphysicsbody.hpp>
+
 namespace Scripts
 {
     class CarScript : public Components::Script
@@ -12,5 +14,8 @@ namespace Scripts
 
         virtual void onStart() override;
         virtual void onUpdate(GLFWwindow *window, float deltaTime) override;
+
+    private:
+        std::shared_ptr<Components::CarPhysicsBody> mCarPhysicsBody;
     };
 }

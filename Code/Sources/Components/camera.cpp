@@ -12,11 +12,11 @@ namespace Components
     {
     }
 
-    glm::mat4 Camera::getViewMatrix(glm::vec3 position, glm::vec3 target, glm::vec3 up)
+    glm::mat4 Camera::getViewMatrix(glm::vec3 up)
     {
         return glm::lookAt(
-            position,
-            target,
+            mGameObject.mTransform->mTranslation,
+            mFollowTransform->mTranslation,
             up
         );
     }
