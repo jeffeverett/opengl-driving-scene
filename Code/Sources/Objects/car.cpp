@@ -46,7 +46,7 @@ namespace Objects
     Car::Car(glm::vec3 position, const Physics::PhysicsEngine &physicsEngine) : Core::GameObject(position)
     {
         // **** SETUP TRANSFORM ****
-        mTransform->scale(glm::vec3(SCALE_FACTOR));
+        mTransform->setScale(glm::vec3(SCALE_FACTOR));
 
         // **** CREATE COMPONENTS ****
         // Create mesh filter for main chassis

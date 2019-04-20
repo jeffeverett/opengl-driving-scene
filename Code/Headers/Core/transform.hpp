@@ -12,9 +12,10 @@ namespace Core
         Transform();
         ~Transform();
 
-        void scale(const glm::vec3 &scaleVector);
-        void translate(const glm::vec3 &translationVector);
-        void rotate(const glm::quat &quaternion);
+        void setScale(const glm::vec3 &scaleVector);
+        void setTranslation(const glm::vec3 &translationVector);
+        void setRotation(const glm::quat &quaternion);
+        void setRotation(const glm::vec3 &eulerAngles);
 
         void updateModelMatrix(glm::mat4 startingMatrix);
 

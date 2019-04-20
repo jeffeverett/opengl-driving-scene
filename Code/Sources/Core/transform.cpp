@@ -1,6 +1,8 @@
 #include "Core/transform.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
 
 #include <iostream>
 
@@ -15,21 +17,27 @@ namespace Core
   {
   }
   
-  void Transform::scale(const glm::vec3 &scaleVector)
+  void Transform::setScale(const glm::vec3 &scaleVector)
   {
-    mScale *= scaleVector;
+    mScale = scaleVector;
     mIsDirty = true;
   }
   
-  void Transform::translate(const glm::vec3 &translationVector)
+  void Transform::setTranslation(const glm::vec3 &translationVector)
   {
-    mTranslation += translationVector;
+    mTranslation = translationVector;
     mIsDirty = true;
   }
 
-  void Transform::rotate(const glm::quat &quaternion)
+  void Transform::setRotation(const glm::quat &quaternion)
   {
     mRotation = quaternion;
+    mIsDirty = true;
+  }
+
+  void Transform::setRotation(const glm::vec3 &eulerAngles)
+  {
+    mRotation = glm::toQuat(glm::orientate3(eulerAngles));
     mIsDirty = true;
   }
 

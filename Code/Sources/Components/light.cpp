@@ -14,6 +14,6 @@ namespace Components
   {
     auto modelMatrix = mGameObject.mTransform->mModelMatrix;
     glm::vec3 lightDirection(modelMatrix[0][2], modelMatrix[1][2], modelMatrix[2][2]);
-    return lightDirection;
+    return glm::normalize(lightDirection);
   }
 }
