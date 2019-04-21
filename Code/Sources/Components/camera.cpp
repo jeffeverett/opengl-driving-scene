@@ -15,8 +15,8 @@ namespace Components
     glm::mat4 Camera::getViewMatrix(glm::vec3 up)
     {
         return glm::lookAt(
-            mGameObject.mTransform->mTranslation,
-            mFollowTransform->mTranslation,
+            mGameObject.mTransform->getWorldTranslation(),
+            mFollowTransform->getWorldTranslation(),
             up
         );
     }

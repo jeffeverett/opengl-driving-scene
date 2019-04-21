@@ -23,7 +23,12 @@
 #include <stb_image.h>
 
 const int FPS_ROLLING_FRAMES = 10;
-
+const int NUM_STREETLIGHTS = 24;
+const float STREETLIGHT_OFFSET = 0.5f;
+const float TRACK_INNER_A = 58.0f;
+const float TRACK_INNER_B = 58.0f;
+const float TRACK_OUTER_A = 63.0f;
+const float TRACK_OUTER_B = 63.0f;
 
 // The following globals are used in the GLFW callbacks
 Core::Scene scene;
@@ -194,16 +199,28 @@ int main(int argc, char * argv[])
     Objects::Streetlight::setup(defaultGeometryShader);
 
     // Add car
+    glm::vec3 carStartingPosition = glm::vec3(-TRACK_INNER_A - (TRACK_OUTER_A-TRACK_INNER_A)/2, 1, 0);
     auto car = std::make_shared<Objects::Car>(glm::vec3(0), physicsEngine);
     scene.add(car);
 
     // Add streetlights
-    auto streetlight = std::make_shared<Objects::Streetlight>(glm::vec3(0), 0, true);
+    for (int i = 0; i < NUM_STREETLIGHTS/2; i++) {
+        float theta = glm::radians(360.0f)*i/(NUM_STREETLIGHTS/2);
+        glm::vec3 posStreetlight1 = glm::vec3((TRACK_INNER_A-STREETLIGHT_OFFSET)*glm::cos(theta), 0, (TRACK_INNER_B-STREETLIGHT_OFFSET)*glm::sin(theta));
+        glm::vec3 posStreetlight2 = glm::vec3((TRACK_OUTER_A+STREETLIGHT_OFFSET)*glm::cos(theta), 0, (TRACK_OUTER_B+STREETLIGHT_OFFSET)*glm::sin(theta));
+
+        auto streetlight1 = std::make_shared<Objects::Streetlight>(posStreetlight1, -theta+glm::radians(180.0f), false);
+        scene.add(streetlight1);
+
+        auto streetlight2 = std::make_shared<Objects::Streetlight>(posStreetlight2, -theta+glm::radians(180.0f), true);
+        scene.add(streetlight2);
+    }
+    auto streetlight = std::make_shared<Objects::Streetlight>(glm::vec3(0), 0, 0);
     scene.add(streetlight);
 
     // Add terrain
     auto terrain = std::make_shared<Objects::Terrain>(glm::vec3(0), physicsEngine);
-    scene.add(terrain);
+    //scene.add(terrain);
 
     //******* Register remaining callbacks *******
     glfwSetKeyCallback(window, keyCallback);

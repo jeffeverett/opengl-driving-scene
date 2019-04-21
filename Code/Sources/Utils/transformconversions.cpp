@@ -25,4 +25,9 @@ namespace Utils
     {
         return glm::quat(quaternion.x(), quaternion.y(), quaternion.z(), quaternion.w());
     }
+
+    btQuaternion TransformConversions::glmQuat2btQuaternion(glm::quat quaternion)
+    {
+        return btQuaternion(quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+    }
 }

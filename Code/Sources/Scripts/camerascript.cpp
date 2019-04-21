@@ -4,6 +4,9 @@
 
 #include <iostream>
 
+const float SCALE_FACTOR = 1.0f;
+
+
 const float DEFAULT_RADIUS = 9.0f;
 const float DEFAULT_THETA = 0.0f;
 const float DEFAULT_PHI = 77.0f;
@@ -64,12 +67,16 @@ namespace Scripts
         float thetaRadians = glm::radians(mTheta);
         float phiRadians = glm::radians(mPhi);
         mCameraTransform->setTranslation(glm::vec3(
-          mRadius*glm::sin(thetaRadians)*glm::sin(phiRadians),
-          mRadius*glm::cos(phiRadians),
-          mRadius*glm::cos(thetaRadians)*sin(phiRadians)
+          SCALE_FACTOR*mRadius*glm::sin(thetaRadians)*glm::sin(phiRadians),
+          SCALE_FACTOR*mRadius*glm::cos(phiRadians),
+          SCALE_FACTOR*mRadius*glm::cos(thetaRadians)*sin(phiRadians)
         ));
 
         Utils::Logger::log("Camera translation", mCameraTransform->mTranslation);
+        Utils::Logger::log("Camera world translation", mCameraTransform->getWorldTranslation());
+        Utils::Logger::log("Camera model matrix", mCameraTransform->mModelMatrix);
+
+
         std::cout << "Radius: " << mRadius << ", Theta: " << mTheta << ", Phi: " << mPhi << std::endl;
     }
 }

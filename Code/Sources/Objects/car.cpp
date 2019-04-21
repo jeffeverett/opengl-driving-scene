@@ -13,9 +13,6 @@
 
 using namespace Objects;
 
-const float START_ROTATION = 180.0f;
-const float START_STEERING = 0.0f;
-
 const float SCALE_FACTOR = 1.0f/400.0f;
 
 const float MASS = 800.0f;
@@ -97,7 +94,7 @@ namespace Objects
         addComponent(carPhysicsBody);
 
         // Create car script
-        auto carScript = std::make_shared<Scripts::CarScript>(*this);
+        auto carScript = std::make_shared<Scripts::CarScript>(*this, position);
         addComponent<Components::Script>(carScript);
 
         // **** CREATE SPOTLIGHTS AND TAILLIGHTS ****

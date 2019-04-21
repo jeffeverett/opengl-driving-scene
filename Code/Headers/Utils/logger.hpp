@@ -20,5 +20,7 @@ namespace Utils
     private:
       static std::string toString(glm::vec3 obj);
       static std::string toString(btVector3 obj);
+
+      static std::string toString(glm::mat4);
   };
 }

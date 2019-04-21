@@ -1,9 +1,9 @@
 #include "Scripts/carscript.hpp"
+#include "Utils/logger.hpp"
 
 #include <iostream>
 
-const glm::vec3 INITIAL_POS(0, 0, 0);
-const glm::vec3 INITIAL_ROTATION(0, 180.0f, 0);
+const glm::quat INITIAL_ROTATION = glm::angleAxis(glm::radians(180.0f), glm::vec3(0, 1, 0));
 const float INITIAL_STEERING = 0.0f;
 
 const float ENGINE_FORCE = 600.0f;
@@ -12,7 +12,7 @@ const float WHEEL_TURN_RATE = 0.2f;
 
 namespace Scripts
 {
-    CarScript::CarScript(const Core::GameObject &gameObject) : Script(gameObject)
+    CarScript::CarScript(const Core::GameObject &gameObject, glm::vec3 initialPosition) : Script(gameObject), mInitialPosition(initialPosition)
     {
     }
 
@@ -24,7 +24,6 @@ namespace Scripts
     {
         mCarPhysicsBody = mGameObject.getComponents<Components::CarPhysicsBody>()[0];
 
-        mGameObject.mTransform->setTranslation(INITIAL_POS);
         mGameObject.mTransform->setRotation(INITIAL_ROTATION);
     }
 
@@ -32,12 +31,15 @@ namespace Scripts
     {
         // Key for resetting car position and position
         if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-            mGameObject.mTransform->setTranslation(INITIAL_POS);
+            mGameObject.mTransform->setTranslation(mInitialPosition);
             mGameObject.mTransform->setRotation(INITIAL_ROTATION);
             mCarPhysicsBody->setSteering(INITIAL_STEERING);
             mCarPhysicsBody->mRigidBody->setLinearVelocity(btVector3(0,0,0));
             mCarPhysicsBody->mRigidBody->setAngularVelocity(btVector3(0,0,0));
         }
+
+        Utils::Logger::log("Car position", mGameObject.mTransform->getWorldTranslation());
+        Utils::Logger::log("Car model matrix", mGameObject.mTransform->mModelMatrix);
 
         // Keys for driving car
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {

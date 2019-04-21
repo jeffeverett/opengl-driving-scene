@@ -1,4 +1,5 @@
 #include "Core/transform.hpp"
+#include "Utils/logger.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -43,16 +44,21 @@ namespace Core
 
   glm::vec3 Transform::getWorldTranslation()
   {
-    return glm::vec3(mModelMatrix[0][3], mModelMatrix[1][3], mModelMatrix[2][3]);
+    return glm::vec3(mModelMatrix[3][0], mModelMatrix[3][1], mModelMatrix[3][2]);
   }
 
   void Transform::updateModelMatrix(glm::mat4 startingMatrix)
   {
     // Update model matrix
-    glm::mat4 matrix = glm::scale(startingMatrix, mScale);
-    matrix = glm::translate(matrix, mTranslation);
+    glm::mat4 mtx(1);
+    mtx = glm::scale(mtx, mScale);
     glm::mat4 rotationMatrix = glm::toMat4(mRotation);
-    mModelMatrix = rotationMatrix * matrix;
+    mtx = rotationMatrix * mtx;
+    mtx = glm::translate(mtx, mTranslation);
+    mModelMatrix = mtx * startingMatrix;
+
+    Utils::Logger::log("Starting matrix", startingMatrix);
+    Utils::Logger::log("Model matrix", mModelMatrix);
 
     // No longer dirty
     mIsDirty = false;

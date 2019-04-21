@@ -28,7 +28,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     else {
         mTransform->setScale(glm::vec3(-1, 1, 1));
     }
-    mTransform->setRotation(glm::vec3(0, theta, 0));
+    mTransform->setRotation(glm::angleAxis(theta, glm::vec3(0, 1, 0)));
 
     // **** CREATE COMPONENTS ***
     // Create mesh filter for post
@@ -57,7 +57,6 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     // **** CREATE BULB ****
     // Create bulb game object
     auto bulbGameObject = std::make_shared<Core::GameObject>();
-    bulbGameObject->mTransform->setRotation(glm::vec3(0, 0, -30));
     addChild(bulbGameObject);
 
     // Create mesh filter for bulb

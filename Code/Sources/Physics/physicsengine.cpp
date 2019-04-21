@@ -29,7 +29,7 @@ namespace Physics
       }
 
       // ***** STEP SCENE *****
-      mDynamicsWorld->stepSimulation((float) deltaTime, 5);
+      //mDynamicsWorld->stepSimulation((float) deltaTime, 5);
 
       // ***** UPDATE TRANSFORMS ****
       int i = 0;
@@ -51,7 +51,7 @@ namespace Physics
         gameObjectTransform->mRotation = Utils::TransformConversions::btQuaternion2glmQuat(physicsBodyTransform.getRotation());
         gameObjectTransform->mModelMatrix = Utils::TransformConversions::btScalar2glmMat4(transform);
         for (auto &gameObject : physicsBody->mGameObject.mChildren) {
-          updateDirtyTransforms(gameObject, gameObjectTransform->mModelMatrix, false);
+          updateDirtyTransforms(gameObject, gameObjectTransform->mModelMatrix, true);
         }
       }
     }
@@ -67,6 +67,8 @@ namespace Physics
         for (auto physicsBody : physicsBodies) {
           physicsBody->mRigidBody->getWorldTransform().setOrigin(
             Utils::TransformConversions::glmVec32btVector3(gameObject->mTransform->getWorldTranslation()));
+          physicsBody->mRigidBody->getWorldTransform().setRotation(
+            Utils::TransformConversions::glmQuat2btQuaternion(gameObject->mTransform->mRotation));
         }
       }
 
