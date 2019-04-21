@@ -41,6 +41,11 @@ namespace Core
     mIsDirty = true;
   }
 
+  glm::vec3 Transform::getWorldTranslation()
+  {
+    return glm::vec3(mModelMatrix[0][3], mModelMatrix[1][3], mModelMatrix[2][3]);
+  }
+
   void Transform::updateModelMatrix(glm::mat4 startingMatrix)
   {
     // Update model matrix
@@ -48,8 +53,6 @@ namespace Core
     matrix = glm::translate(matrix, mTranslation);
     glm::mat4 rotationMatrix = glm::toMat4(mRotation);
     mModelMatrix = rotationMatrix * matrix;
-
-    std::cout << "Element 0 is " << matrix[0][0] << std::endl;
 
     // No longer dirty
     mIsDirty = false;

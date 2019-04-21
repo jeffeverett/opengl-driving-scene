@@ -12,7 +12,7 @@ namespace Rendering
     class RenderingEngine
     {
     public:
-        RenderingEngine();
+        RenderingEngine(int texWidth, int texHeight);
         ~RenderingEngine();
 
         void renderScene(Core::Scene const &scene, double rollingFPS);

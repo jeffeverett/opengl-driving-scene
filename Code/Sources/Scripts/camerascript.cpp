@@ -30,6 +30,14 @@ namespace Scripts
 
     void CameraScript::onUpdate(GLFWwindow *window, float deltaTime)
     {
+        // Key for resetting camera
+        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+            mRadius = DEFAULT_RADIUS;
+            mTheta = DEFAULT_THETA;
+            mPhi = DEFAULT_PHI;
+        }
+
+        // Keys for modifying radius/theta/phi
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
             mRadius += RADIUS_RATE * deltaTime;
             if (mRadius > 100) mRadius = 100;

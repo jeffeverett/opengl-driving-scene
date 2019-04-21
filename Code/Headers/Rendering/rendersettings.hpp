@@ -15,7 +15,7 @@ namespace Rendering
     RenderMode mRenderMode;
     bool mDrawDebugLines;
     
-    float mScreenWidth;
-    float mScreenHeight;
+    float mFramebufferWidth;
+    float mFramebufferHeight;
   };
 }

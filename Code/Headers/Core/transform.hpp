@@ -19,6 +19,8 @@ namespace Core
 
         void updateModelMatrix(glm::mat4 startingMatrix);
 
+        glm::vec3 getWorldTranslation();
+
         glm::vec3 mScale;
         glm::vec3 mTranslation;
         glm::quat mRotation;

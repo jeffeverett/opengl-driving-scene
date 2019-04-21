@@ -32,13 +32,13 @@ double lastX;
 double lastY;
 
 // FPS determination
-double rollingFPS;
-double latestFrameDeltas[FPS_ROLLING_FRAMES];
-int latestFrameIdx = 0;
-bool firstPassFrames = true;
-
 double determineFPS(double deltaTime)
 {
+    static double rollingFPS;
+    static double latestFrameDeltas[FPS_ROLLING_FRAMES];
+    static int latestFrameIdx = 0;
+    static bool firstPassFrames = true;
+
     latestFrameDeltas[latestFrameIdx] = deltaTime;
     if (firstPassFrames) {
         float deltas = 0;
@@ -58,6 +58,8 @@ double determineFPS(double deltaTime)
     if (latestFrameIdx == 0) {
         firstPassFrames = false;
     }
+
+    return rollingFPS;
 }
 
 
@@ -105,8 +107,8 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 
 void framebufferSizeCallback(GLFWwindow* window, int newWidth, int newHeight)
 {
-    scene.mRenderSettings.mScreenWidth = newWidth;
-    scene.mRenderSettings.mScreenHeight = newHeight;
+    scene.mRenderSettings.mFramebufferWidth = newWidth;
+    scene.mRenderSettings.mFramebufferHeight = newHeight;
 }
 
 int main(int argc, char * argv[])
@@ -125,6 +127,10 @@ int main(int argc, char * argv[])
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     auto window = glfwCreateWindow(INIT_WIDTH, INIT_HEIGHT, "Driving Scene - Jeffrey Everett", nullptr, nullptr);
+
+    // Determine framebuffer size
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
 
     // Check for valid context
     if (window == nullptr) {
@@ -146,7 +152,7 @@ int main(int argc, char * argv[])
     //******* CREATE ENGINES ******
     // Create base engines
     Physics::PhysicsEngine physicsEngine;
-    Rendering::RenderingEngine renderingEngine;
+    Rendering::RenderingEngine renderingEngine(fbWidth, fbHeight);
 
     // Make necessary connections
     physicsEngine.connectDebugRenderer(&(*renderingEngine.mDebugRenderer));
@@ -162,7 +168,7 @@ int main(int argc, char * argv[])
         PROJECT_SOURCE_DIR "/Shaders/TessCtrlShaders/terrain.tcs",
         PROJECT_SOURCE_DIR "/Shaders/TessEvalShaders/terrain.tes",
         PROJECT_SOURCE_DIR "/Shaders/GeometryShaders/terrain.geom",
-        PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/gbuffer.frag"
+        PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/terrain.frag"
     );
 
     //******* CREATE SCENE *******
@@ -177,8 +183,8 @@ int main(int argc, char * argv[])
     scene.mCubeMap.setFaces(darkFaces);
     scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEFERRED_SHADING;
     scene.mRenderSettings.mDrawDebugLines = true;
-    scene.mRenderSettings.mScreenWidth = INIT_WIDTH;
-    scene.mRenderSettings.mScreenHeight = INIT_HEIGHT;
+    scene.mRenderSettings.mFramebufferWidth = fbWidth;
+    scene.mRenderSettings.mFramebufferHeight = fbHeight;
 
     //******* CREATE GAMEOBJECTS *******
     // Setup objects
@@ -234,5 +240,6 @@ int main(int argc, char * argv[])
         glfwPollEvents();
     }
     glfwTerminate();
+
     return EXIT_SUCCESS;
 }

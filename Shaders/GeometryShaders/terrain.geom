@@ -17,7 +17,7 @@ out vec3 gPatchDistance;
 out vec3 gTriDistance;
 
 // Uniforms
-uniform mat3 model;
+uniform mat4 model;
 
 void main()
 {

@@ -9,6 +9,7 @@
 #include "globals.hpp"
 
 #include <vector>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <iomanip>
@@ -24,7 +25,7 @@ float quadVertices[] = {
 
 namespace Rendering
 {
-  RenderingEngine::RenderingEngine()
+  RenderingEngine::RenderingEngine(int texWidth, int texHeight) : mTexWidth(texWidth), mTexHeight(texHeight)
   {
     // Enable/disable features that don't change
     glDisable(GL_BLEND);
@@ -35,10 +36,6 @@ namespace Rendering
     );
     mDebugRenderer = std::make_unique<DebugRenderer>();
     mDebugRenderer->setDebugMode(2);
-
-    // Set initial width/height of textures
-    mTexWidth = INIT_WIDTH;
-    mTexHeight = INIT_WIDTH;
 
     // Check errors
     if (glGetError()) {
@@ -149,10 +146,10 @@ namespace Rendering
 
     // ***** SETUP *****
     // Handle viewport changes
-    glViewport(0, 0, scene.mRenderSettings.mScreenWidth, scene.mRenderSettings.mScreenHeight);
-    if (scene.mRenderSettings.mScreenWidth != mTexWidth || scene.mRenderSettings.mScreenHeight != mTexHeight) {
-      mTexWidth = scene.mRenderSettings.mScreenWidth;
-      mTexHeight = scene.mRenderSettings.mScreenHeight;
+    glViewport(0, 0, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight);
+    if (scene.mRenderSettings.mFramebufferWidth != mTexWidth || scene.mRenderSettings.mFramebufferHeight != mTexHeight) {
+      mTexWidth = scene.mRenderSettings.mFramebufferWidth;
+      mTexHeight = scene.mRenderSettings.mFramebufferHeight;
 
       glBindTexture(GL_TEXTURE_2D, mGDepthID);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mTexWidth, mTexHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
@@ -307,12 +304,12 @@ namespace Rendering
     // Render FPS as string
     std::ostringstream fpsOSS;
     fpsOSS << std::fixed << std::setprecision(5) << "FPS: " << rollingFPS;
-    mTextRenderer->renderText(fpsOSS.str(), 1, scene.mRenderSettings.mScreenWidth, scene.mRenderSettings.mScreenHeight, glm::vec3(0.5f, 0.5f, 0.5f));
+    mTextRenderer->renderText(fpsOSS.str(), 1, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight, glm::vec3(0.5f, 0.5f, 0.5f));
 
     // Render draw calls as string
     std::ostringstream drawCallsOSS;
     drawCallsOSS << std::fixed << std::setprecision(5) << "Draw Calls: " << mDrawCalls;
-    mTextRenderer->renderText(drawCallsOSS.str(), 1, scene.mRenderSettings.mScreenWidth, scene.mRenderSettings.mScreenHeight, glm::vec3(0.5f, 0.5f, 0.5f));
+    mTextRenderer->renderText(drawCallsOSS.str(), 1, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight, glm::vec3(0.5f, 0.5f, 0.5f));
   }
 
   void RenderingEngine::calculateCameraUniforms(Core::Scene const &scene)
@@ -320,7 +317,7 @@ namespace Rendering
     auto camera = scene.getComponents<Components::Camera>()[0];
 
     // Set projection matrix
-    float aspectRatio = scene.mRenderSettings.mScreenWidth / scene.mRenderSettings.mScreenHeight;
+    float aspectRatio = scene.mRenderSettings.mFramebufferWidth / scene.mRenderSettings.mFramebufferHeight;
     mProjectionMtx = camera->getProjectionMatrix(aspectRatio);
 
     // Set view matrix

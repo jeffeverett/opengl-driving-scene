@@ -58,11 +58,19 @@ namespace Physics
 
     void PhysicsEngine::updateDirtyTransforms(std::shared_ptr<Core::GameObject> gameObject, glm::mat4 matrix, bool parentDirty)
     {
+      // Update model matrix and physics bodies
       bool isDirty = parentDirty || gameObject->mTransform->mIsDirty;
       if (isDirty) {
         gameObject->mTransform->updateModelMatrix(matrix);
+
+        auto physicsBodies = gameObject->getComponents<Components::PhysicsBody>();
+        for (auto physicsBody : physicsBodies) {
+          physicsBody->mRigidBody->getWorldTransform().setOrigin(
+            Utils::TransformConversions::glmVec32btVector3(gameObject->mTransform->getWorldTranslation()));
+        }
       }
 
+      // Update children
       for (auto &childGameObject : gameObject->mChildren) {
         updateDirtyTransforms(childGameObject, gameObject->mTransform->mModelMatrix, isDirty);
       }
