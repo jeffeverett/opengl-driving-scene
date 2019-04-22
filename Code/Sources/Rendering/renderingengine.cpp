@@ -1,6 +1,7 @@
 #include "Rendering/renderingengine.hpp"
 #include "Rendering/rendersettings.hpp"
 #include "Components/meshrenderer.hpp"
+#include "Components/wheelmeshrenderer.hpp"
 #include "Components/terrainrenderer.hpp"
 #include "Components/meshfilter.hpp"
 #include "Components/camera.hpp"
@@ -219,6 +220,22 @@ namespace Rendering
       for (auto meshFilter : meshFilters) {
         mDrawCalls++;
         meshFilter->mMesh->draw();
+      }
+    }
+
+    // Render wheels
+    auto wheelMeshRenderers = scene.getComponents<Components::WheelMeshRenderer>();
+    for (auto wheelMeshRenderer : wheelMeshRenderers) {
+      // Prepare for draw
+      auto material = wheelMeshRenderer->mMaterial;
+      prepareMaterialForRender(material);
+      setCameraUniforms(material->mGeometryShader);
+      
+      // Draw
+      for (int i = 0; i < 4; i++) {
+        mDrawCalls++;
+        material->mGeometryShader->setMat4("model", wheelMeshRenderer->mWheelModelMatrices[i]);
+        wheelMeshRenderer->mWheelMeshes[i]->draw();
       }
     }
 

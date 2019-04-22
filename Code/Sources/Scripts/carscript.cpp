@@ -38,8 +38,10 @@ namespace Scripts
             mCarPhysicsBody->mRigidBody->setAngularVelocity(btVector3(0,0,0));
         }
 
-        Utils::Logger::log("Car position", mGameObject.mTransform->getWorldTranslation());
-        Utils::Logger::log("Car model matrix", mGameObject.mTransform->mModelMatrix);
+        #ifdef DEBUG
+            Utils::Logger::log("Car position", mGameObject.mTransform->getWorldTranslation());
+            Utils::Logger::log("Car model matrix", mGameObject.mTransform->mModelMatrix);
+        #endif
 
         // Keys for driving car
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {

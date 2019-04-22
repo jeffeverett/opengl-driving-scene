@@ -1,6 +1,7 @@
 #include "Physics/physicsengine.hpp"
 #include "Components/physicsbody.hpp"
 #include "Components/carphysicsbody.hpp"
+#include "Components/wheelmeshrenderer.hpp"
 #include "Utils/transformconversions.hpp"
 #include "Utils/logger.hpp"
 
@@ -31,10 +32,10 @@ namespace Physics
       }
 
       // ***** STEP SCENE *****
-      //mDynamicsWorld->stepSimulation((float) deltaTime, 5);
+      mDynamicsWorld->stepSimulation((float) deltaTime, 5);
 
       // ***** UPDATE TRANSFORMS ****
-      int i = 0;
+      // Generic physics bodies
       for (auto &physicsBody : scene.getComponents<Components::PhysicsBody>()) {
         auto physicsBodyTransform = physicsBody->mRigidBody->getWorldTransform();
         auto gameObjectTransform = physicsBody->mGameObject.mTransform;
@@ -50,6 +51,20 @@ namespace Physics
 
         for (auto &gameObject : physicsBody->mGameObject.mChildren) {
           updateDirtyTransforms(gameObject, gameObjectTransform->mModelMatrix, true);
+        }
+      }
+
+      // Car physics bodies
+      for (auto &carPhysicsBody : scene.getComponents<Components::CarPhysicsBody>()) {
+        auto gameObjectTransform = carPhysicsBody->mGameObject.mTransform;
+        auto wheelMeshRenderer = scene.getComponents<Components::WheelMeshRenderer>()[0];
+
+        for (int i = 0; i < 4; i++) {
+          btScalar wheelTransform[16];
+          carPhysicsBody->mVehicle->getWheelInfo(i).m_worldTransform.getOpenGLMatrix(wheelTransform);
+          glm::mat4 translateRotateMtx = Utils::TransformConversions::btScalar2glmMat4(wheelTransform);
+          glm::mat4 scaleMtx = glm::scale(glm::mat4(1), gameObjectTransform->mScale);
+          wheelMeshRenderer->mWheelModelMatrices[i] = translateRotateMtx * scaleMtx;
         }
       }
     }

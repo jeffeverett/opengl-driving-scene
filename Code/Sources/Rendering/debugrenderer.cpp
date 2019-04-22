@@ -2,7 +2,6 @@
 #include "Utils/transformconversions.hpp"
 #include "Utils/logger.hpp"
 
-#define DEBUG
 #include <iostream>
 
 namespace Rendering
@@ -30,7 +29,6 @@ namespace Rendering
 
     void DebugRenderer::drawAccumulated()
     {
-        std::cout << "Drawing " << mVertices.size() << " vertices." << std::endl;
         mShader->use();
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);

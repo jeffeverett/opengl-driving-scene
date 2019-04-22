@@ -72,11 +72,12 @@ namespace Scripts
           SCALE_FACTOR*mRadius*glm::cos(thetaRadians)*sin(phiRadians)
         ));
 
-        Utils::Logger::log("Camera translation", mCameraTransform->mTranslation);
-        Utils::Logger::log("Camera world translation", mCameraTransform->getWorldTranslation());
-        Utils::Logger::log("Camera model matrix", mCameraTransform->mModelMatrix);
+        #ifdef DEBUG
+            Utils::Logger::log("Camera translation", mCameraTransform->mTranslation);
+            Utils::Logger::log("Camera world translation", mCameraTransform->getWorldTranslation());
+            Utils::Logger::log("Camera model matrix", mCameraTransform->mModelMatrix);
 
-
-        std::cout << "Radius: " << mRadius << ", Theta: " << mTheta << ", Phi: " << mPhi << std::endl;
+            std::cout << "Radius: " << mRadius << ", Theta: " << mTheta << ", Phi: " << mPhi << std::endl;
+        #endif
     }
 }

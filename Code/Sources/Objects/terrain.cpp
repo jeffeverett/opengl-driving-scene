@@ -5,6 +5,7 @@
 
 #include <stb_image.h>
 
+#define DEBUG
 
 using namespace Objects;
 

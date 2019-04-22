@@ -1,6 +1,7 @@
 #include "Objects/car.hpp"
 #include "Components/camera.hpp"
 #include "Components/carphysicsbody.hpp"
+#include "Components/wheelmeshrenderer.hpp"
 #include "Components/meshfilter.hpp"
 #include "Components/meshrenderer.hpp"
 #include "Components/spotlight.hpp"
@@ -57,10 +58,20 @@ namespace Objects
         glassMeshFilter->mMesh = mModel->mMeshes[1];
         addComponent(glassMeshFilter);
 
-        // Create mesh renderer
+        // Create car renderer
         auto carMeshRenderer = std::make_shared<Components::MeshRenderer>(*this);
         carMeshRenderer->mMaterial = mMaterial;
         addComponent(carMeshRenderer);
+
+        // Create wheel mesh renderer
+        auto wheelMeshRenderer = std::make_shared<Components::WheelMeshRenderer>(*this);
+        wheelMeshRenderer->mMaterial = mMaterial;
+        wheelMeshRenderer->mWheelMeshes.push_back(mModel->mMeshes[2]);    // Wheel 1
+        wheelMeshRenderer->mWheelMeshes.push_back(mModel->mMeshes[3]);    // Wheel 2
+        wheelMeshRenderer->mWheelMeshes.push_back(mModel->mMeshes[4]);    // Wheel 3
+        wheelMeshRenderer->mWheelMeshes.push_back(mModel->mMeshes[5]);    // Wheel 4
+        wheelMeshRenderer->mWheelModelMatrices.reserve(4);
+        addComponent(wheelMeshRenderer);
 
         // Create physics body
         auto carPhysicsBody = std::make_shared<Components::CarPhysicsBody>(*this);
@@ -86,6 +97,37 @@ namespace Objects
         btRaycastVehicle::btVehicleTuning tuning;
         carPhysicsBody->mVehicle = std::make_unique<btRaycastVehicle>(tuning, &(*carPhysicsBody->mRigidBody), &(*carPhysicsBody->mVehicleRaycaster));
         carPhysicsBody->mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+
+        btVector3 wheelDirection(0,-1,0);
+        btVector3 wheelAxleCS(-1,0,0);
+        std::vector<btVector3> connectionPoints;
+        connectionPoints.push_back(btVector3(-CHASSIS_WIDTH-WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, CHASSIS_LENGTH-WHEEL_OFFSET_FRONT));
+        connectionPoints.push_back(btVector3(CHASSIS_WIDTH+WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, CHASSIS_LENGTH-WHEEL_OFFSET_FRONT));
+        connectionPoints.push_back(btVector3(-CHASSIS_WIDTH-WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, -CHASSIS_LENGTH+WHEEL_OFFSET_BACK));
+        connectionPoints.push_back(btVector3(CHASSIS_WIDTH+WHEEL_OFFSET_SIDE, CONNECTION_HEIGHT, -CHASSIS_LENGTH+WHEEL_OFFSET_BACK));
+
+        for (auto &connectionPoint : connectionPoints) {
+            carPhysicsBody->mVehicle->addWheel(
+                connectionPoint,
+                wheelDirection,
+                wheelAxleCS,
+                SUSPENSION_REST_LENGTH,
+                WHEEL_RADIUS,
+                tuning,
+                connectionPoint[2] > 0
+            );
+        }
+
+        for (int i=0; i < carPhysicsBody->mVehicle->getNumWheels(); i++) {
+            btWheelInfo& wheel = carPhysicsBody->mVehicle->getWheelInfo(i);
+            wheel.m_suspensionStiffness = SUSPENSION_STIFFNESS;
+            wheel.m_wheelsDampingRelaxation = SUSPENSION_DAMPING;
+            wheel.m_wheelsDampingCompression = SUSPENSION_COMPRESSION;
+            wheel.m_frictionSlip = WHEEL_FRICTION;
+            wheel.m_rollInfluence = ROLL_INFLUENCE;
+        }
+
+        carPhysicsBody->mVehicle->setCoordinateSystem(0, 1, 2);
 
         physicsEngine.mDynamicsWorld->addRigidBody(&(*carPhysicsBody->mRigidBody));
         physicsEngine.mDynamicsWorld->addVehicle(&(*carPhysicsBody->mVehicle));
@@ -164,9 +206,16 @@ namespace Objects
     void Car::setup(std::shared_ptr<Assets::Shader> geometryShader)
     {
         // ***** CREATE MODEL *****
+        // Import model
         auto carModel = std::make_shared<Assets::Model>(
             PROJECT_SOURCE_DIR "/Models/lambo/Lamborghini_Aventador.fbx"
         );
+
+        // Center wheels
+        for (int i = 2; i <= 5; i++) {
+            carModel->mMeshes[i]->center();
+        }
+
         mModel = carModel;
 
         // ***** CREATE MATERIAL *****
@@ -185,8 +234,5 @@ namespace Objects
             mModel->mNormalTextures[0] :
             nullptr;
         mMaterial = carMaterial;
-
-        // ***** CREATE WHEEL MESHES *****
-
     }
 }
