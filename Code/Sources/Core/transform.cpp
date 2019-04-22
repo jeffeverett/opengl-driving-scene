@@ -54,7 +54,9 @@ namespace Core
     mtx = glm::scale(mtx, mScale);
     glm::mat4 rotationMatrix = glm::toMat4(mRotation);
     mtx = rotationMatrix * mtx;
-    mtx = glm::translate(mtx, mTranslation);
+    mtx[3][0] += mTranslation.x;
+    mtx[3][1] += mTranslation.y;
+    mtx[3][2] += mTranslation.z;
     mModelMatrix = mtx * startingMatrix;
 
     //Utils::Logger::log("Starting matrix", startingMatrix);

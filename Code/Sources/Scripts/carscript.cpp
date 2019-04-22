@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#define DEBUG
+
 const glm::quat INITIAL_ROTATION = glm::angleAxis(glm::radians(180.0f), glm::vec3(0, 1, 0));
 const float INITIAL_STEERING = 0.0f;
 
@@ -39,8 +41,8 @@ namespace Scripts
         }
 
         #ifdef DEBUG
-            Utils::Logger::log("Car position", mGameObject.mTransform->getWorldTranslation());
-            Utils::Logger::log("Car model matrix", mGameObject.mTransform->mModelMatrix);
+            Utils::Logger::log("Car position", mGameObject.mTransform->mTranslation);
+            Utils::Logger::log("Car world position", mGameObject.mTransform->getWorldTranslation());
         #endif
 
         // Keys for driving car
@@ -51,7 +53,6 @@ namespace Scripts
             mCarPhysicsBody->setBrake(0);
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            std::cout << "w pressed" << std::endl;
             mCarPhysicsBody->applyEngineForce(ENGINE_FORCE);
         }
         else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {

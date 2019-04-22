@@ -27,9 +27,11 @@ namespace Physics
     void PhysicsEngine::updateScene(Core::Scene const &scene, double deltaTime)
     {
       // ***** UPDATE DIRTY TRANSFORMS *****
+      std::cout << "Updating dirties" << std::endl;
       for (auto &gameObject : scene.mGameObjects) {
         updateDirtyTransforms(gameObject, glm::mat4(1), false);
       }
+      std::cout << "Done updating dirties" << std::endl;
 
       // ***** STEP SCENE *****
       mDynamicsWorld->stepSimulation((float) deltaTime, 5);

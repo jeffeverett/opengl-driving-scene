@@ -7,6 +7,7 @@
 #include "Objects/terrain.hpp"
 #include "Objects/wall.hpp"
 #include "Objects/streetlight.hpp"
+#include "Utils/logger.hpp"
 #include "globals.hpp"
 
 #include <glad/glad.h>
@@ -199,8 +200,9 @@ int main(int argc, char * argv[])
     Objects::Streetlight::setup(defaultGeometryShader);
 
     // Add car
-    glm::vec3 carStartingPosition = glm::vec3(-TRACK_INNER_A - (TRACK_OUTER_A-TRACK_INNER_A)/2, 1, 0);
-    auto car = std::make_shared<Objects::Car>(glm::vec3(0), physicsEngine);
+    glm::vec3 carStartingPosition = glm::vec3(-TRACK_INNER_A - (TRACK_OUTER_A-TRACK_INNER_A)/2, 10, 0);
+    Utils::Logger::log("Car starting position", carStartingPosition);
+    auto car = std::make_shared<Objects::Car>(carStartingPosition, physicsEngine);
     scene.add(car);
 
     // Add streetlights
