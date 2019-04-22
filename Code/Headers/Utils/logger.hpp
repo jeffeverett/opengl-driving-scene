@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 
 #include <string>
@@ -21,6 +23,9 @@ namespace Utils
       static std::string toString(glm::vec3 obj);
       static std::string toString(btVector3 obj);
 
-      static std::string toString(glm::mat4);
+      static std::string toString(glm::quat obj);
+      static std::string toString(btQuaternion obj);
+
+      static std::string toString(glm::mat4 obj);
   };
 }

@@ -18,6 +18,20 @@ namespace Utils
     return ss.str();
   }
 
+  std::string Logger::toString(glm::quat obj)
+  {
+    std::stringstream ss;
+    ss << "(x: " << obj.x << ", y: " << obj.y << ", z: " << obj.z << ", w: " << obj.w << ")";
+    return ss.str();
+  }
+
+  std::string Logger::toString(btQuaternion obj)
+  {
+    std::stringstream ss;
+    ss << "(x: " << obj.x() << ", y: " << obj.y() << ", z: " << obj.z() << ", w: " << obj.w() << ")";
+    return ss.str();
+  }
+
   std::string Logger::toString(glm::mat4 obj)
   {
     std::stringstream ss;

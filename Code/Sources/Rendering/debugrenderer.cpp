@@ -30,6 +30,7 @@ namespace Rendering
 
     void DebugRenderer::drawAccumulated()
     {
+        std::cout << "Drawing " << mVertices.size() << " vertices." << std::endl;
         mShader->use();
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);

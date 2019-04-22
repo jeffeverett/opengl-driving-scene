@@ -99,10 +99,10 @@ namespace Objects
 
         // **** CREATE SPOTLIGHTS AND TAILLIGHTS ****
         // Create child gameobjects
-        auto leftSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(1/SCALE_FACTOR)*glm::vec3(-0.17,0.15,0.5));
-        auto rightSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(1/SCALE_FACTOR)*glm::vec3(0.17,0.15,0.5));
-        auto leftTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(1/SCALE_FACTOR)*glm::vec3(-0.17,0.15,-0.5));        
-        auto rightTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(1/SCALE_FACTOR)*glm::vec3(0.17,0.15,-0.5));
+        auto leftSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17,0.15,0.5));
+        auto rightSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17,0.15,0.5));
+        auto leftTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17,0.15,-0.5));        
+        auto rightTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17,0.15,-0.5));
 
         // Add children
         addChild(leftSpotLightGameObject);
@@ -128,7 +128,7 @@ namespace Objects
         // Create taillight components
         auto tailLightGameObjects = { leftTailLightGameObject, rightTailLightGameObject };
         for (auto tailLightGameObject : tailLightGameObjects) {
-            auto tailLight = std::make_shared<Components::SpotLight>(*leftSpotLightGameObject);
+            auto tailLight = std::make_shared<Components::SpotLight>(*tailLightGameObject);
             tailLight->mAmbient = glm::vec3(0.23f, 0.06f, 0.06f);
             tailLight->mDiffuse = glm::vec3(0.75f, 0.15f, 0.15f);
             tailLight->mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);

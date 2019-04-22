@@ -215,12 +215,14 @@ int main(int argc, char * argv[])
         auto streetlight2 = std::make_shared<Objects::Streetlight>(posStreetlight2, -theta+glm::radians(180.0f), true);
         scene.add(streetlight2);
     }
-    auto streetlight = std::make_shared<Objects::Streetlight>(glm::vec3(0), 0, 0);
+    auto streetlight = std::make_shared<Objects::Streetlight>(glm::vec3(0), glm::radians(0.0f), true);
     scene.add(streetlight);
+    auto streetlight2 = std::make_shared<Objects::Streetlight>(glm::vec3(0), glm::radians(30.0f), false);
+    scene.add(streetlight2);
 
     // Add terrain
     auto terrain = std::make_shared<Objects::Terrain>(glm::vec3(0), physicsEngine);
-    //scene.add(terrain);
+    scene.add(terrain);
 
     //******* Register remaining callbacks *******
     glfwSetKeyCallback(window, keyCallback);

@@ -17,18 +17,31 @@
 #include <Components/spotlight.hpp>
 
 float quadVertices[] = {
-    -1.0f, 1.0f,
-    -1.0f, -1.0f,
-    1.0f, 1.0f,
-    1.0f, -1.0f
+  -1.0f, 1.0f,
+  -1.0f, -1.0f,
+  1.0f, 1.0f,
+  1.0f, -1.0f
 };
+
+float terrainVertices[] = {
+  0.0f, 0.0f,
+  1.0f, 0.0f,
+  1.0f, 1.0f,
+  0.0f, 1.0f
+};
+
+int terrainIndices[] = {
+  0,1,2,3
+};
+
+int terrainN = sizeof(terrainIndices)/sizeof(int);
 
 namespace Rendering
 {
   RenderingEngine::RenderingEngine(int texWidth, int texHeight) : mTexWidth(texWidth), mTexHeight(texHeight)
   {
     // Enable/disable features that don't change
-    glDisable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
     // Create auxiliary renderers
     mTextRenderer = std::make_unique<TextRenderer>(
@@ -126,6 +139,18 @@ namespace Rendering
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
     glBindVertexArray(0);
+
+    // Create quad for terrain rendering
+    glGenVertexArrays(1, &mTerrainVAO);
+    glBindVertexArray(mTerrainVAO);
+    glGenBuffers(1, &mTerrainVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mTerrainVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(terrainVertices), &terrainVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
+    glGenBuffers(1, &mTerrainEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mTerrainEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(terrainIndices), &terrainIndices, GL_STATIC_DRAW);
   }
 
   RenderingEngine::~RenderingEngine()
@@ -169,6 +194,7 @@ namespace Rendering
 
     // ***** GEOMETRY PASS *****
     glEnable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
 
     // Set framebuffer and clear
     glBindFramebuffer(GL_FRAMEBUFFER, mGBufferID);
@@ -197,12 +223,13 @@ namespace Rendering
     }
 
     // Render terrains
-    glBindVertexArray(mQuadVAO);
+    glBindVertexArray(mTerrainVAO);
     auto terrainRenderers = scene.getComponents<Components::TerrainRenderer>();
     for (auto terrainRenderer : terrainRenderers) {
       // Prepare for draw
       auto material = terrainRenderer->mMaterial;
       prepareMaterialForRender(material);
+      setTerrainUniforms(material->mGeometryShader, terrainRenderer);
       setCameraUniforms(material->mGeometryShader);
       setModelUniforms(material->mGeometryShader, scene, terrainRenderer->mGameObject);
       
@@ -214,9 +241,13 @@ namespace Rendering
         material->mGeometryShader->setInt("startZ", i*terrainRenderer->mScaleZ);
         for (int j = -terrainRenderer->mPatchesX/2; j < terrainRenderer->mPatchesX/2; j++) {     
           material->mGeometryShader->setInt("startX", j*terrainRenderer->mScaleX);
-          glDrawArrays(GL_PATCHES, 0, 4);
+          mDrawCalls++;
+          glDrawElements(GL_PATCHES, terrainN, GL_UNSIGNED_INT, 0);
         }
-      }
+      }/*
+      material->mGeometryShader->setInt("startZ", 0);
+      material->mGeometryShader->setInt("startX", 0);
+      glDrawElements(GL_PATCHES, terrainN, GL_UNSIGNED_INT, 0);*/
     }
 
     // ***** SECOND PASS PREP *****
@@ -283,9 +314,9 @@ namespace Rendering
         for (auto &spotLight : scene.getComponents<Components::SpotLight>()) {
           auto transform = spotLight->mGameObject.mTransform;
           mDebugRenderer->drawLine(
-            Utils::TransformConversions::glmVec32btVector3(transform->mTranslation),
-            Utils::TransformConversions::glmVec32btVector3(transform->mTranslation + spotLight->getDirection()),
-            btVector3(0, 1.0, 0));
+            Utils::TransformConversions::glmVec32btVector3(transform->getWorldTranslation()),
+            Utils::TransformConversions::glmVec32btVector3(transform->getWorldTranslation() + spotLight->getDirection()),
+            btVector3(1.0, 1.0, 1.0));
         }
 
         mDebugRenderer->drawAccumulated();
@@ -296,7 +327,8 @@ namespace Rendering
 
     // ***** RENDER UI *****
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
 
     // Start text renderer at bottom
     mTextRenderer->resetVerticalOffset();
@@ -430,4 +462,13 @@ namespace Rendering
     // Set model matrix
     shader->setMat4("model", gameObject.mTransform->mModelMatrix);
   }
+
+  void RenderingEngine::setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, std::shared_ptr<Components::TerrainRenderer> terrainRenderer)
+  {
+    shader->setFloat("innerTL", 4.0f);
+    shader->setFloat("outerTL", 4.0f);
+    shader->setFloat("scaleX", terrainRenderer->mScaleX);
+    shader->setFloat("scaleZ", terrainRenderer->mScaleZ);
+  }
+
 }

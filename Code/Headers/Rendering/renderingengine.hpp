@@ -3,6 +3,7 @@
 #include "Rendering/textrenderer.hpp"
 #include "Rendering/debugrenderer.hpp"
 #include "Assets/material.hpp"
+#include "Components/terrainrenderer.hpp"
 #include "Core/scene.hpp"
 
 #include <glad/glad.h>
@@ -25,9 +26,12 @@ namespace Rendering
 
         void calculateCameraUniforms(Core::Scene const &scene);
         void prepareMaterialForRender(std::shared_ptr<Assets::Material> material);
+       
         void setCameraUniforms(std::shared_ptr<Assets::Shader> shader);
         void setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, const Core::GameObject &gameObject);
         void setLightingUniforms(Core::Scene const &scene);
+        void setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, std::shared_ptr<Components::TerrainRenderer> terrainRenderer);
+
         void drawQuad();
 
         glm::mat4 mProjectionMtx;
@@ -54,5 +58,6 @@ namespace Rendering
         std::unique_ptr<Assets::Texture> mDefaultSpecularTexture;
 
         unsigned int mQuadVAO, mQuadVBO;
+        unsigned int mTerrainVAO, mTerrainVBO, mTerrainEBO;
     };
 }

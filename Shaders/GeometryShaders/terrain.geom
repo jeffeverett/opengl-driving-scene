@@ -1,4 +1,4 @@
-#version 400
+#version 400 core
 
 // Triangles in and out
 layout(triangles) in;

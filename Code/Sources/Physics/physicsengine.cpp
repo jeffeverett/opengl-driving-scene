@@ -2,7 +2,9 @@
 #include "Components/physicsbody.hpp"
 #include "Components/carphysicsbody.hpp"
 #include "Utils/transformconversions.hpp"
+#include "Utils/logger.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 
@@ -36,20 +38,16 @@ namespace Physics
       for (auto &physicsBody : scene.getComponents<Components::PhysicsBody>()) {
         auto physicsBodyTransform = physicsBody->mRigidBody->getWorldTransform();
         auto gameObjectTransform = physicsBody->mGameObject.mTransform;
-        
-        btScalar transform[16];
-        physicsBodyTransform.getOpenGLMatrix(transform);
-        transform[0] *= gameObjectTransform->mScale.x;
-        transform[5] *= gameObjectTransform->mScale.y;
-        transform[10] *= gameObjectTransform->mScale.z;
 
         gameObjectTransform->mTranslation = Utils::TransformConversions::btVector32glmVec3(physicsBodyTransform.getOrigin());
-
-        std::cout << scene.getComponents<Components::PhysicsBody>().size() << std::endl;
-        std::cout << i++ << " " << gameObjectTransform->mTranslation.x << " " << gameObjectTransform->mTranslation.y << " " << gameObjectTransform->mTranslation.z << std::endl;
-
         gameObjectTransform->mRotation = Utils::TransformConversions::btQuaternion2glmQuat(physicsBodyTransform.getRotation());
-        gameObjectTransform->mModelMatrix = Utils::TransformConversions::btScalar2glmMat4(transform);
+
+        btScalar transform[16];
+        physicsBodyTransform.getOpenGLMatrix(transform);
+        glm::mat4 translateRotateMtx = Utils::TransformConversions::btScalar2glmMat4(transform);
+        glm::mat4 scaleMtx = glm::scale(glm::mat4(1), gameObjectTransform->mScale);
+        gameObjectTransform->mModelMatrix = translateRotateMtx * scaleMtx;
+
         for (auto &gameObject : physicsBody->mGameObject.mChildren) {
           updateDirtyTransforms(gameObject, gameObjectTransform->mModelMatrix, true);
         }
@@ -65,10 +63,10 @@ namespace Physics
 
         auto physicsBodies = gameObject->getComponents<Components::PhysicsBody>();
         for (auto physicsBody : physicsBodies) {
-          physicsBody->mRigidBody->getWorldTransform().setOrigin(
-            Utils::TransformConversions::glmVec32btVector3(gameObject->mTransform->getWorldTranslation()));
           physicsBody->mRigidBody->getWorldTransform().setRotation(
             Utils::TransformConversions::glmQuat2btQuaternion(gameObject->mTransform->mRotation));
+          physicsBody->mRigidBody->getWorldTransform().setOrigin(
+            Utils::TransformConversions::glmVec32btVector3(gameObject->mTransform->getWorldTranslation()));
         }
       }
 

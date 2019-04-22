@@ -13,6 +13,14 @@ const float ROTATION = glm::radians(150.0f);
 const float POST_TEXTURE_SCALE_S = 1;
 const float POST_TEXTURE_SCALE_T = 4;
 
+const float A = 0.25f;
+const float X_MIN = -0.25f;
+const float X_MAX = 0.85f;
+const float C = HEIGHT + A*X_MIN*X_MIN;
+
+float poleX0 = X_MIN;
+float poleY0 = -A*X_MIN*X_MIN+C;
+
 std::shared_ptr<Assets::Mesh> Streetlight::mPostMesh;
 std::shared_ptr<Assets::Material> Streetlight::mPostMaterial;
 
@@ -22,13 +30,13 @@ std::shared_ptr<Assets::Material> Streetlight::mBulbMaterial;
 
 Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::GameObject(position)
 {
-    if (onLeft) {
+    /*if (onLeft) {
         mTransform->setScale(glm::vec3(1, 1, 1));
     }
     else {
         mTransform->setScale(glm::vec3(-1, 1, 1));
-    }
-    mTransform->setRotation(glm::angleAxis(theta, glm::vec3(0, 1, 0)));
+    }*/
+    mTransform->setRotation(glm::angleAxis(theta, glm::vec3(0.0f, 1.0f, 0.0f)));
 
     // **** CREATE COMPONENTS ***
     // Create mesh filter for post
@@ -115,32 +123,26 @@ void Streetlight::setup(std::shared_ptr<Assets::Shader> geometryShader)
     }
 
     // Create curved head, following parabolic curve
-    // y = -Ax^2+C, where C is the constant s.t. y(xMin) = HEIGHT
+    // y = -Ax^2+C, where C is the constant s.t. y(X_MIN) = HEIGHT
     partitions = 15;
-    float A = 0.25f;
-    float xMin = -0.25f;
-    float xMax = 0.85f;
-    float C = HEIGHT + A*xMin*xMin;
-    float x0 = xMin;
-    float y0 = -A*xMin*xMin+C;
     for (int i = 0; i <= partitions; i++) {
-        float x = xMin+i*(xMax-xMin)/partitions;
+        float x = X_MIN+i*(X_MAX-X_MIN)/partitions;
         float y = -A*x*x+C;
 
-        postMeshCreator.addRotatedOpenCylinder(y0, y, RADIUS, x0-xMin, x-xMin, ROTATION*(i-1)/partitions, ROTATION*i/partitions);
+        postMeshCreator.addRotatedOpenCylinder(poleY0, y, RADIUS, poleX0-X_MIN, x-X_MIN, ROTATION*(i-1)/partitions, ROTATION*i/partitions);
 
-        x0 = x;
-        y0 = y;
+        poleX0 = x;
+        poleY0 = y;
     }
 
     // Create bulb guard shape
-    postMeshCreator.addSphere(90.0f, glm::vec3(x0-xMin, y0, 0), 0.2, glm::radians(180.0f)-ROTATION);
+    postMeshCreator.addSphere(90.0f, glm::vec3(poleX0-X_MIN, poleY0, 0), 0.2, glm::radians(180.0f)-ROTATION);
 
     // Convert into mesh
     mPostMesh = postMeshCreator.create();
 
     // **** CREATE BULB MESH ****
     Utils::MeshCreator bulbMeshCreator;
-    bulbMeshCreator.addSphere(180.0f, glm::vec3(x0-xMin, y0, 0), 0.18, 0);
+    bulbMeshCreator.addSphere(180.0f, glm::vec3(poleX0-X_MIN, poleY0, 0), 0.18, 0);
     mBulbMesh = bulbMeshCreator.create();
 }

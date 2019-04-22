@@ -57,8 +57,8 @@ namespace Core
     mtx = glm::translate(mtx, mTranslation);
     mModelMatrix = mtx * startingMatrix;
 
-    Utils::Logger::log("Starting matrix", startingMatrix);
-    Utils::Logger::log("Model matrix", mModelMatrix);
+    //Utils::Logger::log("Starting matrix", startingMatrix);
+    //Utils::Logger::log("Model matrix", mModelMatrix);
 
     // No longer dirty
     mIsDirty = false;

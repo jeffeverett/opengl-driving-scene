@@ -13,7 +13,7 @@ namespace Components
 
         int mHeightScale;
         int mPatchesX, mPatchesZ;
-        int mScaleX, mScaleZ;
+        float mScaleX, mScaleZ;
 
         std::shared_ptr<Assets::Material> mMaterial;
 
