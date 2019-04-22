@@ -224,6 +224,7 @@ namespace Rendering
 
     // Render terrains
     glBindVertexArray(mTerrainVAO);
+    glPatchParameteri(GL_PATCH_VERTICES,4);
     auto terrainRenderers = scene.getComponents<Components::TerrainRenderer>();
     for (auto terrainRenderer : terrainRenderers) {
       // Prepare for draw
@@ -244,10 +245,7 @@ namespace Rendering
           mDrawCalls++;
           glDrawElements(GL_PATCHES, terrainN, GL_UNSIGNED_INT, 0);
         }
-      }/*
-      material->mGeometryShader->setInt("startZ", 0);
-      material->mGeometryShader->setInt("startX", 0);
-      glDrawElements(GL_PATCHES, terrainN, GL_UNSIGNED_INT, 0);*/
+      }
     }
 
     // ***** SECOND PASS PREP *****
@@ -465,8 +463,8 @@ namespace Rendering
 
   void RenderingEngine::setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, std::shared_ptr<Components::TerrainRenderer> terrainRenderer)
   {
-    shader->setFloat("innerTL", 4.0f);
-    shader->setFloat("outerTL", 4.0f);
+    shader->setFloat("innerTL", 32.0f);
+    shader->setFloat("outerTL", 32.0f);
     shader->setFloat("scaleX", terrainRenderer->mScaleX);
     shader->setFloat("scaleZ", terrainRenderer->mScaleZ);
   }

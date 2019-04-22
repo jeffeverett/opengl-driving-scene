@@ -23,7 +23,7 @@ void main()
     // Store the fragment position vector
     fPosition = gPosition;
     // Store the per-fragment normals
-    fNormal = gFacetNormal;
+    fNormal = mat3(1,0,0,0,0,1,0,1,0)*texture(normalMap, gTexCoords).rgb;
     // Store the diffuse per-fragment color
     fAlbedoSpec.rgb = texture(albedoMap, gTexCoords).rgb;
     // Store specular intensity in alpha component
