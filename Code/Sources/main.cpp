@@ -211,16 +211,12 @@ int main(int argc, char * argv[])
         glm::vec3 posStreetlight1 = glm::vec3((TRACK_INNER_A-STREETLIGHT_OFFSET)*glm::cos(theta), 0, (TRACK_INNER_B-STREETLIGHT_OFFSET)*glm::sin(theta));
         glm::vec3 posStreetlight2 = glm::vec3((TRACK_OUTER_A+STREETLIGHT_OFFSET)*glm::cos(theta), 0, (TRACK_OUTER_B+STREETLIGHT_OFFSET)*glm::sin(theta));
 
-        auto streetlight1 = std::make_shared<Objects::Streetlight>(posStreetlight1, -theta+glm::radians(180.0f), false);
+        auto streetlight1 = std::make_shared<Objects::Streetlight>(posStreetlight1, -theta+glm::radians(180.0f), false, physicsEngine);
         scene.add(streetlight1);
 
-        auto streetlight2 = std::make_shared<Objects::Streetlight>(posStreetlight2, -theta+glm::radians(180.0f), true);
+        auto streetlight2 = std::make_shared<Objects::Streetlight>(posStreetlight2, -theta+glm::radians(180.0f), true, physicsEngine);
         scene.add(streetlight2);
     }
-    auto streetlight = std::make_shared<Objects::Streetlight>(glm::vec3(0), glm::radians(0.0f), true);
-    scene.add(streetlight);
-    auto streetlight2 = std::make_shared<Objects::Streetlight>(glm::vec3(0), glm::radians(30.0f), false);
-    scene.add(streetlight2);
 
     // Add terrain
     auto terrain = std::make_shared<Objects::Terrain>(glm::vec3(0), physicsEngine);

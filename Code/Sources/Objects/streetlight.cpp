@@ -28,7 +28,7 @@ std::shared_ptr<Assets::Mesh> Streetlight::mBulbMesh;
 std::shared_ptr<Assets::Material> Streetlight::mBulbMaterial;
 
 
-Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::GameObject(position)
+Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft, const Physics::PhysicsEngine &physicsEngine) : Core::GameObject(position)
 {
     if (onLeft) {
         mTransform->setScale(glm::vec3(1, 1, 1));
@@ -60,6 +60,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::G
     physicsBody->mMotionState = std::make_unique<btDefaultMotionState>(streetlightTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, &(*physicsBody->mMotionState), &(*physicsBody->mShape), localInertia);
     physicsBody->mRigidBody = std::make_unique<btRigidBody>(rbInfo);
+    physicsEngine.mDynamicsWorld->addRigidBody(&(*physicsBody->mRigidBody));
     addComponent(physicsBody);
 
     // **** CREATE BULB ****

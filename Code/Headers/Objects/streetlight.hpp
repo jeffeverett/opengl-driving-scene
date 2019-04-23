@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/gameobject.hpp"
+#include "Physics/physicsengine.hpp"
 #include "Assets/mesh.hpp"
 #include "Assets/material.hpp"
 
@@ -13,7 +14,7 @@ namespace Objects
     class Streetlight : public Core::GameObject
     {
     public:
-        Streetlight(glm::vec3 position, float theta, bool onLeft);
+        Streetlight(glm::vec3 position, float theta, bool onLeft, const Physics::PhysicsEngine &physicsEngine);
         ~Streetlight();
 
         static void setup(std::shared_ptr<Assets::Shader> geometryShader);
