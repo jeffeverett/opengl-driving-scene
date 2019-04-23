@@ -243,7 +243,6 @@ namespace Rendering
       }
     }
   
-    /*
     // Render wheels
     auto wheelMeshRenderers = scene.getComponents<Components::WheelMeshRenderer>();
     for (auto wheelMeshRenderer : wheelMeshRenderers) {
@@ -252,14 +251,15 @@ namespace Rendering
       prepareMaterialForRender(material);
       setCameraUniforms(material->mGeometryShader);
       
-      // Draw
-      for (int i = 0; i < 4; i++) {
+      // Prepare model matrices
+      std::vector<glm::mat4> modelMatrices;
+      for (int i = 0; i < wheelMeshRenderer->mWheelMeshes.size(); i++) {
+        std::vector<glm::mat4> modelMatrices { wheelMeshRenderer->mWheelModelMatrices[i] };
+
         mDrawCalls++;
-        material->mGeometryShader->setMat4("model", wheelMeshRenderer->mWheelModelMatrices[i]);
-        wheelMeshRenderer->mWheelMeshes[i]->draw();
+        wheelMeshRenderer->mWheelMeshes[i]->drawInstanced(modelMatrices);
       }
     }
-    */
 
     // Render terrains
     glPatchParameteri(GL_PATCH_VERTICES, 4);
