@@ -23,6 +23,7 @@ namespace Utils
         void addSphere(float maxPhi, glm::vec3 offset, float radius, float rotation);
         void addCircularFace(float xOffset, float radius);
         void addCylinder(float height, float radius);
+        void addEllipticalSegment(float firstS, float secondS, float a, float b, float theta1, float theta2, float height, float depth);
 
         std::vector<glm::vec3> mPositions;
         std::vector<glm::vec3> mNormals;

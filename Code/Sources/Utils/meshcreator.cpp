@@ -175,4 +175,83 @@ namespace Utils
         addCircularFace(height, radius);
         addCircularFace(-height, radius);
     }
+
+    void MeshCreator::addEllipticalSegment(float firstS, float secondS, float a, float b, float theta1, float theta2, float height, float depth)
+    {
+        // Positions
+        glm::vec3 leftTopBack = glm::vec3((a+depth/2)*glm::cos(theta1),  1.0f, (b+depth/2)*glm::sin(theta1));
+        glm::vec3 leftTopFront = glm::vec3((a-depth/2)*glm::cos(theta1),  1.0f, (b-depth/2)*glm::sin(theta1));
+        glm::vec3 leftBottomBack = glm::vec3((a+depth/2)*glm::cos(theta1),  0.0f, (b+depth/2)*glm::sin(theta1));
+        glm::vec3 leftBottomFront = glm::vec3((a-depth/2)*glm::cos(theta1),  0.0f, (b-depth/2)*glm::sin(theta1));
+        glm::vec3 rightTopBack = glm::vec3((a+depth/2)*glm::cos(theta2),  1.0f, (b+depth/2)*glm::sin(theta2));
+        glm::vec3 rightTopFront = glm::vec3((a-depth/2)*glm::cos(theta2),  1.0f, (b-depth/2)*glm::sin(theta2));
+        glm::vec3 rightBottomBack = glm::vec3((a+depth/2)*glm::cos(theta2),  0.0f, (b+depth/2)*glm::sin(theta2));
+        glm::vec3 rightBottomFront = glm::vec3((a-depth/2)*glm::cos(theta2),  0.0f, (b-depth/2)*glm::sin(theta2));
+
+        // Front wall, first triangle
+        mPositions.push_back(glm::vec3(1,height,1)*leftTopFront);
+        mPositions.push_back(glm::vec3(1,height,1)*leftBottomFront);
+        mPositions.push_back(glm::vec3(1,height,1)*rightBottomFront);
+        mNormals.push_back(glm::vec3(leftTopFront[0], 0, leftTopFront[2]));
+        mNormals.push_back(glm::vec3(leftBottomFront[0], 0, leftBottomFront[2]));
+        mNormals.push_back(glm::vec3(rightBottomFront[0], 0, rightBottomFront[2]));
+        mTexCoords.push_back(glm::vec2(firstS, leftTopFront[1]));
+        mTexCoords.push_back(glm::vec2(firstS, leftBottomFront[1]));
+        mTexCoords.push_back(glm::vec2(secondS, rightBottomFront[1]));
+
+        // Front wall, second triangle
+        mPositions.push_back(glm::vec3(1,height,1)*leftTopFront);
+        mPositions.push_back(glm::vec3(1,height,1)*rightBottomFront);
+        mPositions.push_back(glm::vec3(1,height,1)*rightTopFront);
+        mNormals.push_back(glm::vec3(leftTopFront[0], 0, leftTopFront[2]));
+        mNormals.push_back(glm::vec3(rightBottomFront[0], 0, rightBottomFront[2]));
+        mNormals.push_back(glm::vec3(rightTopFront[0], 0, rightTopFront[2]));
+        mTexCoords.push_back(glm::vec2(firstS, leftTopFront[1]));
+        mTexCoords.push_back(glm::vec2(secondS, rightBottomFront[1]));
+        mTexCoords.push_back(glm::vec2(secondS, rightTopFront[1]));
+
+        // Back wall, first triangle
+        mPositions.push_back(glm::vec3(1,height,1)*leftTopBack);
+        mPositions.push_back(glm::vec3(1,height,1)*leftBottomBack);
+        mPositions.push_back(glm::vec3(1,height,1)*rightBottomBack);
+        mNormals.push_back(glm::vec3(leftTopBack[0], 0, leftTopBack[2]));
+        mNormals.push_back(glm::vec3(leftBottomBack[0], 0, leftBottomBack[2]));
+        mNormals.push_back(glm::vec3(rightBottomBack[0], 0, rightBottomBack[2]));
+        mTexCoords.push_back(glm::vec2(secondS, leftTopBack[1]));
+        mTexCoords.push_back(glm::vec2(secondS, leftBottomBack[1]));
+        mTexCoords.push_back(glm::vec2(firstS, rightBottomBack[1]));
+
+        // Back wall, second triangle
+        mPositions.push_back(glm::vec3(1,height,1)*leftTopBack);
+        mPositions.push_back(glm::vec3(1,height,1)*rightBottomBack);
+        mPositions.push_back(glm::vec3(1,height,1)*rightTopBack);
+        mNormals.push_back(glm::vec3(leftTopBack[0], 0, leftTopBack[2]));
+        mNormals.push_back(glm::vec3(rightBottomBack[0], 0, rightBottomBack[2]));
+        mNormals.push_back(glm::vec3(rightTopBack[0], 0, rightTopBack[2]));
+        mTexCoords.push_back(glm::vec2(secondS, leftTopBack[1]));
+        mTexCoords.push_back(glm::vec2(firstS, rightBottomBack[1]));
+        mTexCoords.push_back(glm::vec2(firstS, rightTopBack[1]));
+
+        // Top, first triangle
+        mPositions.push_back(glm::vec3(1,height,1)*leftTopBack);
+        mPositions.push_back(glm::vec3(1,height,1)*leftTopFront);
+        mPositions.push_back(glm::vec3(1,height,1)*rightTopFront);
+        mNormals.push_back(glm::vec3(leftTopBack[0], 0, leftTopBack[2]));
+        mNormals.push_back(glm::vec3(leftTopFront[0], 0, leftTopFront[2]));
+        mNormals.push_back(glm::vec3(rightTopFront[0], 0, rightTopFront[2]));
+        mTexCoords.push_back(glm::vec2(0, 0));
+        mTexCoords.push_back(glm::vec2(0, 0));
+        mTexCoords.push_back(glm::vec2(0, 0));
+
+        // Top, second triangle
+        mPositions.push_back(glm::vec3(1,height,1)*leftTopBack);
+        mPositions.push_back(glm::vec3(1,height,1)*rightTopFront);
+        mPositions.push_back(glm::vec3(1,height,1)*rightTopBack);
+        mNormals.push_back(glm::vec3(leftTopBack[0], 0, leftTopBack[2]));
+        mNormals.push_back(glm::vec3(rightTopFront[0], 0, rightTopFront[2]));
+        mNormals.push_back(glm::vec3(rightTopBack[0], 0, rightTopBack[2]));
+        mTexCoords.push_back(glm::vec2(0, 0));
+        mTexCoords.push_back(glm::vec2(0, 0));
+        mTexCoords.push_back(glm::vec2(0, 0));
+    }
 }

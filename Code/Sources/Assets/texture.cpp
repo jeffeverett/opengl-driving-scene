@@ -7,16 +7,18 @@
 
 namespace Assets
 {
-    Texture::Texture(std::string const &path)
+    Texture::Texture(std::string const &path, bool flipVertically)
     {
-        loadTexture(path);
+        loadTexture(path, flipVertically);
     }
 
-    void Texture::loadTexture(std::string const &path)
+    void Texture::loadTexture(std::string const &path, bool flipVertically)
     {
         mPath = path;
 
         glGenTextures(1, &mID);
+
+        stbi_set_flip_vertically_on_load(flipVertically);
 
         int width, height, nrComponents;
         unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);

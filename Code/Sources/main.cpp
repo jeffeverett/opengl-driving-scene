@@ -194,7 +194,7 @@ int main(int argc, char * argv[])
 
     //******* CREATE GAMEOBJECTS *******
     // Setup objects
-    Objects::Wall::setup();
+    Objects::Wall::setup(defaultGeometryShader, TRACK_INNER_A, TRACK_INNER_B, TRACK_OUTER_A, TRACK_OUTER_B);
     Objects::Car::setup(defaultGeometryShader);
     Objects::Terrain::setup(defaultTerrainShader);
     Objects::Streetlight::setup(defaultGeometryShader);
@@ -221,6 +221,10 @@ int main(int argc, char * argv[])
     // Add terrain
     auto terrain = std::make_shared<Objects::Terrain>(glm::vec3(0), physicsEngine);
     scene.add(terrain);
+
+    // Add walls
+    auto wall = std::make_shared<Objects::Wall>(glm::vec3(0), physicsEngine);
+    scene.add(wall);
 
     //******* Register remaining callbacks *******
     glfwSetKeyCallback(window, keyCallback);

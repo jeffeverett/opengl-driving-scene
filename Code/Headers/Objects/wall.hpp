@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Core/gameobject.hpp"
+#include "Physics/physicsengine.hpp"
 #include "Assets/mesh.hpp"
 #include "Assets/material.hpp"
-#include "Utils/meshcreator.hpp"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -17,17 +17,17 @@ namespace Objects
     class Wall : public Core::GameObject
     {
     public:
-        Wall();
+        Wall(glm::vec3 position, const Physics::PhysicsEngine &physicsEngine);
         ~Wall() { }
 
-        static void addSegment(Utils::MeshCreator &meshCreator, int segNumber, float a, float b, float theta1, float theta2);
-        static void setup();
+        static void setup(std::shared_ptr<Assets::Shader> geometryShader, float trackInnerA, float trackInnerB, float trackOuterA, float trackOuterB);
 
     private:
         Wall(Wall const &) = delete;
         Wall & operator=(Wall const &) = delete;
 
-        static std::shared_ptr<Assets::Mesh> mMesh;
         static std::shared_ptr<Assets::Material> mMaterial;
+        static std::shared_ptr<Assets::Mesh> mMesh;
+        static std::shared_ptr<btTriangleMesh> mColliderMesh;
     };
 }

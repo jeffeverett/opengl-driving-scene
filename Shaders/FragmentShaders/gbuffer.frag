@@ -3,7 +3,7 @@
 // Inputs
 in vec3 vPosition;
 in vec2 vTexCoords;
-flat in mat3 vTBN;
+in mat3 vTBN;
 
 // Outputs
 layout (location = 0) out vec4 fPosition;
