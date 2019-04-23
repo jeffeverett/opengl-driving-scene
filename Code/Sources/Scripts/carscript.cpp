@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-#define DEBUG
-
 const glm::quat INITIAL_ROTATION = glm::angleAxis(glm::radians(180.0f), glm::vec3(0, 1, 0));
 const float INITIAL_STEERING = 0.0f;
 

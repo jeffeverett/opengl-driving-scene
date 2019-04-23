@@ -72,12 +72,10 @@ namespace Rendering
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/cubemap.vert",
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/cubemap.frag"
         );
-        mShader->use();
-        mShader->setInt("skybox", 0);
 
         // Textures
-        glGenTextures(1, &mTexture);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
+        glGenTextures(1, &mTextureID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureID);
 
         int width, height, nrChannels;
         for (unsigned int i = 0; i < faces.size(); i++)
@@ -103,12 +101,13 @@ namespace Rendering
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
 
-    void CubeMap::draw()
+    void CubeMap::draw() const
     {
         glDepthMask(GL_FALSE);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureID);
         mShader->use();
+        mShader->setInt("skybox", 3);
         glBindVertexArray(mVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glDepthMask(GL_TRUE);

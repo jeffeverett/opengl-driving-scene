@@ -315,6 +315,11 @@ namespace Rendering
 
     // ***** LIGHTING PASS *****
     if (scene.mRenderSettings.mRenderMode == Rendering::RenderMode::DEFERRED_SHADING) {
+      // Draw skybox
+      scene.mCubeMap.mShader->use();
+      setCameraUniforms(scene.mCubeMap.mShader);
+      scene.mCubeMap.draw();
+
       // Draw main scene
       mLightingShader->use();
       mLightingShader->setInt("positionTexture", 0);
@@ -323,19 +328,24 @@ namespace Rendering
       mLightingShader->setVec2("scale", 1.0f, 1.0f);
       mLightingShader->setVec2("offset", 0.0f, 0.0f);
       setLightingUniforms(scene);
-      drawQuad();
+      //drawQuad();
 
       // Draw physics debugging lines if enabled
       if (scene.mRenderSettings.mDrawDebugLines) {
         // Add debug lines for spot lights
-        for (auto &spotLight : scene.getComponents<Components::SpotLight>()) {
+        /*for (auto &spotLight : scene.getComponents<Components::SpotLight>()) {
           auto transform = spotLight->mGameObject.mTransform;
           mDebugRenderer->drawLine(
             Utils::TransformConversions::glmVec32btVector3(transform->getWorldTranslation()),
             Utils::TransformConversions::glmVec32btVector3(transform->getWorldTranslation() + spotLight->getDirection()),
             btVector3(1.0, 1.0, 1.0));
-        }
+        }*/
 
+        // Set uniforms
+        mDebugRenderer->mShader->use();
+        setCameraUniforms(mDebugRenderer->mShader);
+
+        // Draw
         mDebugRenderer->drawAccumulated();
       }
       mDebugRenderer->clear();

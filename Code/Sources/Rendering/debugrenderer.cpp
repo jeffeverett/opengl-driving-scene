@@ -4,12 +4,14 @@
 
 #include <iostream>
 
+#define DEBUG
+
 namespace Rendering
 {
     DebugRenderer::DebugRenderer()
     {
         // Create shader
-        mShader = std::make_unique<Assets::Shader>(
+        mShader = std::make_shared<Assets::Shader>(
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/simple.vert",
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/simple.frag"
         );
@@ -18,10 +20,11 @@ namespace Rendering
         glGenVertexArrays(1, &mVAO);
         glGenBuffers(1, &mVBO);
         glBindVertexArray(mVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)sizeof(glm::vec3));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 
         // Set debugging mode
         setDebugMode(2);
@@ -29,6 +32,9 @@ namespace Rendering
 
     void DebugRenderer::drawAccumulated()
     {
+        #define DEBUG
+            std::cout << "Drawing " << mVertices.size() << " vertices." << std::endl;
+        #define DEBUG
         mShader->use();
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
@@ -45,7 +51,8 @@ namespace Rendering
     {
         #ifdef DEBUG
             Utils::Logger::log("from", from);
-            Utils::Logger::log("to", to); 
+            Utils::Logger::log("to", to);
+            Utils::Logger::log("color", color);
         #endif
 
         Vertex fromVertex = {

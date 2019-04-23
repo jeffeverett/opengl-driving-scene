@@ -21,15 +21,15 @@ namespace Rendering
 
         void setFaces(std::vector<std::string> faces);
         std::shared_ptr<Assets::Shader> getShader();
-        void draw();
+        void draw() const;
 
+        std::shared_ptr<Assets::Shader> mShader;
     private:
         CubeMap(CubeMap const &) = delete;
         CubeMap & operator=(CubeMap const &) = delete;
 
         GLuint mVAO;
         GLuint mVBO;
-        GLuint mTexture;
-        std::shared_ptr<Assets::Shader> mShader;
+        GLuint mTextureID;
     };
 }
