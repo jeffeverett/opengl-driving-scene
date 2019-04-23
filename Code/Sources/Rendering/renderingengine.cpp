@@ -341,6 +341,16 @@ namespace Rendering
             btVector3(1.0, 1.0, 1.0));
         }*/
 
+        // Copy depth buffer from gBuffer to default framebuffer
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, mGBufferID);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+        glBlitFramebuffer(
+          0, 0, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight,
+          0, 0, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight,
+          GL_DEPTH_BUFFER_BIT, GL_NEAREST
+        );
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
         // Set uniforms
         mDebugRenderer->mShader->use();
         setCameraUniforms(mDebugRenderer->mShader);

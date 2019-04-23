@@ -34,6 +34,9 @@ namespace Physics
       // ***** STEP SCENE *****
       mDynamicsWorld->stepSimulation((float) deltaTime, 5);
 
+      // ***** DEBUGGING ****
+      mDynamicsWorld->debugDrawWorld();
+
       // ***** UPDATE TRANSFORMS ****
       // Generic physics bodies
       for (auto &physicsBody : scene.getComponents<Components::PhysicsBody>()) {
