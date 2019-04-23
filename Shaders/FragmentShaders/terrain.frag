@@ -8,7 +8,7 @@ in vec3 gTriDistance;
 in vec3 gPatchDistance;
 
 // Outputs
-layout (location = 0) out vec3 fPosition;
+layout (location = 0) out vec4 fPosition;
 layout (location = 1) out vec3 fNormal;
 layout (location = 2) out vec4 fAlbedoSpec;
 
@@ -25,7 +25,7 @@ uniform float textureRepeatZ;
 void main()
 {
     // Store the fragment position vector
-    fPosition = gPosition;
+    fPosition = vec4(gPosition, 1.0);
     // Store the per-fragment normals
     fNormal = mat3(1,0,0,0,0,1,0,1,0)*texture(normalMap, gTexCoords).rgb;
     // Store the diffuse per-fragment color

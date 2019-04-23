@@ -69,6 +69,11 @@ vec3 CalcSpotLight(SpotLight light, vec3 viewDir, GBufferInputs gBufferInputs);
 
 void main()
 {
+    // Do nothing if this location was not written to during gBuffer creation
+    if (texture(positionTexture, TexCoords).a == 0.0) {
+        discard;
+    }
+
     // Determine gBuffer inputs from textures
     GBufferInputs gBufferInputs;
     gBufferInputs.position = texture(positionTexture, TexCoords).rgb;

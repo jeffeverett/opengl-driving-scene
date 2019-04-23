@@ -6,7 +6,7 @@ in vec2 vTexCoords;
 flat in mat3 vTBN;
 
 // Outputs
-layout (location = 0) out vec3 fPosition;
+layout (location = 0) out vec4 fPosition;
 layout (location = 1) out vec3 fNormal;
 layout (location = 2) out vec4 fAlbedoSpec;
 
@@ -19,7 +19,7 @@ uniform sampler2D specularMap;
 void main()
 {
     // Store the fragment position vector
-    fPosition = vPosition;
+    fPosition = vec4(vPosition, 1.0);
     // Store the per-fragment normals
     fNormal = vTBN*texture(normalMap, vTexCoords).rgb;
     // Store the diffuse per-fragment color

@@ -72,7 +72,7 @@ namespace Rendering
     // Create position color buffer
     glGenTextures(1, &mGPositionID);
     glBindTexture(GL_TEXTURE_2D, mGPositionID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, mTexWidth, mTexHeight, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, mTexWidth, mTexHeight, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mGPositionID, 0);
@@ -181,7 +181,7 @@ namespace Rendering
       glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mTexWidth, mTexHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
       glBindTexture(GL_TEXTURE_2D, mGPositionID);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, mTexWidth, mTexHeight, 0, GL_RGB, GL_FLOAT, NULL);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, mTexWidth, mTexHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 
       glBindTexture(GL_TEXTURE_2D, mGNormalID);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, mTexWidth, mTexHeight, 0, GL_RGB, GL_FLOAT, NULL);
@@ -199,7 +199,7 @@ namespace Rendering
 
     // Set framebuffer and clear
     glBindFramebuffer(GL_FRAMEBUFFER, mGBufferID);
-    glClearColor(0.3f, 0.7f, 0.8f, 1.0f);
+    glClearColor(0.3f, 0.7f, 0.8f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Tell OpenGL which color attachments we'll use for rendering 
@@ -270,7 +270,7 @@ namespace Rendering
     // ***** SECOND PASS PREP *****
     // Set framebuffer and clear
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClearColor(0.3f, 0.7f, 0.8f, 1.0f);
+    glClearColor(0.3f, 0.7f, 0.8f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Make gBuffer information available
@@ -328,7 +328,7 @@ namespace Rendering
       mLightingShader->setVec2("scale", 1.0f, 1.0f);
       mLightingShader->setVec2("offset", 0.0f, 0.0f);
       setLightingUniforms(scene);
-      //drawQuad();
+      drawQuad();
 
       // Draw physics debugging lines if enabled
       if (scene.mRenderSettings.mDrawDebugLines) {
