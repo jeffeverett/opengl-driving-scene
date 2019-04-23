@@ -255,6 +255,8 @@ namespace Rendering
       material->mGeometryShader->setFloat("heightScale", terrainRenderer->mHeightScale);
       material->mGeometryShader->setInt("gridSizeX", terrainRenderer->mPatchesX*terrainRenderer->mScaleX);
       material->mGeometryShader->setInt("gridSizeZ", terrainRenderer->mPatchesZ*terrainRenderer->mScaleZ);
+      material->mGeometryShader->setFloat("textureRepeatX", terrainRenderer->mTextureRepeatX);
+      material->mGeometryShader->setFloat("textureRepeatZ", terrainRenderer->mTextureRepeatZ);
       for (int i = -terrainRenderer->mPatchesZ/2; i < terrainRenderer->mPatchesZ/2; i++) {
         material->mGeometryShader->setInt("startZ", i*terrainRenderer->mScaleZ);
         for (int j = -terrainRenderer->mPatchesX/2; j < terrainRenderer->mPatchesX/2; j++) {     

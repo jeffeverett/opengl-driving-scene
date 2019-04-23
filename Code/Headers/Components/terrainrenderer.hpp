@@ -15,6 +15,8 @@ namespace Components
         int mPatchesX, mPatchesZ;
         float mScaleX, mScaleZ;
 
+        float mTextureRepeatX, mTextureRepeatZ;
+
         std::shared_ptr<Assets::Material> mMaterial;
 
     private:

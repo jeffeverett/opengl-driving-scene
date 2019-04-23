@@ -17,6 +17,10 @@ uniform sampler2D albedoMap;
 uniform sampler2D normalMap;
 uniform sampler2D specularMap;
 
+uniform float textureRepeatX;
+uniform float textureRepeatZ;
+
+
 
 void main()
 {
@@ -25,7 +29,7 @@ void main()
     // Store the per-fragment normals
     fNormal = mat3(1,0,0,0,0,1,0,1,0)*texture(normalMap, gTexCoords).rgb;
     // Store the diffuse per-fragment color
-    fAlbedoSpec.rgb = texture(albedoMap, gTexCoords).rgb;
+    fAlbedoSpec.rgb = texture(albedoMap, gTexCoords*vec2(textureRepeatX, textureRepeatZ)).rgb;
     // Store specular intensity in alpha component
     fAlbedoSpec.a = texture(specularMap, gTexCoords).r;
 }

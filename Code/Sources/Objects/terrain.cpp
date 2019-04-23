@@ -13,10 +13,6 @@ const float SIZE_X = 128.0f;
 const float SIZE_Y = 10.0f;
 const float SIZE_Z = 128.0f;
 
-const float TEXTURE_REPEAT_X = 30.0f;
-const float TEXTURE_REPEAT_Z = 30.0f;
-
-
 namespace Objects
 {
     std::shared_ptr<Assets::Material> Terrain::mMaterial;
@@ -69,6 +65,8 @@ namespace Objects
         terrainRenderer->mPatchesX = 16;
         terrainRenderer->mScaleZ = SIZE_Z/16;
         terrainRenderer->mScaleX = SIZE_X/16;
+        terrainRenderer->mTextureRepeatZ = 30.0f;
+        terrainRenderer->mTextureRepeatX = 30.0f;
         addComponent(terrainRenderer);
     }
 
