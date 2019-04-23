@@ -89,6 +89,17 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
             scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEBUG;
         }
     }
+    else if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        if (scene.mRenderSettings.mTerrainRenderMode == Rendering::TerrainRenderMode::ALBEDO) {
+            scene.mRenderSettings.mTerrainRenderMode = Rendering::TerrainRenderMode::ALBEDO_AND_WIREFRAME;
+        }
+        else if (scene.mRenderSettings.mTerrainRenderMode == Rendering::TerrainRenderMode::ALBEDO_AND_WIREFRAME) {
+            scene.mRenderSettings.mTerrainRenderMode = Rendering::TerrainRenderMode::WIREFRAME;
+        }
+        else {
+            scene.mRenderSettings.mTerrainRenderMode = Rendering::TerrainRenderMode::ALBEDO;
+        }
+    }
     else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
         scene.mRenderSettings.mDrawDebugLines = !scene.mRenderSettings.mDrawDebugLines;
     }

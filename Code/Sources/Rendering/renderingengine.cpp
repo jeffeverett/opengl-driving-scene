@@ -502,6 +502,7 @@ namespace Rendering
 
   void RenderingEngine::setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, std::shared_ptr<Components::TerrainRenderer> terrainRenderer)
   {
+    shader->setInt("wireframeMode", scene.mRenderSettings.mTerrainRenderMode);
     shader->setVec2("viewport", glm::vec2(scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight));
     shader->setFloat("scaleX", terrainRenderer->mScaleX);
     shader->setFloat("scaleZ", terrainRenderer->mScaleZ);

@@ -11,8 +11,15 @@ namespace Rendering
     DEBUG 
   };
 
+  enum TerrainRenderMode {
+    ALBEDO,
+    ALBEDO_AND_WIREFRAME,
+    WIREFRAME
+  };
+
   struct RenderSettings {
     RenderMode mRenderMode;
+    TerrainRenderMode mTerrainRenderMode;
     bool mDrawDebugLines;
     
     float mFramebufferWidth;
