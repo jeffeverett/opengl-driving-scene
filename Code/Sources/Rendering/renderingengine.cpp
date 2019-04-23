@@ -393,12 +393,12 @@ namespace Rendering
     // Render FPS as string
     std::ostringstream fpsOSS;
     fpsOSS << std::fixed << std::setprecision(5) << "FPS: " << rollingFPS;
-    mTextRenderer->renderText(fpsOSS.str(), 1, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight, glm::vec3(0.5f, 0.5f, 0.5f));
+    mTextRenderer->renderText(fpsOSS.str(), 1, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Render draw calls as string
     std::ostringstream drawCallsOSS;
     drawCallsOSS << std::fixed << std::setprecision(5) << "Draw Calls: " << mDrawCalls;
-    mTextRenderer->renderText(drawCallsOSS.str(), 1, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight, glm::vec3(0.5f, 0.5f, 0.5f));
+    mTextRenderer->renderText(drawCallsOSS.str(), 1, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight, glm::vec3(1.0f, 1.0f, 1.0f));
   }
 
   void RenderingEngine::calculateCameraUniforms(Core::Scene const &scene)
