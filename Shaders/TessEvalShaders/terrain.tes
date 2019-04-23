@@ -7,6 +7,7 @@ in vec3 tcPosition[];
 in vec2 tcTexCoords[];
 
 // Ouput
+out float teTessLevel;
 out vec3 tePosition;
 out vec2 teTexCoords;
 out vec3 tePatchDistance;
@@ -40,6 +41,9 @@ vec2 interpolate2(in vec2 v0, in vec2 v1, in vec2 v2, in vec2 v3)
 
 void main()
 {
+   // Determine tessellation level
+   teTessLevel = 0.5 * (gl_TessLevelInner[0] + gl_TessLevelInner[1]);
+
    // Distance to edge of patch for interpolation
    tePatchDistance = gl_TessCoord;
 

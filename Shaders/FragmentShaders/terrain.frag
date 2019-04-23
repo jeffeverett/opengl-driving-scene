@@ -1,6 +1,7 @@
 #version 400 core
 
 // Inputs
+in float gTessLevel;
 in vec3 gPosition;
 in vec2 gTexCoords;
 in vec3 gFacetNormal;
@@ -23,6 +24,21 @@ uniform float textureRepeatX;
 uniform float textureRepeatZ;
 
 
+vec3 determineWireframeColor()
+{
+    // Discretize output
+    if (gTessLevel > 30) {
+        return vec3(1,0,0);
+    }
+    if (gTessLevel > 20) {
+        return vec3(0,1,0);
+    }
+    if (gTessLevel > 10) {
+        return vec3(1,1,0);
+    }
+    return vec3(0,0,1);
+}
+
 void main()
 {
     // Store the fragment position vector
@@ -31,6 +47,7 @@ void main()
     fNormal = mat3(1,0,0,0,0,1,0,1,0)*texture(normalMap, gTexCoords).rgb;
     // Store the diffuse per-fragment color
     vec3 color = fAlbedoSpec.rgb = texture(albedoMap, gTexCoords*vec2(textureRepeatX, textureRepeatZ)).rgb;
+    vec3 wireframeColor = determineWireframeColor();
     float d = min(min(gTriDistance.x, gTriDistance.y), gTriDistance.z);
     float stepVal = step(0.1, d);
     bool dUnderThreshold = stepVal == 0.0;
@@ -40,12 +57,12 @@ void main()
     }
     else if (wireframeMode == 1) {
         // Output albedo + wireframe
-        fAlbedoSpec.rgb = mix(vec3(1,0,0), color, stepVal);
+        fAlbedoSpec.rgb = mix(wireframeColor, color, stepVal);
     }
     else {
         // Output wireframe
         if (dUnderThreshold) {
-            fAlbedoSpec.rgb = vec3(1,0,0);
+            fAlbedoSpec.rgb = wireframeColor;
         }
         else {
             discard;

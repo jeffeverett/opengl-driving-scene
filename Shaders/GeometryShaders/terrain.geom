@@ -5,11 +5,13 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 // Input
+in float teTessLevel[3];
 in vec3 tePosition[3];
 in vec2 teTexCoords[3];
 in vec3 tePatchDistance[3];
 
 // Output
+out float gTessLevel;
 out vec3 gPosition;
 out vec2 gTexCoords;
 out vec3 gFacetNormal;
@@ -30,6 +32,7 @@ void main()
    gFacetNormal = normalMatrix * normalize(cross(A, B));
 
    // First vertex
+   gTessLevel = teTessLevel[0];
    gPosition = tePosition[0];
    gTexCoords = teTexCoords[0];
    gPatchDistance = tePatchDistance[0];
@@ -38,6 +41,7 @@ void main()
    EmitVertex();
 
    // Second vertex
+   gTessLevel = teTessLevel[1];
    gPosition = tePosition[1];
    gTexCoords = teTexCoords[1];
    gPatchDistance = tePatchDistance[1];
@@ -46,6 +50,7 @@ void main()
    EmitVertex();
 
    // Third vertex
+   gTessLevel = teTessLevel[2];
    gPosition = tePosition[2];
    gTexCoords = teTexCoords[2];
    gPatchDistance = tePatchDistance[2];
