@@ -27,6 +27,8 @@ namespace Objects
 
     Terrain::Terrain(glm::vec3 position, const Physics::PhysicsEngine &physicsEngine) : Core::GameObject(position)
     {
+        mTransform->setTranslation(glm::vec3(0, SIZE_Y/2, 0));
+
         // **** CREATE COMPONENTS ****
         // Create physics body
         auto physicsBody = std::make_shared<Components::PhysicsBody>(*this);

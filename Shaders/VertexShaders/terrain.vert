@@ -31,6 +31,6 @@ void main()
    vTexCoords = vec2((startX+gridSizeX/2+aPos.x*scaleX)/gridSizeX, (startZ+gridSizeZ/2+aPos.y*scaleZ)/gridSizeZ);
    
    // Determine position
-   float height = texture(heightMap, vTexCoords).r * heightScale;
+   float height = texture(heightMap, vTexCoords).r * heightScale - heightScale/2;
    vPosition = vec3(startX+aPos.x*scaleX, height, startZ+aPos.y*scaleZ);
 }

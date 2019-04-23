@@ -200,7 +200,7 @@ int main(int argc, char * argv[])
     Objects::Streetlight::setup(defaultGeometryShader);
 
     // Add car
-    glm::vec3 carStartingPosition = glm::vec3(-TRACK_INNER_A - (TRACK_OUTER_A-TRACK_INNER_A)/2, 10, 0);
+    glm::vec3 carStartingPosition = glm::vec3(-TRACK_INNER_A - (TRACK_OUTER_A-TRACK_INNER_A)/2, 1, 0);
     Utils::Logger::log("Car starting position", carStartingPosition);
     auto car = std::make_shared<Objects::Car>(carStartingPosition, physicsEngine);
     scene.add(car);

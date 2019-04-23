@@ -48,7 +48,7 @@ void main()
    teTexCoords = interpolate2(tcTexCoords[0], tcTexCoords[1], tcTexCoords[2], tcTexCoords[3]);
 
    // Sample heightMap with new coordinates
-   float height = texture(heightMap, teTexCoords).r * heightScale;
+   float height = texture(heightMap, teTexCoords).r * heightScale - heightScale/2;
 
    // Write position
    tePosition = vec3(position.x, height, position.z);
