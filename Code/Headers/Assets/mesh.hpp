@@ -23,13 +23,13 @@ namespace Assets
         ~Mesh();
 
         void draw();
+        void drawInstanced(std::vector<glm::mat4> modelMatrices);
         void center();
         void setupMesh();
 
         std::vector<Vertex> mVertices;
         std::vector<unsigned int> mIndices;
 
-
-        unsigned int mVBO, mEBO, mVAO;
+        unsigned int mVBO, mInstanceVBO, mEBO, mVAO;
     };
 }

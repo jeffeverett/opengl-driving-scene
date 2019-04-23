@@ -7,6 +7,7 @@
 #include "Components/camera.hpp"
 #include "Utils/openglerrors.hpp"
 #include "Utils/transformconversions.hpp"
+#include "Utils/logger.hpp"
 #include "globals.hpp"
 
 #include <vector>
@@ -206,23 +207,43 @@ namespace Rendering
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, attachments);
 
-    // Render each mesh attached to gameobjects with mesh renderers
+    // Keep track of material&mesh combinations and their associated model matrices
+    std::unordered_map<std::shared_ptr<Assets::Material>, std::unordered_map<std::shared_ptr<Assets::Mesh>, std::vector<glm::mat4>>> renderMap;
+
+    // Prepare each mesh attached to gameobjects with mesh renderers
     auto meshRenderers = scene.getComponents<Components::MeshRenderer>();
     for (auto meshRenderer : meshRenderers) {
-      // Prepare for draw
+      auto gameObject = meshRenderer->mGameObject;
       auto material = meshRenderer->mMaterial;
-      prepareMaterialForRender(material);
-      setCameraUniforms(material->mGeometryShader);
-      setModelUniforms(material->mGeometryShader, scene, meshRenderer->mGameObject);
-      
-      // Draw
+      if (renderMap.find(material) == renderMap.end()) {
+        renderMap[material] = std::unordered_map<std::shared_ptr<Assets::Mesh>, std::vector<glm::mat4>>();
+      }
+
       auto meshFilters = meshRenderer->mGameObject.getComponents<Components::MeshFilter>();
       for (auto meshFilter : meshFilters) {
-        mDrawCalls++;
-        meshFilter->mMesh->draw();
+        auto mesh = meshFilter->mMesh;
+        if (renderMap[material].find(mesh) == renderMap[material].end()) {
+          renderMap[material][mesh] = std::vector<glm::mat4>();
+        }
+        renderMap[material][mesh].push_back(gameObject.mTransform->mModelMatrix);
       }
     }
 
+    // Render prepared material&mesh combinations
+    for (auto it = renderMap.begin(); it != renderMap.end(); it++) {
+      auto material = it->first;
+      prepareMaterialForRender(material);
+      setCameraUniforms(material->mGeometryShader);
+      for (auto innerIt = it->second.begin(); innerIt != it->second.end(); innerIt++) {
+        auto mesh = innerIt->first;
+        auto modelMatrices = innerIt->second;
+
+        mDrawCalls++;
+        mesh->drawInstanced(modelMatrices);
+      }
+    }
+  
+    /*
     // Render wheels
     auto wheelMeshRenderers = scene.getComponents<Components::WheelMeshRenderer>();
     for (auto wheelMeshRenderer : wheelMeshRenderers) {
@@ -238,6 +259,7 @@ namespace Rendering
         wheelMeshRenderer->mWheelMeshes[i]->draw();
       }
     }
+    */
 
     // Render terrains
     glPatchParameteri(GL_PATCH_VERTICES, 4);

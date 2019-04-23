@@ -111,11 +111,33 @@ namespace Assets
         glBindVertexArray(0);
     }
 
+    void Mesh::drawInstanced(std::vector<glm::mat4> modelMatrices)
+    {
+        glBindVertexArray(mVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, mInstanceVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4)*modelMatrices.size(), &modelMatrices[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(5);
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+        glVertexAttribDivisor(5, 1);
+        glEnableVertexAttribArray(6);
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)sizeof(glm::vec4));
+        glVertexAttribDivisor(6, 1);
+        glEnableVertexAttribArray(7);
+        glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*sizeof(glm::vec4)));
+        glVertexAttribDivisor(7, 1);
+        glEnableVertexAttribArray(8);
+        glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*sizeof(glm::vec4)));
+        glVertexAttribDivisor(8, 1);
+        glDrawElementsInstanced(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0, modelMatrices.size());
+        glBindVertexArray(0);
+    }
+
     void Mesh::setupMesh()
     {
         // Create buffers/arrays
         glGenVertexArrays(1, &mVAO);
         glGenBuffers(1, &mVBO);
+        glGenBuffers(1, &mInstanceVBO);
         glGenBuffers(1, &mEBO);
 
         // Bind VAO/VBO/EBO and set buffer data
