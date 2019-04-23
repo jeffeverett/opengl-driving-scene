@@ -5,8 +5,6 @@
 
 #include <stb_image.h>
 
-#define DEBUG
-
 using namespace Objects;
 
 const float SIZE_X = 128.0f;
@@ -67,6 +65,7 @@ namespace Objects
         terrainRenderer->mScaleX = SIZE_X/16;
         terrainRenderer->mTextureRepeatZ = 30.0f;
         terrainRenderer->mTextureRepeatX = 30.0f;
+        terrainRenderer->generateInstanceVBO();
         addComponent(terrainRenderer);
     }
 

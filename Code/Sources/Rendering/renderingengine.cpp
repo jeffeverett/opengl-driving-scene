@@ -240,10 +240,19 @@ namespace Rendering
     }
 
     // Render terrains
-    glBindVertexArray(mTerrainVAO);
-    glPatchParameteri(GL_PATCH_VERTICES,4);
+    glPatchParameteri(GL_PATCH_VERTICES, 4);
     auto terrainRenderers = scene.getComponents<Components::TerrainRenderer>();
     for (auto terrainRenderer : terrainRenderers) {
+      // Bind per-instance data to terrain VAO
+      glBindVertexArray(mTerrainVAO);
+      glBindBuffer(GL_ARRAY_BUFFER, terrainRenderer->mInstanceVBO);
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+      glVertexAttribDivisor(1, 1);  
+      glEnableVertexAttribArray(2);
+      glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)sizeof(float));
+      glVertexAttribDivisor(2, 1);
+
       // Prepare for draw
       auto material = terrainRenderer->mMaterial;
       prepareMaterialForRender(material);
@@ -252,19 +261,8 @@ namespace Rendering
       setModelUniforms(material->mGeometryShader, scene, terrainRenderer->mGameObject);
       
       // Draw
-      material->mGeometryShader->setFloat("heightScale", terrainRenderer->mHeightScale);
-      material->mGeometryShader->setInt("gridSizeX", terrainRenderer->mPatchesX*terrainRenderer->mScaleX);
-      material->mGeometryShader->setInt("gridSizeZ", terrainRenderer->mPatchesZ*terrainRenderer->mScaleZ);
-      material->mGeometryShader->setFloat("textureRepeatX", terrainRenderer->mTextureRepeatX);
-      material->mGeometryShader->setFloat("textureRepeatZ", terrainRenderer->mTextureRepeatZ);
-      for (int i = -terrainRenderer->mPatchesZ/2; i < terrainRenderer->mPatchesZ/2; i++) {
-        material->mGeometryShader->setInt("startZ", i*terrainRenderer->mScaleZ);
-        for (int j = -terrainRenderer->mPatchesX/2; j < terrainRenderer->mPatchesX/2; j++) {     
-          material->mGeometryShader->setInt("startX", j*terrainRenderer->mScaleX);
-          mDrawCalls++;
-          glDrawElements(GL_PATCHES, terrainN, GL_UNSIGNED_INT, 0);
-        }
-      }
+      mDrawCalls++;
+      glDrawElementsInstanced(GL_PATCHES, terrainN, GL_UNSIGNED_INT, 0, terrainRenderer->mPatchesX*terrainRenderer->mPatchesZ);
     }
 
     // ***** SECOND PASS PREP *****
@@ -506,6 +504,11 @@ namespace Rendering
     shader->setVec2("viewport", glm::vec2(scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight));
     shader->setFloat("scaleX", terrainRenderer->mScaleX);
     shader->setFloat("scaleZ", terrainRenderer->mScaleZ);
+    shader->setFloat("heightScale", terrainRenderer->mHeightScale);
+    shader->setInt("gridSizeX", terrainRenderer->mPatchesX*terrainRenderer->mScaleX);
+    shader->setInt("gridSizeZ", terrainRenderer->mPatchesZ*terrainRenderer->mScaleZ);
+    shader->setFloat("textureRepeatX", terrainRenderer->mTextureRepeatX);
+    shader->setFloat("textureRepeatZ", terrainRenderer->mTextureRepeatZ);
   }
 
 }

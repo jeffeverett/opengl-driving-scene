@@ -2,6 +2,8 @@
 
 // Inputs
 layout (location = 0) in vec2 aPos;
+layout (location = 1) in float aStartX;
+layout (location = 2) in float aStartZ;
 
 // Outputs
 out vec3 vPosition;
@@ -13,9 +15,6 @@ uniform float heightScale;
 uniform int gridSizeX;
 uniform int gridSizeZ;
 
-uniform int startX;
-uniform int startZ;
-
 uniform float scaleX;
 uniform float scaleZ;
 
@@ -24,9 +23,9 @@ uniform sampler2D heightMap;
 void main()
 {
    // Determine UV
-   vTexCoords = vec2((startX+gridSizeX/2+aPos.x*scaleX)/gridSizeX, (startZ+gridSizeZ/2+aPos.y*scaleZ)/gridSizeZ);
+   vTexCoords = vec2((aStartX+gridSizeX/2+aPos.x*scaleX)/gridSizeX, (aStartZ+gridSizeZ/2+aPos.y*scaleZ)/gridSizeZ);
    
    // Determine position
    float height = texture(heightMap, vTexCoords).r * heightScale - heightScale/2;
-   vPosition = vec3(startX+aPos.x*scaleX, height, startZ+aPos.y*scaleZ);
+   vPosition = vec3(aStartX+aPos.x*scaleX, height, aStartZ+aPos.y*scaleZ);
 }

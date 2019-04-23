@@ -4,8 +4,6 @@
 
 #include <iostream>
 
-#define DEBUG
-
 namespace Rendering
 {
     DebugRenderer::DebugRenderer()
@@ -32,9 +30,9 @@ namespace Rendering
 
     void DebugRenderer::drawAccumulated()
     {
-        #define DEBUG
+        #ifdef DEBUG
             std::cout << "Drawing " << mVertices.size() << " vertices." << std::endl;
-        #define DEBUG
+        #endif
         mShader->use();
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
