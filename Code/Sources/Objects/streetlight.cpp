@@ -30,12 +30,12 @@ std::shared_ptr<Assets::Material> Streetlight::mBulbMaterial;
 
 Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft) : Core::GameObject(position)
 {
-    /*if (onLeft) {
+    if (onLeft) {
         mTransform->setScale(glm::vec3(1, 1, 1));
     }
     else {
         mTransform->setScale(glm::vec3(-1, 1, 1));
-    }*/
+    }
     mTransform->setRotation(glm::angleAxis(theta, glm::vec3(0.0f, 1.0f, 0.0f)));
 
     // **** CREATE COMPONENTS ***
