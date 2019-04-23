@@ -30,7 +30,7 @@ namespace Rendering
         void setCameraUniforms(std::shared_ptr<Assets::Shader> shader);
         void setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, const Core::GameObject &gameObject);
         void setLightingUniforms(Core::Scene const &scene);
-        void setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, std::shared_ptr<Components::TerrainRenderer> terrainRenderer);
+        void setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, std::shared_ptr<Components::TerrainRenderer> terrainRenderer);
 
         void drawQuad();
 

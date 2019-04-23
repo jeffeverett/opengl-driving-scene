@@ -247,7 +247,7 @@ namespace Rendering
       // Prepare for draw
       auto material = terrainRenderer->mMaterial;
       prepareMaterialForRender(material);
-      setTerrainUniforms(material->mGeometryShader, terrainRenderer);
+      setTerrainUniforms(material->mGeometryShader, scene, terrainRenderer);
       setCameraUniforms(material->mGeometryShader);
       setModelUniforms(material->mGeometryShader, scene, terrainRenderer->mGameObject);
       
@@ -500,10 +500,9 @@ namespace Rendering
     shader->setMat4("model", gameObject.mTransform->mModelMatrix);
   }
 
-  void RenderingEngine::setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, std::shared_ptr<Components::TerrainRenderer> terrainRenderer)
+  void RenderingEngine::setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, std::shared_ptr<Components::TerrainRenderer> terrainRenderer)
   {
-    shader->setFloat("innerTL", 32.0f);
-    shader->setFloat("outerTL", 32.0f);
+    shader->setVec2("viewport", glm::vec2(scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight));
     shader->setFloat("scaleX", terrainRenderer->mScaleX);
     shader->setFloat("scaleZ", terrainRenderer->mScaleZ);
   }

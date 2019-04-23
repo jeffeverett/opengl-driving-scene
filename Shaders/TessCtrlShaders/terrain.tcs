@@ -10,9 +10,31 @@ in vec2 vTexCoords[];
 out vec3 tcPosition[];
 out vec2 tcTexCoords[];
 
-// Tesselation control parameters
-uniform float innerTL;
-uniform float outerTL;
+// Uniforms
+uniform vec2 viewport;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+
+float determineTessellationLevel(vec3 p0, vec3 p1)
+{
+   // Determine number of screen pixels between two positions
+   vec4 clip0 = projection * view * model * vec4(p0, 1.0);
+   vec4 clip1 = projection * view * model * vec4(p1, 1.0);
+   
+   vec3 ndc0 = vec3(clip0 / clip0.w);
+   vec3 ndc1 = vec3(clip1 / clip1.w);
+   
+   vec2 sc0 = ndc0.xy*viewport;
+   vec2 sc1 = ndc1.xy*viewport;
+
+   float d = distance(sc0, sc1);
+
+   // Calculate tessellation level based on this value
+   float pixelsPerEdgeVertex = 20.0;
+   return clamp(d / pixelsPerEdgeVertex, 0, 64);
+}
 
 void main()
 {
@@ -23,11 +45,14 @@ void main()
    //  Only the first vertex per patch needs to set the patch parameters
    if (gl_InvocationID == 0)
    {
-      gl_TessLevelInner[0] = innerTL;
-      gl_TessLevelInner[1] = innerTL;
-      gl_TessLevelOuter[0] = outerTL;
-      gl_TessLevelOuter[1] = outerTL;
-      gl_TessLevelOuter[2] = outerTL;
-      gl_TessLevelOuter[3] = outerTL;
+      // Outer tessellation level
+      gl_TessLevelOuter[0] = determineTessellationLevel(vPosition[0], vPosition[3]);
+      gl_TessLevelOuter[1] = determineTessellationLevel(vPosition[0], vPosition[1]);
+      gl_TessLevelOuter[2] = determineTessellationLevel(vPosition[1], vPosition[2]);
+      gl_TessLevelOuter[3] = determineTessellationLevel(vPosition[2], vPosition[3]);
+
+      // Inner tessellation level
+      gl_TessLevelInner[0] = 0.5 * (gl_TessLevelOuter[0] + gl_TessLevelOuter[3]);
+      gl_TessLevelInner[1] = 0.5 * (gl_TessLevelOuter[2] + gl_TessLevelOuter[1]);
    }
 }

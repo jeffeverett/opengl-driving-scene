@@ -8,10 +8,6 @@ out vec3 vPosition;
 out vec2 vTexCoords;
 
 // Uniforms
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
 uniform float heightScale;
 
 uniform int gridSizeX;
