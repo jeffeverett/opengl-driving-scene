@@ -34,6 +34,6 @@ namespace Objects
 
         static int mHeightmapWidth;
         static int mHeightmapHeight;
-        static unsigned char *mTransposedHeightData;
+        static unsigned char *mHeightData;
     };
 }

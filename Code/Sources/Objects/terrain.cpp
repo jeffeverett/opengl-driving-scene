@@ -19,7 +19,7 @@ namespace Objects
 
     int Terrain::mHeightmapWidth;
     int Terrain::mHeightmapHeight;
-    unsigned char *Terrain::mTransposedHeightData;
+    unsigned char *Terrain::mHeightData;
 
     Terrain::Terrain(glm::vec3 position, const Physics::PhysicsEngine &physicsEngine) : Core::GameObject(position)
     {
@@ -31,7 +31,7 @@ namespace Objects
         physicsBody->mShape = std::make_unique<btHeightfieldTerrainShape>(
             mHeightmapHeight,
             mHeightmapWidth,
-            mTransposedHeightData,
+            mHeightData,
             1.0/255.0*SIZE_Y,
             0,
             SIZE_Y,
@@ -72,7 +72,7 @@ namespace Objects
 
     Terrain::~Terrain()
     {
-        delete [] mTransposedHeightData;
+        delete [] mHeightData;
     }
 
     void Terrain::setup(std::shared_ptr<Assets::Shader> terrainShader)
@@ -102,10 +102,10 @@ namespace Objects
         if (data)
         {
             // Create Bullet terrain shape
-            mTransposedHeightData = (unsigned char *) malloc(mHeightmapHeight*mHeightmapWidth*1);
+            mHeightData = (unsigned char *) malloc(mHeightmapHeight*mHeightmapWidth*1);
             for (int i = 1; i < mHeightmapHeight; i++) {
                 for (int j = 1; j < mHeightmapWidth; j++) {
-                    mTransposedHeightData[j*mHeightmapWidth+i] = data[i*mHeightmapWidth+j];
+                    mHeightData[i*mHeightmapWidth+j] = data[i*mHeightmapWidth+j];
                 }
             }
 
