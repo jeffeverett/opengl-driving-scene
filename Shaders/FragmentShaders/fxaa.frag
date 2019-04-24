@@ -94,8 +94,8 @@ void main(void)
     fFragColor = vec4(rgbFourTab, 1.0);
   }
 
-  // Show edges for debug purposes.	
-  if (showEdges != 0) {
-    fFragColor.r = 1.0;
+  // Show edges for debug purposes.
+  if (showEdges) {
+    fFragColor = vec4(1.0, 0.0, 1.0, 1.0);
   }
 }

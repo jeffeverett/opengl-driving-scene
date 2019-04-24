@@ -103,7 +103,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
         scene.mRenderSettings.mDrawDebugLines = !scene.mRenderSettings.mDrawDebugLines;
     }
-    else if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+    else if (key == GLFW_KEY_V && action == GLFW_PRESS) {
         scene.mRenderSettings.mUseFXAA = !scene.mRenderSettings.mUseFXAA;
     }
 }
