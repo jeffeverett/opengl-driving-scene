@@ -205,6 +205,7 @@ namespace Rendering
       mTexWidth = scene.mRenderSettings.mFramebufferWidth;
       mTexHeight = scene.mRenderSettings.mFramebufferHeight;
 
+      // Modify gBuffer textures
       glBindTexture(GL_TEXTURE_2D, mGDepthID);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mTexWidth, mTexHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
@@ -216,6 +217,10 @@ namespace Rendering
       
       glBindTexture(GL_TEXTURE_2D, mGAlbedoSpecID);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mTexWidth, mTexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+      // Modify lBuffer textures
+      glBindTexture(GL_TEXTURE_2D, mLColorID);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mTexWidth, mTexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     }
 
     // Calculate common uniforms
