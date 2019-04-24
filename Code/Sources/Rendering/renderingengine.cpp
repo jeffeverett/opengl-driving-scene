@@ -97,10 +97,31 @@ namespace Rendering
     // Check for completeness of framebuffer
     Utils::OpenGLErrors::checkFramebufferComplete();
 
+    // Create lBuffer
+    glGenFramebuffers(1, &mLBufferID);
+    glBindFramebuffer(GL_FRAMEBUFFER, mLBufferID);
+      
+    // Create color buffer
+    glGenTextures(1, &mLColorID);
+    glBindTexture(GL_TEXTURE_2D, mLColorID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mTexWidth, mTexHeight, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mLColorID, 0);
+    
+    // Check for completeness of framebuffer
+    Utils::OpenGLErrors::checkFramebufferComplete();
+
     // Create lighting shader
     mLightingShader = std::make_unique<Assets::Shader>(
       PROJECT_SOURCE_DIR "/Shaders/VertexShaders/quad.vert",
       PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/lighting.frag"
+    );
+
+    // Create FXAA shader
+    mFXAAShader = std::make_unique<Assets::Shader>(
+      PROJECT_SOURCE_DIR "/Shaders/VertexShaders/quad.vert",
+      PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/fxaa.frag"
     );
 
     // Create gBuffer debugging shaders
@@ -159,6 +180,12 @@ namespace Rendering
   {
   }
 
+  void RenderingEngine::clearFramebuffer()
+  {
+    glClearColor(0.3f, 0.7f, 0.8f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
+
   void RenderingEngine::drawQuad()
   {
     mDrawCalls++;
@@ -200,8 +227,7 @@ namespace Rendering
 
     // Set framebuffer and clear
     glBindFramebuffer(GL_FRAMEBUFFER, mGBufferID);
-    glClearColor(0.3f, 0.7f, 0.8f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    clearFramebuffer();
 
     // Tell OpenGL which color attachments we'll use for rendering 
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
@@ -288,11 +314,6 @@ namespace Rendering
     }
 
     // ***** SECOND PASS PREP *****
-    // Set framebuffer and clear
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClearColor(0.3f, 0.7f, 0.8f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     // Make gBuffer information available
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mGPositionID);
@@ -303,6 +324,10 @@ namespace Rendering
 
     // ***** DEBUG PASS *****
     if (scene.mRenderSettings.mRenderMode == Rendering::RenderMode::DEBUG) {
+      // Do not use post-processing renders in deferred rendering debug
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      clearFramebuffer();
+
       // Draw positions in top-left
       mDebugPositionShader->use();
       mDebugPositionShader->setInt("positionTexture", 0);
@@ -335,6 +360,16 @@ namespace Rendering
 
     // ***** LIGHTING PASS *****
     if (scene.mRenderSettings.mRenderMode == Rendering::RenderMode::DEFERRED_SHADING) {
+      // Render to lighting buffer if post-processing is necessary
+      // Otherwise, render directly to default framebuffer
+      if (scene.mRenderSettings.mUseFXAA) {
+        glBindFramebuffer(GL_FRAMEBUFFER, mLBufferID);
+      }
+      else {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      }
+      clearFramebuffer();
+
       // Draw skybox
       scene.mCubeMap.mShader->use();
       setCameraUniforms(scene.mCubeMap.mShader);
@@ -349,6 +384,29 @@ namespace Rendering
       mLightingShader->setVec2("offset", 0.0f, 0.0f);
       setLightingUniforms(scene);
       drawQuad();
+
+      // Use FXAA if enabled
+      if (scene.mRenderSettings.mUseFXAA) {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        clearFramebuffer();
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, mLColorID);
+
+        mFXAAShader->use();
+        mFXAAShader->setInt("colorTexture", 0);
+        mFXAAShader->setVec2("texelStep", glm::vec2(
+          1.0f / scene.mRenderSettings.mFramebufferWidth, 1.0f / scene.mRenderSettings.mFramebufferHeight));
+        mFXAAShader->setBool("showEdges", true);
+        mFXAAShader->setFloat("lumaThreshold", 0.5f);
+        mFXAAShader->setFloat("mulReduce", 1.0f/8.0f);
+        mFXAAShader->setFloat("minReduce", 1.0f/128.0f);
+        mFXAAShader->setFloat("maxSpan", 8.0f);
+
+        mFXAAShader->setVec2("scale", 1.0f, 1.0f);
+        mFXAAShader->setVec2("offset", 0.0f, 0.0f);
+        drawQuad();
+      }
 
       // Draw physics debugging lines if enabled
       if (scene.mRenderSettings.mDrawDebugLines) {

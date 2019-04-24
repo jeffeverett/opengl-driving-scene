@@ -103,6 +103,9 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
         scene.mRenderSettings.mDrawDebugLines = !scene.mRenderSettings.mDrawDebugLines;
     }
+    else if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        scene.mRenderSettings.mUseFXAA = !scene.mRenderSettings.mUseFXAA;
+    }
 }
 
 
@@ -200,6 +203,7 @@ int main(int argc, char * argv[])
     scene.mCubeMap.setFaces(darkFaces);
     scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEFERRED_SHADING;
     scene.mRenderSettings.mDrawDebugLines = true;
+    scene.mRenderSettings.mUseFXAA = true;
     scene.mRenderSettings.mFramebufferWidth = fbWidth;
     scene.mRenderSettings.mFramebufferHeight = fbHeight;
 

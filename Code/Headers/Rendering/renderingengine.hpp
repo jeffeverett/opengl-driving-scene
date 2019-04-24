@@ -24,6 +24,8 @@ namespace Rendering
         RenderingEngine(RenderingEngine const &) = delete;
         RenderingEngine & operator=(RenderingEngine const &) = delete;
 
+        void clearFramebuffer();
+
         void calculateCameraUniforms(Core::Scene const &scene);
         void prepareMaterialForRender(std::shared_ptr<Assets::Material> material);
        
@@ -44,10 +46,14 @@ namespace Rendering
         GLuint mGBufferID;
         GLuint mGDepthID, mGPositionID, mGNormalID, mGAlbedoSpecID;
 
+        GLuint mLBufferID;
+        GLuint mLColorID;
+
         float mTexWidth;
         float mTexHeight;
 
         std::unique_ptr<Assets::Shader> mLightingShader;
+        std::unique_ptr<Assets::Shader> mFXAAShader;
         std::unique_ptr<Assets::Shader> mDebugPositionShader;
         std::unique_ptr<Assets::Shader> mDebugNormalShader;
         std::unique_ptr<Assets::Shader> mDebugAlbedoShader;

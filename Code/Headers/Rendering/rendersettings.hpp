@@ -21,6 +21,7 @@ namespace Rendering
     RenderMode mRenderMode;
     TerrainRenderMode mTerrainRenderMode;
     bool mDrawDebugLines;
+    bool mUseFXAA;
     
     float mFramebufferWidth;
     float mFramebufferHeight;
