@@ -1,5 +1,7 @@
 #version 400 core
 
+// Note: the following based off of https://github.com/McNopper/OpenGL/blob/master/Example42/shader/fxaa.frag.glsl
+
 // Inputs
 in vec2 vTexCoords;
 

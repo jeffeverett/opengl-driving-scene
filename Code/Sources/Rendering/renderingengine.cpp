@@ -362,7 +362,7 @@ namespace Rendering
     if (scene.mRenderSettings.mRenderMode == Rendering::RenderMode::DEFERRED_SHADING) {
       // Render to lighting buffer if post-processing is necessary
       // Otherwise, render directly to default framebuffer
-      if (scene.mRenderSettings.mUseFXAA) {
+      if (scene.mRenderSettings.mFXAARenderMode != Rendering::FXAARenderMode::NONE) {
         glBindFramebuffer(GL_FRAMEBUFFER, mLBufferID);
       }
       else {
@@ -386,7 +386,7 @@ namespace Rendering
       drawQuad();
 
       // Use FXAA if enabled
-      if (scene.mRenderSettings.mUseFXAA) {
+      if (scene.mRenderSettings.mFXAARenderMode != Rendering::FXAARenderMode::NONE) {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         clearFramebuffer();
 
@@ -397,7 +397,7 @@ namespace Rendering
         mFXAAShader->setInt("colorTexture", 0);
         mFXAAShader->setVec2("texelStep", glm::vec2(
           1.0f / scene.mRenderSettings.mFramebufferWidth, 1.0f / scene.mRenderSettings.mFramebufferHeight));
-        mFXAAShader->setBool("showEdges", true);
+        mFXAAShader->setBool("showEdges", scene.mRenderSettings.mFXAARenderMode == Rendering::FXAARenderMode::FXAA_AND_DEBUG);
         mFXAAShader->setFloat("lumaThreshold", 0.5f);
         mFXAAShader->setFloat("mulReduce", 1.0f/8.0f);
         mFXAAShader->setFloat("minReduce", 1.0f/128.0f);
