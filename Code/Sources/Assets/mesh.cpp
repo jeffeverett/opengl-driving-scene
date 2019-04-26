@@ -90,7 +90,7 @@ namespace Assets
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
         for (unsigned int i = 0; i < positions.size(); i++) {
-            vertices.push_back(Vertex{positions[i], normals[i], texCoords[i], tangents[i], bitangents[i]});
+            vertices.push_back(Vertex{positions[i], normals[i], texCoords[i], tangents[i/3], bitangents[i/3]});
             indices.push_back(i);
         }
         mVertices = vertices;
