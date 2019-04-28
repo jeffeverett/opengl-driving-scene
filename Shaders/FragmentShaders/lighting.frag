@@ -89,10 +89,10 @@ void main()
 
     // Phase 1: Directional lighting
     vec3 result = CalcDirLight(dirLight, viewDir, gBufferInputs);
-    /*// Phase 2: Point lights
+    // Phase 2: Point lights
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], viewDir, gBufferInputs);
-    */// Phase 3: Spot light
+    // Phase 3: Spot light
     for (int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], viewDir, gBufferInputs);
     
@@ -121,7 +121,7 @@ vec3 CalcDirLight(DirLight light, vec3 viewDir, GBufferInputs gBufferInputs)
     vec3 ambient  = light.ambient  * gBufferInputs.albedo;
     vec3 diffuse  = light.diffuse  * diff * gBufferInputs.albedo;
     vec3 specular = light.specular * spec * vec3(gBufferInputs.specular);
-    return (ambient + diff);
+    return (ambient + diffuse + specular);
 }
 
 vec3 CalcPointLight(PointLight light, vec3 viewDir, GBufferInputs gBufferInputs)

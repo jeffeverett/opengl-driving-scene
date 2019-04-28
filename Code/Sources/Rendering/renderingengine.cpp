@@ -534,14 +534,15 @@ namespace Rendering
     mLightingShader->setVec3("dirLight.direction", glm::vec3(0.3f, -0.7f, 0.648f));
     mLightingShader->setVec3("dirLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
     mLightingShader->setVec3("dirLight.diffuse", glm::vec3(0.25f, 0.25f, 0.25f));
-    mLightingShader->setVec3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    mLightingShader->setVec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
     // Set point light uniforms
+    auto followPos = camera->mFollowTransform->getWorldTranslation();
     auto pointLights = scene.getComponents<Components::PointLight>();
     std::map<float, std::shared_ptr<Components::PointLight>> distancesMap;
     for (int i = 0; i < pointLights.size(); i++) {
       glm::vec3 pointLightPos = pointLights[i]->mGameObject.mTransform->getWorldTranslation();
-      float distance = glm::length(cameraPos-pointLightPos);
+      float distance = glm::length(followPos-pointLightPos);
       distancesMap[distance] = pointLights[i];
     }
     auto iter = distancesMap.begin();

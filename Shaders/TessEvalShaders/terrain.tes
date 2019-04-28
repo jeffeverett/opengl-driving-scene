@@ -55,8 +55,8 @@ void main()
    float height = texture(heightMap, teTexCoords).r * heightScale - heightScale/2;
 
    // Write position
-   tePosition = vec3(position.x, height, position.z);
+   tePosition = vec3(model * vec4(position.x, height, position.z, 1));
 
    // Project vertex
-   gl_Position = projection * view * model * vec4(tePosition, 1);
+   gl_Position = projection * view * vec4(tePosition, 1);
 }

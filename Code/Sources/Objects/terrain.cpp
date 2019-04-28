@@ -85,6 +85,9 @@ namespace Objects
         terrainMaterial->mAlbedoMap = std::make_shared<Assets::Texture>(
             PROJECT_SOURCE_DIR "/Textures/Ground/rock.jpg"
         );
+        terrainMaterial->mSpecularMap = std::make_shared<Assets::Texture>(
+            PROJECT_SOURCE_DIR "/Textures/Specular/dark_specular.jpg"
+        );
         terrainMaterial->mNormalMap = std::make_shared<Assets::Texture>(
             PROJECT_SOURCE_DIR "/Textures/HeightMaps/height_map1_normal.png"
         );

@@ -82,7 +82,7 @@ Streetlight::Streetlight(glm::vec3 position, float theta, bool onLeft, const Phy
     auto pointLight = std::make_shared<Components::PointLight>(*bulbGameObject);
     pointLight->mAmbient = glm::vec3(0.25f, 0.25f, 0.25f);
     pointLight->mDiffuse = glm::vec3(0.60f, 0.60f, 0.60f);
-    pointLight->mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+    pointLight->mSpecular = glm::vec3(0.f, 0.f, 0.f);
     pointLight->mConstant = 1.0f;
     pointLight->mLinear = 0.09f;
     pointLight->mQuadratic = 0.032f;
