@@ -416,13 +416,13 @@ namespace Rendering
       // Draw physics debugging lines if enabled
       if (scene.mRenderSettings.mDrawDebugLines) {
         // Add debug lines for spot lights
-        /*for (auto &spotLight : scene.getComponents<Components::SpotLight>()) {
+        for (auto &spotLight : scene.getComponents<Components::SpotLight>()) {
           auto transform = spotLight->mGameObject.mTransform;
           mDebugRenderer->drawLine(
             Utils::TransformConversions::glmVec32btVector3(transform->getWorldTranslation()),
             Utils::TransformConversions::glmVec32btVector3(transform->getWorldTranslation() + spotLight->getDirection()),
             btVector3(1.0, 1.0, 1.0));
-        }*/
+        }
 
         // Copy depth buffer from gBuffer to default framebuffer
         glBindFramebuffer(GL_READ_FRAMEBUFFER, mGBufferID);
@@ -527,7 +527,7 @@ namespace Rendering
   {
     // Set view position
     auto camera = scene.getComponents<Components::Camera>()[0];
-    auto cameraPos = camera->mGameObject.mTransform->mTranslation;
+    auto cameraPos = camera->getWorldTranslation();
     mLightingShader->setVec3("viewPos", cameraPos);
 
     // Set directional light uniforms
@@ -540,7 +540,7 @@ namespace Rendering
     auto pointLights = scene.getComponents<Components::PointLight>();
     std::map<float, std::shared_ptr<Components::PointLight>> distancesMap;
     for (int i = 0; i < pointLights.size(); i++) {
-      glm::vec3 pointLightPos = pointLights[i]->mGameObject.mTransform->mTranslation;
+      glm::vec3 pointLightPos = pointLights[i]->mGameObject.mTransform->getWorldTranslation();
       float distance = glm::length(cameraPos-pointLightPos);
       distancesMap[distance] = pointLights[i];
     }
@@ -548,7 +548,7 @@ namespace Rendering
     for (int i = 0; i < std::min((size_t) 6, distancesMap.size()); i++) {
       std::string number = std::to_string(i);
       auto pointLight = iter->second;
-      mLightingShader->setVec3("pointLights[" + number + "].position", pointLight->mGameObject.mTransform->mTranslation);
+      mLightingShader->setVec3("pointLights[" + number + "].position", pointLight->mGameObject.mTransform->getWorldTranslation());
       mLightingShader->setVec3("pointLights[" + number + "].ambient", pointLight->mAmbient);
       mLightingShader->setVec3("pointLights[" + number + "].diffuse", pointLight->mDiffuse);
       mLightingShader->setVec3("pointLights[" + number + "].specular", pointLight->mSpecular);
@@ -564,7 +564,7 @@ namespace Rendering
         std::string number = std::to_string(i);
         auto spotLight = spotLights[i];
 
-        mLightingShader->setVec3("spotLights[" + number + "].position", spotLight->mGameObject.mTransform->mTranslation);
+        mLightingShader->setVec3("spotLights[" + number + "].position", spotLight->mGameObject.mTransform->getWorldTranslation());
         mLightingShader->setVec3("spotLights[" + number + "].direction", spotLight->getDirection());
         mLightingShader->setVec3("spotLights[" + number + "].ambient", spotLight->mAmbient);
         mLightingShader->setVec3("spotLights[" + number + "].diffuse", spotLight->mDiffuse);

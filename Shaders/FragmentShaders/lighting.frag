@@ -92,10 +92,10 @@ void main()
     /*// Phase 2: Point lights
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], viewDir, gBufferInputs);
-    // Phase 3: Spot light
+    */// Phase 3: Spot light
     for (int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], viewDir, gBufferInputs);
-    */
+    
     vec4 objectColor = vec4(result, 1.0);
     fFragColor = objectColor;
 

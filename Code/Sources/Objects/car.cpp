@@ -141,10 +141,14 @@ namespace Objects
 
         // **** CREATE SPOTLIGHTS AND TAILLIGHTS ****
         // Create child gameobjects
-        auto leftSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17,0.15,0.5));
-        auto rightSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17,0.15,0.5));
-        auto leftTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17,0.15,-0.5));        
-        auto rightTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17,0.15,-0.5));
+        auto leftSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17/SCALE_FACTOR,0.15/SCALE_FACTOR,0.5/SCALE_FACTOR));
+        auto rightSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17/SCALE_FACTOR,0.15/SCALE_FACTOR,0.5/SCALE_FACTOR));
+        auto leftTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17/SCALE_FACTOR,0.15/SCALE_FACTOR,-0.5/SCALE_FACTOR));        
+        auto rightTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17/SCALE_FACTOR,0.15/SCALE_FACTOR,-0.5/SCALE_FACTOR));
+
+        // Rotate tail lights so they face backwards
+        leftTailLightGameObject->mTransform->setRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(0,1,0)));
+        rightTailLightGameObject->mTransform->setRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(0,1,0)));
 
         // Add children
         addChild(leftSpotLightGameObject);
