@@ -201,7 +201,7 @@ namespace Objects
         // Create paricle system renderer
         auto particleSystemRenderer = std::make_shared<Components::ParticleSystemRenderer>(*psrGameObject);
         particleSystemRenderer->mParticleSystem = mParticleSystem;
-        particleSystemRenderer->setupParticleSystem(211);
+        particleSystemRenderer->setupParticleSystem(10000);
         psrGameObject->addComponent(particleSystemRenderer);
 
         // **** CREATE GAMEOBJECT WITH CAMERA TO FOLLOW CAR ****
@@ -267,10 +267,12 @@ namespace Objects
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/flames_render.frag"
         );
         auto particleSystem = std::make_shared<Assets::ParticleSystem>();
+        particleSystem->mParticleLifetime = 30.0f;
         particleSystem->mUpdateShader = particleUpdateShader;
         particleSystem->mRenderShader = particleRenderShader;
         particleSystem->mTextures.push_back(std::make_shared<Assets::Texture>(PROJECT_SOURCE_DIR "/Textures/Particles/flames.tga"));
         particleSystem->mColors.push_back(glm::vec3(0.886, 0.345, 0.133));
+        particleSystem->mColors.push_back(glm::vec3(0.0, 0.0, 1.0));
         mParticleSystem = particleSystem;
     }
 }

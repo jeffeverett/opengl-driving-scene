@@ -12,6 +12,7 @@ namespace Components
         virtual ~ParticleSystemRenderer();
 
         void setupParticleSystem(unsigned int numParticles);
+        void resetBuffers();
 
         void update();
         void draw();
@@ -19,19 +20,19 @@ namespace Components
         std::shared_ptr<Assets::ParticleSystem> mParticleSystem;
 
         bool mIsActive;
+        float mTimeActive;
         
-        GLuint mBufferID;
-        unsigned int mPositionTimeTextureID;
+        unsigned int mPositionBuffer;
+        unsigned int mVelocityBuffer;
+        unsigned int mColorBuffer;
 
-        int mDataTextureWidth;
-        int mDataTextureHeight;
+
+        int mNumParticles;
 
     private:
         ParticleSystemRenderer(ParticleSystemRenderer const &) = delete;
         ParticleSystemRenderer &operator=(ParticleSystemRenderer const &) = delete;
-        
-        std::vector<glm::ivec2> mParticleIndices;
 
-        unsigned int mVBO, mVAO;
+        unsigned int mVAO;
     };
 }

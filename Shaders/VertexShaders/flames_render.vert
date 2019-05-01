@@ -1,21 +1,15 @@
 #version 440 core
 
 // Inputs
-layout (location = 0) in vec2 aParticleIndices;
+layout (location = 0) in vec4 aPosition;
+layout (location = 1) in vec3 aColor;
 
 // Outputs
-out vec3 vPosition;
-out vec2 vParticleIndices;
-
-// Uniforms
-uniform sampler2D positionTimeMap;
-
-uniform mat4 view;
-uniform mat4 projection;
+out vec4 vPosition;
+out vec3 vColor;
 
 void main()
 {
-    vPosition = textureOffset(positionTimeMap, vec2(0), ivec2(aParticleIndices)).rgb;
-    vParticleIndices = aParticleIndices;
-    gl_Position = projection * view * vec4(vPosition, 1);
+    vPosition = aPosition;
+    vColor = aColor;
 }

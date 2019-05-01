@@ -12,56 +12,92 @@ namespace Components
 
   void ParticleSystemRenderer::update()
   {
-    glDispatchCompute(mDataTextureWidth, mDataTextureHeight, 1);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, mPositionBuffer);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, mVelocityBuffer);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, mColorBuffer);
+
+
+    glDispatchCompute(mNumParticles, 1, 1);
+    glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
   }
 
   void ParticleSystemRenderer::draw()
   {
     glBindVertexArray(mVAO);
-    glDrawArrays(GL_POINTS, 0, mParticleIndices.size());
+    glDrawArrays(GL_POINTS, 0, mNumParticles);
     glBindVertexArray(0);
    }
 
   void ParticleSystemRenderer::setupParticleSystem(unsigned int numParticles)
   {
-    int n = ceil(sqrt(numParticles));
-    mDataTextureWidth = n;
-    mDataTextureHeight = n;
+    mNumParticles = numParticles;
 
-    // Create framebuffer
-    glGenFramebuffers(1, &mBufferID);
-    glBindFramebuffer(GL_FRAMEBUFFER, mBufferID);
+    // Create position buffer
+    glGenBuffers(1, &mPositionBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, mPositionBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, mNumParticles*sizeof(glm::vec4), nullptr, GL_STATIC_DRAW);
 
-    // Create data textures
-    glGenTextures(1, &mPositionTimeTextureID);
-    glBindTexture(GL_TEXTURE_2D, mPositionTimeTextureID);
-    GLfloat texels[n][n][4] = {0};
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, n, n, 0, GL_RGBA, GL_FLOAT, texels);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    // Create velocity buffer
+    glGenBuffers(1, &mVelocityBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, mVelocityBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, mNumParticles*sizeof(glm::vec4), nullptr, GL_STATIC_DRAW);
 
-    // Construct indices data
-    for (int i = 0; i < n; i+=1) {
-      for (int j = 0; j < n && i*n+j < numParticles; j+=1) {
-        mParticleIndices.push_back(glm::ivec2(i,j));
-      }
-    }
+    // Create color buffer
+    glGenBuffers(1, &mColorBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, mColorBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, mNumParticles*sizeof(glm::vec4), nullptr, GL_STATIC_DRAW);
 
-    // Create buffers/arrays
+    // Create VAO
     glGenVertexArrays(1, &mVAO);
-    glGenBuffers(1, &mVBO);
-
-    // Bind VAO/VBO and set buffer data
     glBindVertexArray(mVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, mParticleIndices.size() * sizeof(glm::ivec2), &mParticleIndices[0], GL_STATIC_DRAW);
 
-    // Setup VAO
-    // Particle indices
+    // Bind position buffer
+    glBindBuffer(GL_ARRAY_BUFFER, mPositionBuffer);
     glEnableVertexAttribArray(0);
-    glVertexAttribIPointer(0, 2, GL_INT, sizeof(glm::ivec2), (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
 
-    glBindVertexArray(0);
+    // Bind color buffer
+    glBindBuffer(GL_ARRAY_BUFFER, mColorBuffer);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
+
+    resetBuffers();
+  }
+
+  void ParticleSystemRenderer::resetBuffers()
+  {
+    // Reset position buffer
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, mPositionBuffer);
+    glm::vec4 *pos = (glm::vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, mNumParticles*sizeof(glm::vec4), GL_MAP_WRITE_BIT|GL_MAP_INVALIDATE_BUFFER_BIT);
+    for (int i = 0; i < mNumParticles; i++) {
+      pos[i].x = 0.0f;
+      pos[i].y = 0.0f;
+      pos[i].z = 0.0f;
+      pos[i].w = 1;
+    }
+    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+    // Reset velocity buffer
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, mVelocityBuffer);
+    glm::vec4 *vel = (glm::vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, mNumParticles*sizeof(glm::vec4), GL_MAP_WRITE_BIT|GL_MAP_INVALIDATE_BUFFER_BIT);
+    for (int i = 0; i < mNumParticles; i++) {
+      vel[i].x = 0.0f;
+      vel[i].y = 0.0f;
+      vel[i].z = 0.0f;
+      vel[i].w = 0.0f;
+    }
+    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+    // Reset color buffer
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, mColorBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, mNumParticles*sizeof(glm::vec4), nullptr, GL_STATIC_DRAW);
+    glm::vec4 *col = (glm::vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, mNumParticles*sizeof(glm::vec4), GL_MAP_WRITE_BIT|GL_MAP_INVALIDATE_BUFFER_BIT);
+    for (int i = 0; i < mNumParticles; i++) {
+      col[i].x = 0.0f;
+      col[i].y = 0.0f;
+      col[i].z = 0.0f;
+      col[i].w = 0.0f;
+    }
+    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
   }
 }

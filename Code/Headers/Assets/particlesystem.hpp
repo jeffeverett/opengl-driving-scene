@@ -20,5 +20,7 @@ namespace Assets
         std::vector<glm::vec3> mColors;
         std::shared_ptr<Shader> mUpdateShader;
         std::shared_ptr<Shader> mRenderShader;
+
+        float mParticleLifetime;
     };
 }

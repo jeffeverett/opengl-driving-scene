@@ -64,10 +64,14 @@ namespace Scripts
         else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
             mCarPhysicsBody->applyEngineForce(-ENGINE_FORCE);
             mParticleSystemRenderer->mIsActive = false;
+            mParticleSystemRenderer->resetBuffers();
+            mParticleSystemRenderer->mTimeActive = 0;
         }
         else {
             mCarPhysicsBody->applyEngineForce(0);
             mParticleSystemRenderer->mIsActive = false;
+            mParticleSystemRenderer->resetBuffers();
+            mParticleSystemRenderer->mTimeActive = 0;
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
             mCarPhysicsBody->setSteering((float)(mCarPhysicsBody->mSteering + WHEEL_TURN_RATE*deltaTime));

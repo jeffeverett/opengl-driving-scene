@@ -203,23 +203,27 @@ namespace Rendering
     // ***** UPDATE PARTICLE STATES *****
     auto particleSystemRenderers = scene.getComponents<Components::ParticleSystemRenderer>();
     for (auto particleSystemRenderer : particleSystemRenderers) {
-      glBindFramebuffer(GL_FRAMEBUFFER, particleSystemRenderer->mBufferID);
-      auto updateShader = particleSystemRenderer->mParticleSystem->mUpdateShader;
-      updateShader->use();
+      if (particleSystemRenderer->mIsActive) {
+        particleSystemRenderer->mTimeActive += deltaTime;
 
-      // Set particle update uniforms
-      updateShader->setBool("isActive", particleSystemRenderer->mIsActive);
-      updateShader->setFloat("deltaTime", deltaTime);
-      updateShader->setInt("dataTextureWidth", particleSystemRenderer->mDataTextureWidth);
-      updateShader->setInt("dataTextureHeight", particleSystemRenderer->mDataTextureHeight);
+        auto updateShader = particleSystemRenderer->mParticleSystem->mUpdateShader;
+        updateShader->use();
 
-      // Bind position and time texture
-      unsigned int positionTimeIdx = 0;
-      glBindImageTexture(positionTimeIdx, particleSystemRenderer->mPositionTimeTextureID, 0, false, 0, GL_READ_WRITE, GL_RGB32F);
-      updateShader->setInt("positionTimeMap", positionTimeIdx);
+        // Set color uniforms
+        auto colors = particleSystemRenderer->mParticleSystem->mColors;
+        for (int i = 0; i < colors.size(); i++) {
+          updateShader->setVec3("color" + std::to_string(i), colors[i]);
+        }
 
-      setModelUniforms(updateShader, scene, particleSystemRenderer->mGameObject);
-      particleSystemRenderer->update();
+        // Set particle update uniforms
+        updateShader->setInt("numParticles", particleSystemRenderer->mNumParticles);
+        updateShader->setFloat("particleLifetime", particleSystemRenderer->mParticleSystem->mParticleLifetime);
+        updateShader->setFloat("totalTime", particleSystemRenderer->mTimeActive);
+        updateShader->setFloat("deltaTime", deltaTime);
+
+        setModelUniforms(updateShader, scene, particleSystemRenderer->mGameObject);
+        particleSystemRenderer->update();
+      }
     }
 
     // ***** MAIN RENDERING SETUP *****
@@ -252,6 +256,7 @@ namespace Rendering
 
     // ***** GEOMETRY PASS *****
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
 
     // Set framebuffer and clear
@@ -469,34 +474,25 @@ namespace Rendering
 
       // Render particles
       glEnable(GL_BLEND);
+      glDepthMask(GL_FALSE);
       auto particleSystemRenderers = scene.getComponents<Components::ParticleSystemRenderer>();
       for (auto particleSystemRenderer : particleSystemRenderers) {
-        auto textures = particleSystemRenderer->mParticleSystem->mTextures;
-        auto colors = particleSystemRenderer->mParticleSystem->mColors;
-        auto renderShader = particleSystemRenderer->mParticleSystem->mRenderShader;
-        renderShader->use();
-        renderShader->setVec2("particleSize", glm::vec2(100.0f, 100.0f));
+        if (particleSystemRenderer->mIsActive) {
+          auto textures = particleSystemRenderer->mParticleSystem->mTextures;
+          auto renderShader = particleSystemRenderer->mParticleSystem->mRenderShader;
+          renderShader->use();
+          renderShader->setVec2("particleSize", glm::vec2(0.2f, 0.2f));
 
-        // Set color uniforms
-        for (int i = 0; i < colors.size(); i++) {
-          renderShader->setVec3("color" + std::to_string(i), colors[i]);
+          // Bind albedo textures
+          for (int i = 0; i < textures.size(); i++) {
+            glActiveTexture(GL_TEXTURE0 + i);
+            renderShader->setInt("albedoMap" + std::to_string(i), i);
+            glBindTexture(GL_TEXTURE_2D, textures[i]->mID);
+          }
+          
+          setCameraUniforms(renderShader);
+          particleSystemRenderer->draw();
         }
-
-        // Bind albedo textures
-        for (int i = 0; i < textures.size(); i++) {
-          glActiveTexture(GL_TEXTURE0 + i);
-          renderShader->setInt("albedoMap" + std::to_string(i), i);
-          glBindTexture(GL_TEXTURE_2D, textures[i]->mID);
-        }
-
-        // Bind position and time texture
-        unsigned int positionTimeIdx = textures.size();
-        glActiveTexture(GL_TEXTURE0 + positionTimeIdx);
-        glBindTexture(GL_TEXTURE_2D, particleSystemRenderer->mPositionTimeTextureID);
-        renderShader->setInt("positionTimeMap", positionTimeIdx);
-        
-        setCameraUniforms(renderShader);
-        particleSystemRenderer->draw();
       }
     }
 
