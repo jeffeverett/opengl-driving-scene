@@ -26,6 +26,8 @@ namespace Components
         unsigned int mVelocityBuffer;
         unsigned int mColorBuffer;
 
+        glm::vec3 mMaxOffset;
+
 
         int mNumParticles;
 

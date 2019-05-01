@@ -7,7 +7,7 @@
 
 #include <glm/glm.hpp>
 
-const int PSR_POOL_SIZE = 300;
+const int PSR_POOL_SIZE = 200;
 
 namespace Scripts
 {

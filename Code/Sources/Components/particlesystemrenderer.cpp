@@ -1,5 +1,11 @@
 #include "Components/particlesystemrenderer.hpp"
 
+float frand(float min,float max)
+{
+   return rand()*(max-min)/RAND_MAX+min;
+}
+
+
 namespace Components
 {
   ParticleSystemRenderer::ParticleSystemRenderer(Core::GameObject &gameObject) : Component(gameObject)
@@ -70,9 +76,9 @@ namespace Components
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, mPositionBuffer);
     glm::vec4 *pos = (glm::vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, mNumParticles*sizeof(glm::vec4), GL_MAP_WRITE_BIT|GL_MAP_INVALIDATE_BUFFER_BIT);
     for (int i = 0; i < mNumParticles; i++) {
-      pos[i].x = 0.0f;
-      pos[i].y = 0.0f;
-      pos[i].z = 0.0f;
+      pos[i].x = frand(-mMaxOffset.x, mMaxOffset.x);
+      pos[i].y = frand(-mMaxOffset.y, mMaxOffset.y);
+      pos[i].z = frand(-mMaxOffset.z, mMaxOffset.z);
       pos[i].w = 0.0f;
     }
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);

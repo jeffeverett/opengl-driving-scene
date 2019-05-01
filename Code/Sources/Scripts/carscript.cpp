@@ -24,9 +24,9 @@ namespace Scripts
             PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/flames_render.frag"
         );
         auto particleSystem = std::make_shared<Assets::ParticleSystem>();
-        particleSystem->mParticleLifetime = 1.0f;
-        particleSystem->mInitialParticleSize = glm::vec2(0.5f, 0.5f);
-        particleSystem->mFinalParticleSize = glm::vec2(0.2f, 0.2f);
+        particleSystem->mParticleLifetime = 0.5f;
+        particleSystem->mInitialParticleSize = glm::vec2(0.07f, 0.07f);
+        particleSystem->mFinalParticleSize = glm::vec2(0.02f, 0.02f);
         particleSystem->mUpdateShader = particleUpdateShader;
         particleSystem->mRenderShader = particleRenderShader;
         particleSystem->mTextures.push_back(std::make_shared<Assets::Texture>(PROJECT_SOURCE_DIR "/Textures/Particles/flames.tga"));
@@ -53,7 +53,8 @@ namespace Scripts
             particleSystemRenderer->mIsActive = false;
             particleSystemRenderer->mTimeActive = 0.0f;
             particleSystemRenderer->mParticleSystem = mParticleSystem;
-            particleSystemRenderer->setupParticleSystem(100);
+            particleSystemRenderer->mMaxOffset = glm::vec3(0.1, 0, 0.1);
+            particleSystemRenderer->setupParticleSystem(300);
             psrGameObject->addComponent(particleSystemRenderer);
 
             // Add to scene
@@ -93,11 +94,20 @@ namespace Scripts
             mCarPhysicsBody->applyEngineForce(ENGINE_FORCE);
             
             if (mTimeSinceLastSpawnedPS > 0.01f) {
-                mParticleSystemRendererPool[mNextPoolIdx]->mGameObject.mTransform->setTranslation(mGameObject.mTransform->getWorldTranslation());
+                // Activate trail behind left wheel
+                mParticleSystemRendererPool[mNextPoolIdx]->mGameObject.mTransform->setTranslation(
+                    mGameObject.mTransform->getWorldTranslation() + mGameObject.mTransform->mRotation*glm::vec3(-0.17, 0, -0.5));
                 mParticleSystemRendererPool[mNextPoolIdx]->mIsActive = true;
                 mParticleSystemRendererPool[mNextPoolIdx]->mTimeActive = 0.0f;
-
                 mNextPoolIdx = (mNextPoolIdx + 1) % PSR_POOL_SIZE;
+
+                // Activate trail behind right wheel
+                mParticleSystemRendererPool[mNextPoolIdx]->mGameObject.mTransform->setTranslation(
+                    mGameObject.mTransform->getWorldTranslation() + mGameObject.mTransform->mRotation*glm::vec3(0.17, 0, -0.5));
+                mParticleSystemRendererPool[mNextPoolIdx]->mIsActive = true;
+                mParticleSystemRendererPool[mNextPoolIdx]->mTimeActive = 0.0f;
+                mNextPoolIdx = (mNextPoolIdx + 1) % PSR_POOL_SIZE;
+
                 mTimeSinceLastSpawnedPS = 0.0f;
             }
         }
