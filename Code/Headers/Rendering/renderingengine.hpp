@@ -16,7 +16,7 @@ namespace Rendering
         RenderingEngine(int texWidth, int texHeight);
         ~RenderingEngine();
 
-        void renderScene(Core::Scene const &scene, double rollingFPS);
+        void renderScene(Core::Scene const &scene, double deltaTime, double rollingFPS);
 
         std::unique_ptr<DebugRenderer> mDebugRenderer;
         

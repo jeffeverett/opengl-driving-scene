@@ -23,6 +23,13 @@ namespace Scripts
     void CarScript::onStart()
     {
         mCarPhysicsBody = mGameObject.getComponents<Components::CarPhysicsBody>()[0];
+        for (auto child : mGameObject.mChildren) {
+            auto particleSystemRenderers = child->getComponents<Components::ParticleSystemRenderer>();
+            if (particleSystemRenderers.size() > 0) {
+                mParticleSystemRenderer = particleSystemRenderers[0];
+                break;
+            }
+        }
 
         mGameObject.mTransform->setRotation(INITIAL_ROTATION);
     }
@@ -52,12 +59,15 @@ namespace Scripts
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
             mCarPhysicsBody->applyEngineForce(ENGINE_FORCE);
+            mParticleSystemRenderer->mIsActive = true;
         }
         else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
             mCarPhysicsBody->applyEngineForce(-ENGINE_FORCE);
+            mParticleSystemRenderer->mIsActive = false;
         }
         else {
             mCarPhysicsBody->applyEngineForce(0);
+            mParticleSystemRenderer->mIsActive = false;
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
             mCarPhysicsBody->setSteering((float)(mCarPhysicsBody->mSteering + WHEEL_TURN_RATE*deltaTime));

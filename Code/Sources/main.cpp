@@ -278,7 +278,7 @@ int main(int argc, char * argv[])
         physicsEngine.updateScene(scene, deltaTime);
 
         // Draw scene
-        renderingEngine.renderScene(scene, fps);
+        renderingEngine.renderScene(scene, deltaTime, fps);
 
         // Flip buffers and draw
         glfwSwapBuffers(window);

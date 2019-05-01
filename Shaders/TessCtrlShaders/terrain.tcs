@@ -33,7 +33,8 @@ float determineTessellationLevel(vec3 p0, vec3 p1)
 
    // Calculate tessellation level based on this value
    float pixelsPerEdgeVertex = 20.0;
-   return clamp(d / pixelsPerEdgeVertex, 0, 64);
+   float val = clamp(d / pixelsPerEdgeVertex, 0, 64);
+   return val;
 }
 
 void main()

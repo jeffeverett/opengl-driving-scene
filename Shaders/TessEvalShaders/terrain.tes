@@ -26,17 +26,17 @@ uniform sampler2D heightMap;
 
 vec3 interpolate3(in vec3 v0, in vec3 v1, in vec3 v2, in vec3 v3)
 {
-	vec3 a = mix(v0, v1, gl_TessCoord.x);
-	vec3 b = mix(v3, v2, gl_TessCoord.x);
-	return mix(a, b, gl_TessCoord.y);
+   vec3 a = mix(v0, v1, gl_TessCoord.x);
+   vec3 b = mix(v3, v2, gl_TessCoord.x);
+   return mix(a, b, gl_TessCoord.y);
 }
 
 
 vec2 interpolate2(in vec2 v0, in vec2 v1, in vec2 v2, in vec2 v3)
 {
-	vec2 a = mix(v0, v1, gl_TessCoord.x);
-	vec2 b = mix(v3, v2, gl_TessCoord.x);
-	return mix(a, b, gl_TessCoord.y);
+   vec2 a = mix(v0, v1, gl_TessCoord.x);
+   vec2 b = mix(v3, v2, gl_TessCoord.x);
+   return mix(a, b, gl_TessCoord.y);
 }
 
 void main()

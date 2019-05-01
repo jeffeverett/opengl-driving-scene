@@ -83,7 +83,7 @@ namespace Objects
         auto terrainMaterial = std::make_shared<Assets::Material>();
         terrainMaterial->mGeometryShader = terrainShader;
         terrainMaterial->mAlbedoMap = std::make_shared<Assets::Texture>(
-            PROJECT_SOURCE_DIR "/Textures/Ground/rock.jpg"
+            PROJECT_SOURCE_DIR "/Textures/Ground/rock2.jpg"
         );
         terrainMaterial->mSpecularMap = std::make_shared<Assets::Texture>(
             PROJECT_SOURCE_DIR "/Textures/Specular/dark_specular.jpg"

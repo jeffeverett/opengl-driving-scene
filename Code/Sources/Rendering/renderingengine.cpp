@@ -3,6 +3,7 @@
 #include "Components/meshrenderer.hpp"
 #include "Components/wheelmeshrenderer.hpp"
 #include "Components/terrainrenderer.hpp"
+#include "Components/particlesystemrenderer.hpp"
 #include "Components/meshfilter.hpp"
 #include "Components/camera.hpp"
 #include "Utils/openglerrors.hpp"
@@ -42,8 +43,9 @@ namespace Rendering
 {
   RenderingEngine::RenderingEngine(int texWidth, int texHeight) : mTexWidth(texWidth), mTexHeight(texHeight)
   {
-    // Enable/disable features that don't change
+    // OpenGL settings that don't change
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+    glPointSize(1);
 
     // Create auxiliary renderers
     mTextRenderer = std::make_unique<TextRenderer>(
@@ -194,11 +196,34 @@ namespace Rendering
     glBindVertexArray(0);
   }
 
-  void RenderingEngine::renderScene(Core::Scene const & scene, double rollingFPS)
+  void RenderingEngine::renderScene(Core::Scene const & scene, double deltaTime, double rollingFPS)
   {
     mDrawCalls = 0;
 
-    // ***** SETUP *****
+    // ***** UPDATE PARTICLE STATES *****
+    auto particleSystemRenderers = scene.getComponents<Components::ParticleSystemRenderer>();
+    for (auto particleSystemRenderer : particleSystemRenderers) {
+      glBindFramebuffer(GL_FRAMEBUFFER, particleSystemRenderer->mBufferID);
+      auto updateShader = particleSystemRenderer->mParticleSystem->mUpdateShader;
+      updateShader->use();
+
+      // Set particle update uniforms
+      updateShader->setBool("isActive", particleSystemRenderer->mIsActive);
+      updateShader->setFloat("deltaTime", deltaTime);
+      updateShader->setInt("dataTextureWidth", particleSystemRenderer->mDataTextureWidth);
+      updateShader->setInt("dataTextureHeight", particleSystemRenderer->mDataTextureHeight);
+
+      // Bind position and time texture
+      /*unsigned int positionTimeIdx = 0;
+      glActiveTexture(GL_TEXTURE0 + positionTimeIdx);
+      glBindTexture(GL_TEXTURE_2D, particleSystemRenderer->mPositionTimeTextureID);
+      updateShader->setInt("positionTimeMap", positionTimeIdx);*/
+
+      setModelUniforms(updateShader, scene, particleSystemRenderer->mGameObject);
+      particleSystemRenderer->update();
+    }
+
+    // ***** MAIN RENDERING SETUP *****
     // Handle viewport changes
     glViewport(0, 0, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight);
     if (scene.mRenderSettings.mFramebufferWidth != mTexWidth || scene.mRenderSettings.mFramebufferHeight != mTexHeight) {
@@ -442,6 +467,38 @@ namespace Rendering
         mDebugRenderer->drawAccumulated();
       }
       mDebugRenderer->clear();
+
+      // Render particles
+      glEnable(GL_BLEND);
+      auto particleSystemRenderers = scene.getComponents<Components::ParticleSystemRenderer>();
+      for (auto particleSystemRenderer : particleSystemRenderers) {
+        auto textures = particleSystemRenderer->mParticleSystem->mTextures;
+        auto colors = particleSystemRenderer->mParticleSystem->mColors;
+        auto renderShader = particleSystemRenderer->mParticleSystem->mRenderShader;
+        renderShader->use();
+        renderShader->setVec2("particleSize", glm::vec2(100.0f, 100.0f));
+
+        // Set color uniforms
+        for (int i = 0; i < colors.size(); i++) {
+          renderShader->setVec3("color" + std::to_string(i), colors[i]);
+        }
+
+        // Bind albedo textures
+        for (int i = 0; i < textures.size(); i++) {
+          glActiveTexture(GL_TEXTURE0 + i);
+          renderShader->setInt("albedoMap" + std::to_string(i), i);
+          glBindTexture(GL_TEXTURE_2D, textures[i]->mID);
+        }
+
+        // Bind position and time texture
+        unsigned int positionTimeIdx = textures.size();
+        glActiveTexture(GL_TEXTURE0 + positionTimeIdx);
+        glBindTexture(GL_TEXTURE_2D, particleSystemRenderer->mPositionTimeTextureID);
+        renderShader->setInt("positionTimeMap", positionTimeIdx);
+        
+        setCameraUniforms(renderShader);
+        particleSystemRenderer->draw();
+      }
     }
 
 

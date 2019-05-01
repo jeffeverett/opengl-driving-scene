@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Components/script.hpp"
-
-#include <Components/carphysicsbody.hpp>
+#include "Components/particlesystemrenderer.hpp"
+#include "Components/carphysicsbody.hpp"
 
 #include <glm/glm.hpp>
 
@@ -21,5 +21,6 @@ namespace Scripts
         glm::vec3 mInitialPosition;
 
         std::shared_ptr<Components::CarPhysicsBody> mCarPhysicsBody;
+        std::shared_ptr<Components::ParticleSystemRenderer> mParticleSystemRenderer;
     };
 }
