@@ -6,6 +6,15 @@
 
 namespace Assets
 {
+    Shader::Shader(std::string computePath)
+    {
+        // Create shader
+        mID = glCreateProgram();
+        attachShader(GL_COMPUTE_SHADER, computePath, "COMPUTE");
+        glLinkProgram(mID);
+        checkCompileErrors(mID, "PROGRAM");
+    }
+
     Shader::Shader(std::string vertexPath, std::string fragmentPath)
     {
         // Create shader

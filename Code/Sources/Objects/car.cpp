@@ -259,8 +259,7 @@ namespace Objects
 
         // ***** CREATE PARTICLE SYSTEM *****
         auto particleUpdateShader = std::make_shared<Assets::Shader>(
-            PROJECT_SOURCE_DIR "/Shaders/VertexShaders/flames_update.vert",
-            PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/flames_update.frag"
+            PROJECT_SOURCE_DIR "/Shaders/ComputeShaders/flames_update.cs"
         );
         auto particleRenderShader = std::make_shared<Assets::Shader>(
             PROJECT_SOURCE_DIR "/Shaders/VertexShaders/flames_render.vert",

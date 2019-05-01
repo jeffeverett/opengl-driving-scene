@@ -1,4 +1,4 @@
-#version 400 core
+#version 440 core
 
 // Inputs
 layout (location = 0) in vec2 aPos;

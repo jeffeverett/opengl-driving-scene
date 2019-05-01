@@ -12,10 +12,8 @@ namespace Components
 
   void ParticleSystemRenderer::update()
   {
-    glBindVertexArray(mVAO);
-    glDrawArrays(GL_POINTS, 0, mParticleIndices.size());
-    glBindVertexArray(0);
-   }
+    glDispatchCompute(mDataTextureWidth, mDataTextureHeight, 1);
+  }
 
   void ParticleSystemRenderer::draw()
   {
@@ -37,9 +35,11 @@ namespace Components
     // Create data textures
     glGenTextures(1, &mPositionTimeTextureID);
     glBindTexture(GL_TEXTURE_2D, mPositionTimeTextureID);
-    GLfloat texels[n][n] = {0};
+    GLfloat texels[n][n][4] = {0};
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, n, n, 0, GL_RGBA, GL_FLOAT, texels);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mPositionTimeTextureID, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     // Construct indices data
     for (int i = 0; i < n; i+=1) {

@@ -214,10 +214,9 @@ namespace Rendering
       updateShader->setInt("dataTextureHeight", particleSystemRenderer->mDataTextureHeight);
 
       // Bind position and time texture
-      /*unsigned int positionTimeIdx = 0;
-      glActiveTexture(GL_TEXTURE0 + positionTimeIdx);
-      glBindTexture(GL_TEXTURE_2D, particleSystemRenderer->mPositionTimeTextureID);
-      updateShader->setInt("positionTimeMap", positionTimeIdx);*/
+      unsigned int positionTimeIdx = 0;
+      glBindImageTexture(positionTimeIdx, particleSystemRenderer->mPositionTimeTextureID, 0, false, 0, GL_READ_WRITE, GL_RGB32F);
+      updateShader->setInt("positionTimeMap", positionTimeIdx);
 
       setModelUniforms(updateShader, scene, particleSystemRenderer->mGameObject);
       particleSystemRenderer->update();

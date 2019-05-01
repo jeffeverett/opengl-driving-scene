@@ -1,4 +1,4 @@
-#version 400 core
+#version 440 core
 
 // Inputs
 in vec3 gPosition;

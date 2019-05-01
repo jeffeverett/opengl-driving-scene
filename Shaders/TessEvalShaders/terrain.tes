@@ -1,4 +1,4 @@
-#version 400 core
+#version 440 core
 
 layout(quads, equal_spacing, cw) in;
 
