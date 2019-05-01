@@ -36,11 +36,11 @@ void main()
     float timeIntoCycle = mod(totalTime, particleLifetime);
     float currPartCyclePlacement = float(gid) / numParticles * particleLifetime;
     if (totalTime > currPartCyclePlacement && totalTime <= particleLifetime) {
+      velocities[gid].xyz = normalize(vec3(0, 0.8, 0)-positions[gid].xyz);
+      velocities[gid].w = 0;
+
       positions[gid].xyz = vec3(model * vec4(positions[gid].xyz,1));
       positions[gid].w = particleLifetime;
-
-      velocities[gid].xyz = vec3(0, 1, 0);
-      velocities[gid].w = 0;
 
       colors[gid].rgb = color0;
       colors[gid].a = 1;

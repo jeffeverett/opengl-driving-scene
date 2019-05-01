@@ -413,6 +413,7 @@ namespace Rendering
       // Draw skybox
       scene.mCubeMap.mShader->use();
       setCameraUniforms(scene.mCubeMap.mShader);
+      mDrawCalls++;
       scene.mCubeMap.draw();
 
       // Draw main scene
@@ -474,6 +475,7 @@ namespace Rendering
         setCameraUniforms(mDebugRenderer->mShader);
 
         // Draw
+        mDrawCalls++;
         mDebugRenderer->drawAccumulated();
       }
       mDebugRenderer->clear();
@@ -499,6 +501,7 @@ namespace Rendering
           }
           
           setCameraUniforms(renderShader);
+          mDrawCalls++;
           particleSystemRenderer->draw();
         }
       }

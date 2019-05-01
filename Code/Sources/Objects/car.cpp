@@ -181,9 +181,9 @@ namespace Objects
         auto tailLightGameObjects = { leftTailLightGameObject, rightTailLightGameObject };
         for (auto tailLightGameObject : tailLightGameObjects) {
             auto tailLight = std::make_shared<Components::SpotLight>(*tailLightGameObject);
-            tailLight->mAmbient = glm::vec3(0.23,0.06,0.06);
-            tailLight->mDiffuse = glm::vec3(0.35,0.15,0.15);
-            tailLight->mSpecular = glm::vec3(0.55f, 0.25f, 0.25f);
+            tailLight->mAmbient = glm::vec3(0.13,0.06,0.06);
+            tailLight->mDiffuse = glm::vec3(0.25,0.15,0.15);
+            tailLight->mSpecular = glm::vec3(0.35f, 0.25f, 0.25f);
             tailLight->mInnerCutoff = glm::cos(glm::radians(12.5f));
             tailLight->mOuterCutoff = glm::cos(glm::radians(17.5f));
             tailLight->mConstant = 1.0f;
