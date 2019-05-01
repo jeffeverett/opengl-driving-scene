@@ -4,7 +4,7 @@
 
 namespace Components
 {
-    Camera::Camera(const Core::GameObject &gameObject) : Component(gameObject)
+    Camera::Camera(Core::GameObject &gameObject) : Component(gameObject)
     {
     }
 

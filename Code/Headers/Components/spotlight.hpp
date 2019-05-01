@@ -8,7 +8,7 @@ namespace Components
     class SpotLight : public Light
     {
     public:
-        SpotLight(const Core::GameObject &gameObject);
+        SpotLight(Core::GameObject &gameObject);
         virtual ~SpotLight();
 
         float mInnerCutoff;

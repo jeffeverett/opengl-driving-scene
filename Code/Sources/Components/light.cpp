@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  Light::Light(const Core::GameObject &gameObject) : Component(gameObject)
+  Light::Light(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 

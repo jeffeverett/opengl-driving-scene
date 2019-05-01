@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  DirectionalLight::DirectionalLight(const Core::GameObject &gameObject) : Light(gameObject)
+  DirectionalLight::DirectionalLight(Core::GameObject &gameObject) : Light(gameObject)
   {
   }
 

@@ -22,5 +22,7 @@ namespace Assets
         std::shared_ptr<Shader> mRenderShader;
 
         float mParticleLifetime;
+        glm::vec2 mInitialParticleSize;
+        glm::vec2 mFinalParticleSize;
     };
 }

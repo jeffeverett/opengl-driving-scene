@@ -8,7 +8,7 @@ namespace Components
     class MeshRenderer : public Component
     {
     public:
-        MeshRenderer(const Core::GameObject &gameObject);
+        MeshRenderer(Core::GameObject &gameObject);
         virtual ~MeshRenderer();
 
         std::shared_ptr<Assets::Material> mMaterial;

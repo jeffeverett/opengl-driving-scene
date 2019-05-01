@@ -17,7 +17,11 @@ out vec2 gTexCoords;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform vec2 particleSize;
+uniform float particleLifetime;
+
+uniform vec2 initialParticleSize;
+uniform vec2 finalParticleSize;
+
 
 void main()
 {
@@ -28,6 +32,10 @@ void main()
   // Determine up and right vectors of camera for billboarding
   vec3 up = vec3(view[0][1], view[1][1], view[2][1]);
   vec3 right = vec3(view[0][0], view[1][0], view[2][0]);
+
+  // Determines sizes for extension
+  float weight = (vPosition[0].w / particleLifetime);
+  vec2 particleSize = weight*initialParticleSize + (1-weight)*finalParticleSize;
 
   // Bottom-left vertex
   gPosition = vec3(vPosition[0]) - particleSize[0]/2*right - particleSize[1]/2*up;

@@ -13,7 +13,7 @@ namespace Components
     class WheelMeshRenderer : public Component
     {
     public:
-        WheelMeshRenderer(const Core::GameObject &gameObject);
+        WheelMeshRenderer(Core::GameObject &gameObject);
         virtual ~WheelMeshRenderer();
 
         std::shared_ptr<Assets::Material> mMaterial;

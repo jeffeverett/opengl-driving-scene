@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  Script::Script(const Core::GameObject &gameObject) : Component(gameObject)
+  Script::Script(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 

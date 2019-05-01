@@ -15,7 +15,7 @@ namespace Components
     class Camera : public Component
     {
     public:
-        Camera(const Core::GameObject &gameObject);
+        Camera(Core::GameObject &gameObject);
         virtual ~Camera();
 
         glm::vec3 getWorldTranslation();

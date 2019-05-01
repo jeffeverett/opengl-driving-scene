@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  ParticleSystemRenderer::ParticleSystemRenderer(const Core::GameObject &gameObject) : Component(gameObject)
+  ParticleSystemRenderer::ParticleSystemRenderer(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 
@@ -73,7 +73,7 @@ namespace Components
       pos[i].x = 0.0f;
       pos[i].y = 0.0f;
       pos[i].z = 0.0f;
-      pos[i].w = 1;
+      pos[i].w = 0.0f;
     }
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 

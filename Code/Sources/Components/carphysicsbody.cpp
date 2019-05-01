@@ -5,7 +5,7 @@ const float STEERING_CLAMP = 0.3f;
 
 namespace Components
 {
-  CarPhysicsBody::CarPhysicsBody(const Core::GameObject &gameObject) : PhysicsBody(gameObject)
+  CarPhysicsBody::CarPhysicsBody(Core::GameObject &gameObject) : PhysicsBody(gameObject)
   {
   }
 

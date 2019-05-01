@@ -57,6 +57,6 @@ namespace Core
         std::vector<std::shared_ptr<Components::Component>> mComponents;
         std::vector<std::shared_ptr<GameObject>> mChildren;
         
-        std::unordered_map<std::size_t, std::vector<std::shared_ptr<Components::Component>>> mComponentsHash; 
+        std::unordered_map<std::size_t, std::vector<std::shared_ptr<Components::Component>>> mComponentsHash;
     };
 }

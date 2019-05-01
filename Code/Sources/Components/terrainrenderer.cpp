@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  TerrainRenderer::TerrainRenderer(const Core::GameObject &gameObject) : Component(gameObject)
+  TerrainRenderer::TerrainRenderer(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 

@@ -205,24 +205,30 @@ namespace Rendering
     for (auto particleSystemRenderer : particleSystemRenderers) {
       if (particleSystemRenderer->mIsActive) {
         particleSystemRenderer->mTimeActive += deltaTime;
-
-        auto updateShader = particleSystemRenderer->mParticleSystem->mUpdateShader;
-        updateShader->use();
-
-        // Set color uniforms
-        auto colors = particleSystemRenderer->mParticleSystem->mColors;
-        for (int i = 0; i < colors.size(); i++) {
-          updateShader->setVec3("color" + std::to_string(i), colors[i]);
+        if (particleSystemRenderer->mTimeActive >= particleSystemRenderer->mParticleSystem->mParticleLifetime*2) {
+          particleSystemRenderer->mTimeActive = 0.0f;
+          particleSystemRenderer->mIsActive = false;
+          particleSystemRenderer->resetBuffers();
         }
+        else {
+          auto updateShader = particleSystemRenderer->mParticleSystem->mUpdateShader;
+          updateShader->use();
 
-        // Set particle update uniforms
-        updateShader->setInt("numParticles", particleSystemRenderer->mNumParticles);
-        updateShader->setFloat("particleLifetime", particleSystemRenderer->mParticleSystem->mParticleLifetime);
-        updateShader->setFloat("totalTime", particleSystemRenderer->mTimeActive);
-        updateShader->setFloat("deltaTime", deltaTime);
+          // Set color uniforms
+          auto colors = particleSystemRenderer->mParticleSystem->mColors;
+          for (int i = 0; i < colors.size(); i++) {
+            updateShader->setVec3("color" + std::to_string(i), colors[i]);
+          }
 
-        setModelUniforms(updateShader, scene, particleSystemRenderer->mGameObject);
-        particleSystemRenderer->update();
+          // Set particle update uniforms
+          updateShader->setInt("numParticles", particleSystemRenderer->mNumParticles);
+          updateShader->setFloat("particleLifetime", particleSystemRenderer->mParticleSystem->mParticleLifetime);
+          updateShader->setFloat("totalTime", particleSystemRenderer->mTimeActive);
+          updateShader->setFloat("deltaTime", deltaTime);
+
+          setModelUniforms(updateShader, scene, particleSystemRenderer->mGameObject);
+          particleSystemRenderer->update();
+        }
       }
     }
 
@@ -481,7 +487,9 @@ namespace Rendering
           auto textures = particleSystemRenderer->mParticleSystem->mTextures;
           auto renderShader = particleSystemRenderer->mParticleSystem->mRenderShader;
           renderShader->use();
-          renderShader->setVec2("particleSize", glm::vec2(0.2f, 0.2f));
+          renderShader->setFloat("particleLifetime", particleSystemRenderer->mParticleSystem->mParticleLifetime);
+          renderShader->setVec2("initialParticleSize", particleSystemRenderer->mParticleSystem->mInitialParticleSize);
+          renderShader->setVec2("finalParticleSize", particleSystemRenderer->mParticleSystem->mFinalParticleSize);
 
           // Bind albedo textures
           for (int i = 0; i < textures.size(); i++) {
@@ -630,7 +638,7 @@ namespace Rendering
     }
   }
 
-  void RenderingEngine::setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, const Core::GameObject &gameObject)
+  void RenderingEngine::setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, Core::GameObject &gameObject)
   {
     // Set model matrix
     shader->setMat4("model", gameObject.mTransform->mModelMatrix);

@@ -12,9 +12,9 @@ namespace Components
   class Component
   {
   public:
-    Component(const Core::GameObject &gameObject);
+    Component(Core::GameObject &gameObject);
     virtual ~Component();
 
-    const Core::GameObject &mGameObject;
+    Core::GameObject &mGameObject;
   };
 }

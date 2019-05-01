@@ -7,7 +7,7 @@ namespace Components
     class PointLight : public Light
     {
     public:
-        PointLight(const Core::GameObject &gameObject);
+        PointLight(Core::GameObject &gameObject);
         virtual ~PointLight();
 
         float mConstant;

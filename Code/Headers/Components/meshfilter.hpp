@@ -8,7 +8,7 @@ namespace Components
     class MeshFilter : public Component
     {
     public:
-        MeshFilter(const Core::GameObject &gameObject);
+        MeshFilter(Core::GameObject &gameObject);
         virtual ~MeshFilter();
 
         std::shared_ptr<Assets::Mesh> mMesh;

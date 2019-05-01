@@ -8,7 +8,7 @@ namespace Components
     class ParticleSystemRenderer : public Component
     {
     public:
-        ParticleSystemRenderer(const Core::GameObject &gameObject);
+        ParticleSystemRenderer(Core::GameObject &gameObject);
         virtual ~ParticleSystemRenderer();
 
         void setupParticleSystem(unsigned int numParticles);

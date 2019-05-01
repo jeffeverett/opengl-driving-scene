@@ -45,7 +45,6 @@ namespace Objects
 {
     std::shared_ptr<Assets::Model> Car::mModel;
     std::shared_ptr<Assets::Material> Car::mMaterial;
-    std::shared_ptr<Assets::ParticleSystem> Car::mParticleSystem;
 
     Car::Car(glm::vec3 position, const Physics::PhysicsEngine &physicsEngine) : Core::GameObject(position)
     {
@@ -193,17 +192,6 @@ namespace Objects
             tailLightGameObject->addComponent(tailLight);
         }
 
-        // **** CREATE GAMEOBJECT WITH PARTICLE SYSTEM RENDERER ****
-        // Create gameobject
-        auto psrGameObject = std::make_shared<Core::GameObject>(glm::vec3(0, 0, -0.5));
-        addChild(psrGameObject);
-
-        // Create paricle system renderer
-        auto particleSystemRenderer = std::make_shared<Components::ParticleSystemRenderer>(*psrGameObject);
-        particleSystemRenderer->mParticleSystem = mParticleSystem;
-        particleSystemRenderer->setupParticleSystem(10000);
-        psrGameObject->addComponent(particleSystemRenderer);
-
         // **** CREATE GAMEOBJECT WITH CAMERA TO FOLLOW CAR ****
         // Create gameobject
         auto cameraGameObject = std::make_shared<Core::GameObject>(glm::vec3(0, 0, 2));
@@ -256,23 +244,5 @@ namespace Objects
             mModel->mNormalTextures[0] :
             nullptr;
         mMaterial = carMaterial;
-
-        // ***** CREATE PARTICLE SYSTEM *****
-        auto particleUpdateShader = std::make_shared<Assets::Shader>(
-            PROJECT_SOURCE_DIR "/Shaders/ComputeShaders/flames_update.cs"
-        );
-        auto particleRenderShader = std::make_shared<Assets::Shader>(
-            PROJECT_SOURCE_DIR "/Shaders/VertexShaders/flames_render.vert",
-            PROJECT_SOURCE_DIR "/Shaders/GeometryShaders/flames_render.geom",
-            PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/flames_render.frag"
-        );
-        auto particleSystem = std::make_shared<Assets::ParticleSystem>();
-        particleSystem->mParticleLifetime = 30.0f;
-        particleSystem->mUpdateShader = particleUpdateShader;
-        particleSystem->mRenderShader = particleRenderShader;
-        particleSystem->mTextures.push_back(std::make_shared<Assets::Texture>(PROJECT_SOURCE_DIR "/Textures/Particles/flames.tga"));
-        particleSystem->mColors.push_back(glm::vec3(0.886, 0.345, 0.133));
-        particleSystem->mColors.push_back(glm::vec3(0.0, 0.0, 1.0));
-        mParticleSystem = particleSystem;
     }
 }

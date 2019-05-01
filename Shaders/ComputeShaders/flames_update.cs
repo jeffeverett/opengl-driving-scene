@@ -33,15 +33,13 @@ void main()
 
   // w of "positions" encodes the amount of time remaining in particle lifetime
   if (positions[gid].w <= 0) {
-    float prevTimeIntoCycle = mod(totalTime - deltaTime, particleLifetime);
     float timeIntoCycle = mod(totalTime, particleLifetime);
     float currPartCyclePlacement = float(gid) / numParticles * particleLifetime;
-    if (timeIntoCycle > currPartCyclePlacement || 
-       (totalTime > particleLifetime && prevTimeIntoCycle > timeIntoCycle && currPartCyclePlacement > timeIntoCycle)) {
+    if (totalTime > currPartCyclePlacement && totalTime <= particleLifetime) {
       positions[gid].xyz = vec3(model * vec4(0,0,0,1));
       positions[gid].w = particleLifetime;
 
-      velocities[gid].xyz = -3*normalize(vec3(model[0][2], model[1][2], model[2][2]));
+      velocities[gid].xyz = vec3(0, 1, 0);
       velocities[gid].w = 0;
 
       colors[gid].rgb = color0;

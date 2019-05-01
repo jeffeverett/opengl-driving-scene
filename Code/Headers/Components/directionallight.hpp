@@ -7,7 +7,7 @@ namespace Components
     class DirectionalLight : public Light
     {
     public:
-        DirectionalLight(const Core::GameObject &gameObject);
+        DirectionalLight(Core::GameObject &gameObject);
         virtual ~DirectionalLight();
         
     private:

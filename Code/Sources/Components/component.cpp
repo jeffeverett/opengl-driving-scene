@@ -3,7 +3,7 @@
 
 namespace Components
 {
-  Component::Component(const Core::GameObject &gameObject) : mGameObject(gameObject)
+  Component::Component(Core::GameObject &gameObject) : mGameObject(gameObject)
   {
   }
 

@@ -4,7 +4,6 @@
 #include "Physics/physicsengine.hpp"
 #include "Assets/model.hpp"
 #include "Assets/material.hpp"
-#include "Assets/particlesystem.hpp"
 #include "Utils/meshcreator.hpp"
 
 #include <memory>
@@ -24,6 +23,5 @@ namespace Objects
 
         static std::shared_ptr<Assets::Model> mModel;
         static std::shared_ptr<Assets::Material> mMaterial;
-        static std::shared_ptr<Assets::ParticleSystem> mParticleSystem;
     };
 }

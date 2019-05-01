@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  MeshRenderer::MeshRenderer(const Core::GameObject &gameObject) : Component(gameObject)
+  MeshRenderer::MeshRenderer(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 
