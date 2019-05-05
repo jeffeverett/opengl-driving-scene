@@ -68,25 +68,25 @@ The program can then be run like so:
 
 # Functionality:
 - Deferred rendering: The rendering pipeline is a form of deferred rendering. Moreover, the output of the intermediate geometry buffer
-  textures are easily viewable using the DEBUG rendering mode.
+  textures are easily viewable using the `DEBUG` rendering mode.
 - Tessellated terrain: the terrain is tessellated based off of the distance from the camera. Specifically, the outer tessellation
   level of each rectangular edge is based on the number of pixels which that edge occupies; the inner tessellation levels are
   then determined by averaging these outer tessellation levels. The approximate tessellation amounts can be viewed using the
   wireframe mode--each rendered quad in the terrain grid (pre-tessellation) is given a wireframe color based on the average
-  tessellation level used. TL>30 = red, 30>TL>20 = green, 20>TL>10 = yellow, TL<10 = purple.
-- GPU particle engine: When the gas pedal is pressed ("W"), a flame trail appears behind the car. This flame trail consists of multiple
+  tessellation level used. `TL`>`30` = `red`, `30`>`TL`>`20` = `green`, `20`>`TL`>`10` = `yellow`, `TL`<`10` = `purple`.
+- GPU particle engine: When the gas pedal is pressed (`W`), a flame trail appears behind the car. This flame trail consists of multiple
   particle systems, each of which belong to a pre-generated pool that become active when necessary. The update step is performed using
   a compute shader and the billboarded quads are generated using a geometry shader. 
 - Normal mapping (+ specular mapping): Each material has the ability to utilize a normal map and/or specular map. When these
   textures are not specified, defaults are provided to the shader (for the normal map, the default is a 1x1 blue pixel, and for
-  the specular map, the default is a 1x1 gray pixel). Currently, the terrain utilizes a non-default normal map and specular map and the car
+  the specular map, the default is a `1x1` gray pixel). Currently, the terrain utilizes a non-default normal map and specular map and the car
   utilizes a non-default specular map.
 - FXAA: Rendering engine allows for post-processing in the form of FXAA. Moreover, the edges which are detected during this processing
   can be highlighted for debugging purposes.
 - Instancing: The rendering engine aggregates material and mesh combinations; for each unique combination, it creates an
   instanced draw call which utilizes instanced arrays. This drastically reduces the total number of draw calls in the scene.
-  Prior to instancing, there were 16x16 (for terrain) + 24 + 24 (for streetlights) + 6 (for car) = 310 draw calls for object
-  rendering. Now there are 1 (for terrain) + 1 + 1 (for streetlights) + 6 (for car) = 9 draw calls for object rendering.
+  Prior to instancing, there were `16` * `16` (for terrain) + `24` + `24` (for streetlights) + `6` (for car) = `310` draw calls for object
+  rendering. Now there are `1` (for terrain) + `1` + `1` (for streetlights) + `6` (for car) = `9` draw calls for object rendering.
   Note that "object rendering" does not include draw calls for lighting pass, post-processing passes, debug lines, etc.
   In the current system, most draw calls are for the activated particle systems (although this is dependent on the number
   of active particle systems, of course).
