@@ -3,15 +3,15 @@ This is a driving scene created in OpenGL. It incorporates the Bullet physics en
 deferred rendering, tessellated terrain, and more.
 
 # Screenshots
-The following showcases the deferred rendering capabilities:
 
+## Deferred Rendering
 ![deferred rendering screenshot](Screenshots/deferred_rendering.png)
 
 The position texture is in the top-left, the normal texture is in the top-right, the diffuse portion of the diffuse/specular
 texture is in the bottom-left, and the specular portion of the diffues/specular texture in the bottom-right.
 
-The following showcases the tessellated terrain:
 
+## Tessellated Terrain
 ![deferred rendering screenshot](Screenshots/tessellated_terrain.png)
 
 Each rendered quad in the terrain grid (pre-tessellation) is given a wireframe color based on the average
@@ -21,15 +21,15 @@ tessellation level used. The following ranges are used:
 - `20`>`TL`>`10` = `yellow`
 - `TL`<`10` = `purple`.
 
-The following showcases the use of FXAA:
 
+## FXAA
 ![FXAA screenshot](Screenshots/fxaa.png)
 
 FXAA detects edges in the renderered scene and then blurs those edges. Here, the detected edges are highlighted in purple.
 
-The following showcases the use of the Bullet physics engine:
 
-![FXAA screenshot](Screenshots/bullet_physics.png)
+## Bullet Physics Engine
+![Bullet physics screenshot](Screenshots/bullet_physics.png)
 
 The car has various debug lines, including the red AABB. The other objects in the scene have a green wireframe which represents
 their collision shape.
