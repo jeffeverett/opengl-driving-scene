@@ -1,6 +1,6 @@
-.PHONY: final
+.PHONY: opengl-driving-scene
 
-final:
+opengl-driving-scene:
 	mkdir -p Build
 	cd Build; cmake -DCMAKE_BUILD_TYPE=Debug ..; make
-	cp Build/final/final ./final
+	cp Build/opengl-driving-scene/opengl-driving-scene ./opengl-driving-scene

@@ -42,7 +42,7 @@ This will create a `Build` directory, use CMake to build the project in that dir
 copy the executable to the topmost directory.
 
 The program can then be run like so:
-- `./final`
+- `./opengl-driving-scene`
 
 # Keys:
 - `ESC`: Exit program
