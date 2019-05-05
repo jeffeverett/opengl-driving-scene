@@ -7,7 +7,7 @@ namespace Components
     class Light : public Component
     {
     public:
-        Light(const Core::GameObject &gameObject);
+        Light(Core::GameObject &gameObject);
         virtual ~Light();
 
         glm::vec3 getDirection();

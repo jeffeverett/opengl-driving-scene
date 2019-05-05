@@ -9,11 +9,11 @@ namespace Scripts
     class CameraScript : public Components::Script
     {
     public:
-        CameraScript(Core::GameObject const &);
+        CameraScript(Core::GameObject &);
         virtual ~CameraScript();
 
-        virtual void onStart() override;
-        virtual void onUpdate(GLFWwindow *window, float deltaTime) override;
+        virtual void onStart(Core::Scene &scene) override;
+        virtual void onUpdate(GLFWwindow *window, Core::Scene &scene, float deltaTime) override;
 
     private:
         float mRadius;

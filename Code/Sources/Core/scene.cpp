@@ -32,14 +32,14 @@ namespace Core
     void Scene::update(GLFWwindow *window, float deltaTime)
     {
         for (auto script : getComponents<Components::Script>()) {
-            script->onUpdate(window, deltaTime);
+            script->onUpdate(window, *this, deltaTime);
         }
     }
 
     void Scene::initialize()
     {
         for (auto script : getComponents<Components::Script>()) {
-            script->onStart();
+            script->onStart(*this);
         }
     }
 }

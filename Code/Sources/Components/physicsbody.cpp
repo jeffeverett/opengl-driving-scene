@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  PhysicsBody::PhysicsBody(const Core::GameObject &gameObject) : Component(gameObject)
+  PhysicsBody::PhysicsBody(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 

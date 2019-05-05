@@ -8,7 +8,7 @@ namespace Components
     class TerrainRenderer : public Component
     {
     public:
-        TerrainRenderer(const Core::GameObject &gameObject);
+        TerrainRenderer(Core::GameObject &gameObject);
         virtual ~TerrainRenderer();
 
         void generateInstanceVBO();

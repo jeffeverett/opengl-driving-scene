@@ -7,7 +7,7 @@ namespace Components
     class CarPhysicsBody : public PhysicsBody
     {
     public:
-        CarPhysicsBody(const Core::GameObject &gameObject);
+        CarPhysicsBody(Core::GameObject &gameObject);
         virtual ~CarPhysicsBody();
 
         void applyEngineForce(float force);

@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  Light::Light(const Core::GameObject &gameObject) : Component(gameObject)
+  Light::Light(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 
@@ -13,7 +13,7 @@ namespace Components
   glm::vec3 Light::getDirection()
   {
     auto modelMatrix = mGameObject.mTransform->mModelMatrix;
-    glm::vec3 lightDirection(modelMatrix[0][2], modelMatrix[1][2], modelMatrix[2][2]);
+    glm::vec3 lightDirection(modelMatrix[2][0], modelMatrix[2][1], modelMatrix[2][2]);
     return glm::normalize(lightDirection);
   }
 }

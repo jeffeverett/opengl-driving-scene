@@ -3,6 +3,7 @@
 #include "Components/meshrenderer.hpp"
 #include "Components/wheelmeshrenderer.hpp"
 #include "Components/terrainrenderer.hpp"
+#include "Components/particlesystemrenderer.hpp"
 #include "Components/meshfilter.hpp"
 #include "Components/camera.hpp"
 #include "Utils/openglerrors.hpp"
@@ -42,8 +43,9 @@ namespace Rendering
 {
   RenderingEngine::RenderingEngine(int texWidth, int texHeight) : mTexWidth(texWidth), mTexHeight(texHeight)
   {
-    // Enable/disable features that don't change
+    // OpenGL settings that don't change
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+    glPointSize(1);
 
     // Create auxiliary renderers
     mTextRenderer = std::make_unique<TextRenderer>(
@@ -97,10 +99,31 @@ namespace Rendering
     // Check for completeness of framebuffer
     Utils::OpenGLErrors::checkFramebufferComplete();
 
+    // Create lBuffer
+    glGenFramebuffers(1, &mLBufferID);
+    glBindFramebuffer(GL_FRAMEBUFFER, mLBufferID);
+      
+    // Create color buffer
+    glGenTextures(1, &mLColorID);
+    glBindTexture(GL_TEXTURE_2D, mLColorID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mTexWidth, mTexHeight, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mLColorID, 0);
+    
+    // Check for completeness of framebuffer
+    Utils::OpenGLErrors::checkFramebufferComplete();
+
     // Create lighting shader
     mLightingShader = std::make_unique<Assets::Shader>(
       PROJECT_SOURCE_DIR "/Shaders/VertexShaders/quad.vert",
       PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/lighting.frag"
+    );
+
+    // Create FXAA shader
+    mFXAAShader = std::make_unique<Assets::Shader>(
+      PROJECT_SOURCE_DIR "/Shaders/VertexShaders/quad.vert",
+      PROJECT_SOURCE_DIR "/Shaders/FragmentShaders/fxaa.frag"
     );
 
     // Create gBuffer debugging shaders
@@ -159,6 +182,12 @@ namespace Rendering
   {
   }
 
+  void RenderingEngine::clearFramebuffer()
+  {
+    glClearColor(0.3f, 0.7f, 0.8f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
+
   void RenderingEngine::drawQuad()
   {
     mDrawCalls++;
@@ -167,17 +196,50 @@ namespace Rendering
     glBindVertexArray(0);
   }
 
-  void RenderingEngine::renderScene(Core::Scene const & scene, double rollingFPS)
+  void RenderingEngine::renderScene(Core::Scene const & scene, double deltaTime, double rollingFPS)
   {
     mDrawCalls = 0;
 
-    // ***** SETUP *****
+    // ***** UPDATE PARTICLE STATES *****
+    auto particleSystemRenderers = scene.getComponents<Components::ParticleSystemRenderer>();
+    for (auto particleSystemRenderer : particleSystemRenderers) {
+      if (particleSystemRenderer->mIsActive) {
+        particleSystemRenderer->mTimeActive += deltaTime;
+        if (particleSystemRenderer->mTimeActive >= particleSystemRenderer->mParticleSystem->mParticleLifetime*2) {
+          particleSystemRenderer->mTimeActive = 0.0f;
+          particleSystemRenderer->mIsActive = false;
+          particleSystemRenderer->resetBuffers();
+        }
+        else {
+          auto updateShader = particleSystemRenderer->mParticleSystem->mUpdateShader;
+          updateShader->use();
+
+          // Set color uniforms
+          auto colors = particleSystemRenderer->mParticleSystem->mColors;
+          for (int i = 0; i < colors.size(); i++) {
+            updateShader->setVec3("color" + std::to_string(i), colors[i]);
+          }
+
+          // Set particle update uniforms
+          updateShader->setInt("numParticles", particleSystemRenderer->mNumParticles);
+          updateShader->setFloat("particleLifetime", particleSystemRenderer->mParticleSystem->mParticleLifetime);
+          updateShader->setFloat("totalTime", particleSystemRenderer->mTimeActive);
+          updateShader->setFloat("deltaTime", deltaTime);
+
+          setModelUniforms(updateShader, scene, particleSystemRenderer->mGameObject);
+          particleSystemRenderer->update();
+        }
+      }
+    }
+
+    // ***** MAIN RENDERING SETUP *****
     // Handle viewport changes
     glViewport(0, 0, scene.mRenderSettings.mFramebufferWidth, scene.mRenderSettings.mFramebufferHeight);
     if (scene.mRenderSettings.mFramebufferWidth != mTexWidth || scene.mRenderSettings.mFramebufferHeight != mTexHeight) {
       mTexWidth = scene.mRenderSettings.mFramebufferWidth;
       mTexHeight = scene.mRenderSettings.mFramebufferHeight;
 
+      // Modify gBuffer textures
       glBindTexture(GL_TEXTURE_2D, mGDepthID);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mTexWidth, mTexHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
@@ -189,6 +251,10 @@ namespace Rendering
       
       glBindTexture(GL_TEXTURE_2D, mGAlbedoSpecID);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mTexWidth, mTexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+      // Modify lBuffer textures
+      glBindTexture(GL_TEXTURE_2D, mLColorID);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mTexWidth, mTexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     }
 
     // Calculate common uniforms
@@ -196,12 +262,12 @@ namespace Rendering
 
     // ***** GEOMETRY PASS *****
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
 
     // Set framebuffer and clear
     glBindFramebuffer(GL_FRAMEBUFFER, mGBufferID);
-    glClearColor(0.3f, 0.7f, 0.8f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    clearFramebuffer();
 
     // Tell OpenGL which color attachments we'll use for rendering 
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
@@ -288,11 +354,6 @@ namespace Rendering
     }
 
     // ***** SECOND PASS PREP *****
-    // Set framebuffer and clear
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClearColor(0.3f, 0.7f, 0.8f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     // Make gBuffer information available
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mGPositionID);
@@ -303,6 +364,10 @@ namespace Rendering
 
     // ***** DEBUG PASS *****
     if (scene.mRenderSettings.mRenderMode == Rendering::RenderMode::DEBUG) {
+      // Do not use post-processing renders in deferred rendering debug
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      clearFramebuffer();
+
       // Draw positions in top-left
       mDebugPositionShader->use();
       mDebugPositionShader->setInt("positionTexture", 0);
@@ -335,9 +400,20 @@ namespace Rendering
 
     // ***** LIGHTING PASS *****
     if (scene.mRenderSettings.mRenderMode == Rendering::RenderMode::DEFERRED_SHADING) {
+      // Render to lighting buffer if post-processing is necessary
+      // Otherwise, render directly to default framebuffer
+      if (scene.mRenderSettings.mFXAARenderMode != Rendering::FXAARenderMode::NONE) {
+        glBindFramebuffer(GL_FRAMEBUFFER, mLBufferID);
+      }
+      else {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      }
+      clearFramebuffer();
+
       // Draw skybox
       scene.mCubeMap.mShader->use();
       setCameraUniforms(scene.mCubeMap.mShader);
+      mDrawCalls++;
       scene.mCubeMap.draw();
 
       // Draw main scene
@@ -350,16 +426,39 @@ namespace Rendering
       setLightingUniforms(scene);
       drawQuad();
 
+      // Use FXAA if enabled
+      if (scene.mRenderSettings.mFXAARenderMode != Rendering::FXAARenderMode::NONE) {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        clearFramebuffer();
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, mLColorID);
+
+        mFXAAShader->use();
+        mFXAAShader->setInt("colorTexture", 0);
+        mFXAAShader->setVec2("texelStep", glm::vec2(
+          1.0f / scene.mRenderSettings.mFramebufferWidth, 1.0f / scene.mRenderSettings.mFramebufferHeight));
+        mFXAAShader->setBool("showEdges", scene.mRenderSettings.mFXAARenderMode == Rendering::FXAARenderMode::FXAA_AND_DEBUG);
+        mFXAAShader->setFloat("lumaThreshold", 0.5f);
+        mFXAAShader->setFloat("mulReduce", 1.0f/8.0f);
+        mFXAAShader->setFloat("minReduce", 1.0f/128.0f);
+        mFXAAShader->setFloat("maxSpan", 8.0f);
+
+        mFXAAShader->setVec2("scale", 1.0f, 1.0f);
+        mFXAAShader->setVec2("offset", 0.0f, 0.0f);
+        drawQuad();
+      }
+
       // Draw physics debugging lines if enabled
       if (scene.mRenderSettings.mDrawDebugLines) {
         // Add debug lines for spot lights
-        /*for (auto &spotLight : scene.getComponents<Components::SpotLight>()) {
+        for (auto &spotLight : scene.getComponents<Components::SpotLight>()) {
           auto transform = spotLight->mGameObject.mTransform;
           mDebugRenderer->drawLine(
             Utils::TransformConversions::glmVec32btVector3(transform->getWorldTranslation()),
             Utils::TransformConversions::glmVec32btVector3(transform->getWorldTranslation() + spotLight->getDirection()),
             btVector3(1.0, 1.0, 1.0));
-        }*/
+        }
 
         // Copy depth buffer from gBuffer to default framebuffer
         glBindFramebuffer(GL_READ_FRAMEBUFFER, mGBufferID);
@@ -376,9 +475,36 @@ namespace Rendering
         setCameraUniforms(mDebugRenderer->mShader);
 
         // Draw
+        mDrawCalls++;
         mDebugRenderer->drawAccumulated();
       }
       mDebugRenderer->clear();
+
+      // Render particles
+      glEnable(GL_BLEND);
+      glDepthMask(GL_FALSE);
+      auto particleSystemRenderers = scene.getComponents<Components::ParticleSystemRenderer>();
+      for (auto particleSystemRenderer : particleSystemRenderers) {
+        if (particleSystemRenderer->mIsActive) {
+          auto textures = particleSystemRenderer->mParticleSystem->mTextures;
+          auto renderShader = particleSystemRenderer->mParticleSystem->mRenderShader;
+          renderShader->use();
+          renderShader->setFloat("particleLifetime", particleSystemRenderer->mParticleSystem->mParticleLifetime);
+          renderShader->setVec2("initialParticleSize", particleSystemRenderer->mParticleSystem->mInitialParticleSize);
+          renderShader->setVec2("finalParticleSize", particleSystemRenderer->mParticleSystem->mFinalParticleSize);
+
+          // Bind albedo textures
+          for (int i = 0; i < textures.size(); i++) {
+            glActiveTexture(GL_TEXTURE0 + i);
+            renderShader->setInt("albedoMap" + std::to_string(i), i);
+            glBindTexture(GL_TEXTURE_2D, textures[i]->mID);
+          }
+          
+          setCameraUniforms(renderShader);
+          mDrawCalls++;
+          particleSystemRenderer->draw();
+        }
+      }
     }
 
 
@@ -464,28 +590,29 @@ namespace Rendering
   {
     // Set view position
     auto camera = scene.getComponents<Components::Camera>()[0];
-    auto cameraPos = camera->mGameObject.mTransform->mTranslation;
+    auto cameraPos = camera->getWorldTranslation();
     mLightingShader->setVec3("viewPos", cameraPos);
 
     // Set directional light uniforms
     mLightingShader->setVec3("dirLight.direction", glm::vec3(0.3f, -0.7f, 0.648f));
     mLightingShader->setVec3("dirLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
     mLightingShader->setVec3("dirLight.diffuse", glm::vec3(0.25f, 0.25f, 0.25f));
-    mLightingShader->setVec3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    mLightingShader->setVec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
     // Set point light uniforms
+    auto followPos = camera->mFollowTransform->getWorldTranslation();
     auto pointLights = scene.getComponents<Components::PointLight>();
     std::map<float, std::shared_ptr<Components::PointLight>> distancesMap;
     for (int i = 0; i < pointLights.size(); i++) {
-      glm::vec3 pointLightPos = pointLights[i]->mGameObject.mTransform->mTranslation;
-      float distance = glm::length(cameraPos-pointLightPos);
+      glm::vec3 pointLightPos = pointLights[i]->mGameObject.mTransform->getWorldTranslation();
+      float distance = glm::length(followPos-pointLightPos);
       distancesMap[distance] = pointLights[i];
     }
     auto iter = distancesMap.begin();
     for (int i = 0; i < std::min((size_t) 6, distancesMap.size()); i++) {
       std::string number = std::to_string(i);
       auto pointLight = iter->second;
-      mLightingShader->setVec3("pointLights[" + number + "].position", pointLight->mGameObject.mTransform->mTranslation);
+      mLightingShader->setVec3("pointLights[" + number + "].position", pointLight->mGameObject.mTransform->getWorldTranslation());
       mLightingShader->setVec3("pointLights[" + number + "].ambient", pointLight->mAmbient);
       mLightingShader->setVec3("pointLights[" + number + "].diffuse", pointLight->mDiffuse);
       mLightingShader->setVec3("pointLights[" + number + "].specular", pointLight->mSpecular);
@@ -501,7 +628,7 @@ namespace Rendering
         std::string number = std::to_string(i);
         auto spotLight = spotLights[i];
 
-        mLightingShader->setVec3("spotLights[" + number + "].position", spotLight->mGameObject.mTransform->mTranslation);
+        mLightingShader->setVec3("spotLights[" + number + "].position", spotLight->mGameObject.mTransform->getWorldTranslation());
         mLightingShader->setVec3("spotLights[" + number + "].direction", spotLight->getDirection());
         mLightingShader->setVec3("spotLights[" + number + "].ambient", spotLight->mAmbient);
         mLightingShader->setVec3("spotLights[" + number + "].diffuse", spotLight->mDiffuse);
@@ -514,7 +641,7 @@ namespace Rendering
     }
   }
 
-  void RenderingEngine::setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, const Core::GameObject &gameObject)
+  void RenderingEngine::setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, Core::GameObject &gameObject)
   {
     // Set model matrix
     shader->setMat4("model", gameObject.mTransform->mModelMatrix);

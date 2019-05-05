@@ -17,9 +17,16 @@ namespace Rendering
     WIREFRAME
   };
 
+  enum FXAARenderMode {
+    FXAA,
+    FXAA_AND_DEBUG,
+    NONE
+  };
+
   struct RenderSettings {
     RenderMode mRenderMode;
     TerrainRenderMode mTerrainRenderMode;
+    FXAARenderMode mFXAARenderMode;
     bool mDrawDebugLines;
     
     float mFramebufferWidth;

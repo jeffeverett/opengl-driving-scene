@@ -7,7 +7,7 @@ namespace Components
     class Text : public Component
     {
     public:
-        Text(const Core::GameObject &gameObject);
+        Text(Core::GameObject &gameObject);
         virtual ~Text();
 
         std::string mText;

@@ -2,6 +2,7 @@
 #include "Components/camera.hpp"
 #include "Components/carphysicsbody.hpp"
 #include "Components/wheelmeshrenderer.hpp"
+#include "Components/particlesystemrenderer.hpp"
 #include "Components/meshfilter.hpp"
 #include "Components/meshrenderer.hpp"
 #include "Components/spotlight.hpp"
@@ -9,6 +10,9 @@
 #include "Scripts/camerascript.hpp"
 #include "Utils/meshcreator.hpp"
 #include "Utils/transformconversions.hpp"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
 
 #include <iostream>
 
@@ -141,10 +145,16 @@ namespace Objects
 
         // **** CREATE SPOTLIGHTS AND TAILLIGHTS ****
         // Create child gameobjects
-        auto leftSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17,0.15,0.5));
-        auto rightSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17,0.15,0.5));
-        auto leftTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17,0.15,-0.5));        
-        auto rightTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17,0.15,-0.5));
+        auto leftSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17/SCALE_FACTOR,0.15/SCALE_FACTOR,0.5/SCALE_FACTOR));
+        auto rightSpotLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17/SCALE_FACTOR,0.15/SCALE_FACTOR,0.5/SCALE_FACTOR));
+        auto leftTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(-0.17/SCALE_FACTOR,0.15/SCALE_FACTOR,-0.5/SCALE_FACTOR));        
+        auto rightTailLightGameObject = std::make_shared<Core::GameObject>(glm::vec3(0.17/SCALE_FACTOR,0.15/SCALE_FACTOR,-0.5/SCALE_FACTOR));
+
+        // Rotate lights appropriate amounts
+        leftSpotLightGameObject->mTransform->setRotation(glm::angleAxis(glm::radians(5.0f), glm::vec3(1,0,0)));
+        rightSpotLightGameObject->mTransform->setRotation(glm::angleAxis(glm::radians(5.0f), glm::vec3(1,0,0)));
+        leftTailLightGameObject->mTransform->setRotation(glm::toQuat(glm::yawPitchRoll(glm::radians(180.0f), glm::radians(5.0f), 0.0f)));
+        rightTailLightGameObject->mTransform->setRotation(glm::toQuat(glm::yawPitchRoll(glm::radians(180.0f), glm::radians(5.0f), 0.0f)));
 
         // Add children
         addChild(leftSpotLightGameObject);
@@ -157,8 +167,8 @@ namespace Objects
         for (auto spotLightGameObject : spotLightGameObjects) {
             auto spotLight = std::make_shared<Components::SpotLight>(*spotLightGameObject); 
             spotLight->mAmbient = glm::vec3(0.2,0.2,0.2);
-            spotLight->mDiffuse = glm::vec3(0.75,0.75,0.75);
-            spotLight->mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+            spotLight->mDiffuse = glm::vec3(0.45,0.45,0.45);
+            spotLight->mSpecular = glm::vec3(0.55f, 0.55f, 0.55f);
             spotLight->mInnerCutoff = glm::cos(glm::radians(12.5f));
             spotLight->mOuterCutoff = glm::cos(glm::radians(17.5f));
             spotLight->mConstant = 1.0f;
@@ -171,9 +181,9 @@ namespace Objects
         auto tailLightGameObjects = { leftTailLightGameObject, rightTailLightGameObject };
         for (auto tailLightGameObject : tailLightGameObjects) {
             auto tailLight = std::make_shared<Components::SpotLight>(*tailLightGameObject);
-            tailLight->mAmbient = glm::vec3(0.23f, 0.06f, 0.06f);
-            tailLight->mDiffuse = glm::vec3(0.75f, 0.15f, 0.15f);
-            tailLight->mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+            tailLight->mAmbient = glm::vec3(0.13,0.06,0.06);
+            tailLight->mDiffuse = glm::vec3(0.25,0.15,0.15);
+            tailLight->mSpecular = glm::vec3(0.35f, 0.25f, 0.25f);
             tailLight->mInnerCutoff = glm::cos(glm::radians(12.5f));
             tailLight->mOuterCutoff = glm::cos(glm::radians(17.5f));
             tailLight->mConstant = 1.0f;

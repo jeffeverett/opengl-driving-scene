@@ -9,7 +9,7 @@ namespace Components
     class PhysicsBody : public Component
     {
     public:
-        PhysicsBody(const Core::GameObject &gameObject);
+        PhysicsBody(Core::GameObject &gameObject);
         virtual ~PhysicsBody();
 
         void addChildShape(btTransform localTrans, std::shared_ptr<btCollisionShape> childShape);

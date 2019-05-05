@@ -4,7 +4,7 @@
 
 namespace Components
 {
-    Camera::Camera(const Core::GameObject &gameObject) : Component(gameObject)
+    Camera::Camera(Core::GameObject &gameObject) : Component(gameObject)
     {
     }
 
@@ -12,10 +12,15 @@ namespace Components
     {
     }
 
+    glm::vec3 Camera::getWorldTranslation()
+    {
+        return mFollowTransform->getWorldTranslation() + mGameObject.mTransform->mTranslation;
+    }
+
     glm::mat4 Camera::getViewMatrix(glm::vec3 up)
     {
         return glm::lookAt(
-            mGameObject.mTransform->getWorldTranslation(),
+            getWorldTranslation(),
             mFollowTransform->getWorldTranslation(),
             up
         );

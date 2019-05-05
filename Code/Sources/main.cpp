@@ -89,7 +89,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
             scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEBUG;
         }
     }
-    else if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+    else if (key == GLFW_KEY_V && action == GLFW_PRESS) {
         if (scene.mRenderSettings.mTerrainRenderMode == Rendering::TerrainRenderMode::ALBEDO) {
             scene.mRenderSettings.mTerrainRenderMode = Rendering::TerrainRenderMode::ALBEDO_AND_WIREFRAME;
         }
@@ -98,6 +98,17 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
         }
         else {
             scene.mRenderSettings.mTerrainRenderMode = Rendering::TerrainRenderMode::ALBEDO;
+        }
+    }
+    else if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        if (scene.mRenderSettings.mFXAARenderMode == Rendering::FXAARenderMode::FXAA) {
+            scene.mRenderSettings.mFXAARenderMode = Rendering::FXAARenderMode::FXAA_AND_DEBUG;
+        }
+        else if (scene.mRenderSettings.mFXAARenderMode == Rendering::FXAARenderMode::FXAA_AND_DEBUG) {
+            scene.mRenderSettings.mFXAARenderMode = Rendering::FXAARenderMode::NONE;
+        }
+        else {
+            scene.mRenderSettings.mFXAARenderMode = Rendering::FXAARenderMode::FXAA;
         }
     }
     else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
@@ -139,7 +150,7 @@ int main(int argc, char * argv[])
 
     // Create a window
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
@@ -199,6 +210,8 @@ int main(int argc, char * argv[])
     };
     scene.mCubeMap.setFaces(darkFaces);
     scene.mRenderSettings.mRenderMode = Rendering::RenderMode::DEFERRED_SHADING;
+    scene.mRenderSettings.mTerrainRenderMode = Rendering::TerrainRenderMode::ALBEDO_AND_WIREFRAME;
+    scene.mRenderSettings.mFXAARenderMode = Rendering::FXAARenderMode::FXAA_AND_DEBUG;
     scene.mRenderSettings.mDrawDebugLines = true;
     scene.mRenderSettings.mFramebufferWidth = fbWidth;
     scene.mRenderSettings.mFramebufferHeight = fbHeight;
@@ -265,7 +278,7 @@ int main(int argc, char * argv[])
         physicsEngine.updateScene(scene, deltaTime);
 
         // Draw scene
-        renderingEngine.renderScene(scene, fps);
+        renderingEngine.renderScene(scene, deltaTime, fps);
 
         // Flip buffers and draw
         glfwSwapBuffers(window);

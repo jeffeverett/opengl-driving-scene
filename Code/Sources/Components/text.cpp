@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  Text::Text(const Core::GameObject &gameObject) : Component(gameObject)
+  Text::Text(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 

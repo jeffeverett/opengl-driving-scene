@@ -2,7 +2,7 @@
 
 namespace Components
 {
-  WheelMeshRenderer::WheelMeshRenderer(const Core::GameObject &gameObject) : Component(gameObject)
+  WheelMeshRenderer::WheelMeshRenderer(Core::GameObject &gameObject) : Component(gameObject)
   {
   }
 

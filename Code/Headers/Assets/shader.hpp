@@ -10,7 +10,9 @@ namespace Assets
     class Shader
     {
     public:
+        Shader(std::string computePath);
         Shader(std::string vertexPath, std::string fragmentPath);
+        Shader(std::string vertexPath, std::string geometryPath, std::string fragmentPath);
         Shader(std::string vertexPath, std::string tcsPath, std::string tesPath, std::string geomPath, std::string fragmentPath);
         ~Shader();
 

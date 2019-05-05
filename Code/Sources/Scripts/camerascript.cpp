@@ -16,7 +16,7 @@ const float ROTATION_RATE = 60.0f;
 
 namespace Scripts
 {
-    CameraScript::CameraScript(const Core::GameObject &gameObject) : Script(gameObject),
+    CameraScript::CameraScript(Core::GameObject &gameObject) : Script(gameObject),
       mRadius(DEFAULT_RADIUS), mTheta(DEFAULT_THETA), mPhi(DEFAULT_PHI)
     {
     }
@@ -25,13 +25,13 @@ namespace Scripts
     {
     }
 
-    void CameraScript::onStart()
+    void CameraScript::onStart(Core::Scene &scene)
     {
         mCamera = mGameObject.getComponents<Components::Camera>()[0];
         mCameraTransform = mCamera->mGameObject.mTransform;
     }
 
-    void CameraScript::onUpdate(GLFWwindow *window, float deltaTime)
+    void CameraScript::onUpdate(GLFWwindow *window, Core::Scene &scene, float deltaTime)
     {
         // Key for resetting camera
         if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
@@ -43,7 +43,7 @@ namespace Scripts
         // Keys for modifying radius/theta/phi
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
             mRadius += RADIUS_RATE * deltaTime;
-            if (mRadius > 100) mRadius = 100;
+            if (mRadius > 250) mRadius = 250;
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
             mRadius -= RADIUS_RATE * deltaTime;

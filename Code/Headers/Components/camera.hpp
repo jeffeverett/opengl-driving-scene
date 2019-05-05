@@ -15,9 +15,10 @@ namespace Components
     class Camera : public Component
     {
     public:
-        Camera(const Core::GameObject &gameObject);
+        Camera(Core::GameObject &gameObject);
         virtual ~Camera();
 
+        glm::vec3 getWorldTranslation();
         glm::mat4 getViewMatrix(glm::vec3 up);
         glm::mat4 getProjectionMatrix(float aspectRatio);
         void cycleProjectionMode();

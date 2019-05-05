@@ -1,9 +1,12 @@
-#version 400 core
+#version 440 core
 
-out vec4 FragColor;
+// Inputs
+in vec2 vTexCoords;
 
-in vec2 TexCoords;
+// Outputs
+out vec4 fFragColor;
 
+// Uniforms
 struct DirLight {
     vec3 direction;
 
@@ -70,31 +73,31 @@ vec3 CalcSpotLight(SpotLight light, vec3 viewDir, GBufferInputs gBufferInputs);
 void main()
 {
     // Do nothing if this location was not written to during gBuffer creation
-    if (texture(positionTexture, TexCoords).a == 0.0) {
+    if (texture(positionTexture, vTexCoords).a == 0.0) {
         discard;
     }
 
     // Determine gBuffer inputs from textures
     GBufferInputs gBufferInputs;
-    gBufferInputs.position = texture(positionTexture, TexCoords).rgb;
-    gBufferInputs.normal = texture(normalTexture, TexCoords).rgb;
-    gBufferInputs.albedo = texture(albedoSpecTexture, TexCoords).rgb;
-    gBufferInputs.specular = texture(albedoSpecTexture, TexCoords).a;
+    gBufferInputs.position = texture(positionTexture, vTexCoords).rgb;
+    gBufferInputs.normal = texture(normalTexture, vTexCoords).rgb;
+    gBufferInputs.albedo = texture(albedoSpecTexture, vTexCoords).rgb;
+    gBufferInputs.specular = texture(albedoSpecTexture, vTexCoords).a;
 
     // Convencence calculations
     vec3 viewDir = normalize(viewPos - gBufferInputs.position);
 
     // Phase 1: Directional lighting
     vec3 result = CalcDirLight(dirLight, viewDir, gBufferInputs);
-    /*// Phase 2: Point lights
+    // Phase 2: Point lights
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], viewDir, gBufferInputs);
     // Phase 3: Spot light
     for (int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], viewDir, gBufferInputs);
-    */
+    
     vec4 objectColor = vec4(result, 1.0);
-    FragColor = objectColor;
+    fFragColor = objectColor;
 
     /*
     // Phase 4: Apply fog
@@ -102,7 +105,7 @@ void main()
     // Note: same as GL_EXP
     float f = exp(-fogDensity*distance);
 
-    FragColor = f*objectColor + (1-f)*fogColor;
+    fFragColor = f*objectColor + (1-f)*fogColor;
     */
 }
 
@@ -118,7 +121,7 @@ vec3 CalcDirLight(DirLight light, vec3 viewDir, GBufferInputs gBufferInputs)
     vec3 ambient  = light.ambient  * gBufferInputs.albedo;
     vec3 diffuse  = light.diffuse  * diff * gBufferInputs.albedo;
     vec3 specular = light.specular * spec * vec3(gBufferInputs.specular);
-    return (ambient + diff);
+    return (ambient + diffuse + specular);
 }
 
 vec3 CalcPointLight(PointLight light, vec3 viewDir, GBufferInputs gBufferInputs)

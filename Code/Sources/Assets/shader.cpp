@@ -6,11 +6,31 @@
 
 namespace Assets
 {
+    Shader::Shader(std::string computePath)
+    {
+        // Create shader
+        mID = glCreateProgram();
+        attachShader(GL_COMPUTE_SHADER, computePath, "COMPUTE");
+        glLinkProgram(mID);
+        checkCompileErrors(mID, "PROGRAM");
+    }
+
     Shader::Shader(std::string vertexPath, std::string fragmentPath)
     {
         // Create shader
         mID = glCreateProgram();
         attachShader(GL_VERTEX_SHADER, vertexPath, "VERTEX");
+        attachShader(GL_FRAGMENT_SHADER, fragmentPath, "FRAGMENT");
+        glLinkProgram(mID);
+        checkCompileErrors(mID, "PROGRAM");
+    }
+
+    Shader::Shader(std::string vertexPath, std::string geometryPath, std::string fragmentPath)
+    {
+        // Create shader
+        mID = glCreateProgram();
+        attachShader(GL_VERTEX_SHADER, vertexPath, "VERTEX");
+        attachShader(GL_GEOMETRY_SHADER, geometryPath, "GEOMETRY");
         attachShader(GL_FRAGMENT_SHADER, fragmentPath, "FRAGMENT");
         glLinkProgram(mID);
         checkCompileErrors(mID, "PROGRAM");

@@ -57,10 +57,7 @@ namespace Core
     mtx[3][0] += mTranslation.x;
     mtx[3][1] += mTranslation.y;
     mtx[3][2] += mTranslation.z;
-    mModelMatrix = mtx * startingMatrix;
-
-    //Utils::Logger::log("Starting matrix", startingMatrix);
-    //Utils::Logger::log("Model matrix", mModelMatrix);
+    mModelMatrix = startingMatrix * mtx;
 
     // No longer dirty
     mIsDirty = false;

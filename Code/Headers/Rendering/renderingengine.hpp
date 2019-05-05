@@ -16,7 +16,7 @@ namespace Rendering
         RenderingEngine(int texWidth, int texHeight);
         ~RenderingEngine();
 
-        void renderScene(Core::Scene const &scene, double rollingFPS);
+        void renderScene(Core::Scene const &scene, double deltaTime, double rollingFPS);
 
         std::unique_ptr<DebugRenderer> mDebugRenderer;
         
@@ -24,11 +24,13 @@ namespace Rendering
         RenderingEngine(RenderingEngine const &) = delete;
         RenderingEngine & operator=(RenderingEngine const &) = delete;
 
+        void clearFramebuffer();
+
         void calculateCameraUniforms(Core::Scene const &scene);
         void prepareMaterialForRender(std::shared_ptr<Assets::Material> material);
        
         void setCameraUniforms(std::shared_ptr<Assets::Shader> shader);
-        void setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, const Core::GameObject &gameObject);
+        void setModelUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, Core::GameObject &gameObject);
         void setLightingUniforms(Core::Scene const &scene);
         void setTerrainUniforms(std::shared_ptr<Assets::Shader> shader, Core::Scene const &scene, std::shared_ptr<Components::TerrainRenderer> terrainRenderer);
 
@@ -44,10 +46,14 @@ namespace Rendering
         GLuint mGBufferID;
         GLuint mGDepthID, mGPositionID, mGNormalID, mGAlbedoSpecID;
 
+        GLuint mLBufferID;
+        GLuint mLColorID;
+
         float mTexWidth;
         float mTexHeight;
 
         std::unique_ptr<Assets::Shader> mLightingShader;
+        std::unique_ptr<Assets::Shader> mFXAAShader;
         std::unique_ptr<Assets::Shader> mDebugPositionShader;
         std::unique_ptr<Assets::Shader> mDebugNormalShader;
         std::unique_ptr<Assets::Shader> mDebugAlbedoShader;
