@@ -27,6 +27,13 @@ The following showcases the use of FXAA:
 
 FXAA detects edges in the renderered scene and then blurs those edges. Here, the detected edges are highlighted in purple.
 
+The following showcases the use of the Bullet physics engine:
+
+![FXAA screenshot](Screenshots/bullet_physics.png)
+
+The car has various debug lines, including the red AABB. The other objects in the scene have a green wireframe which represents
+their collision shape.
+
 # Build Instructions:
 This project requires the following libraries:
 - `libbullet-dev`
@@ -78,7 +85,7 @@ The program can then be run like so:
   particle systems, each of which belong to a pre-generated pool that become active when necessary. The update step is performed using
   a compute shader and the billboarded quads are generated using a geometry shader. 
 - Normal mapping (+ specular mapping): Each material has the ability to utilize a normal map and/or specular map. When these
-  textures are not specified, defaults are provided to the shader (for the normal map, the default is a 1x1 blue pixel, and for
+  textures are not specified, defaults are provided to the shader (for the normal map, the default is a `1x1` blue pixel, and for
   the specular map, the default is a `1x1` gray pixel). Currently, the terrain utilizes a non-default normal map and specular map and the car
   utilizes a non-default specular map.
 - FXAA: Rendering engine allows for post-processing in the form of FXAA. Moreover, the edges which are detected during this processing
@@ -106,7 +113,7 @@ The program can then be run like so:
 - Custom-generated geometry: The vertex positions, normals, and texture coordinates for the streetlights and walls are
   all generated programmatically. The streetlight uses two textures (one for the post, one for the bulb), but the
   walls only use one (each "segment", which is a locally-linear approximation of the ellipse, contains one logo;
-  the texture contains three logos, so each segment has a range of 1/3 in the s-coordinate).
+  the texture contains three logos, so each segment has a range of `1/3` in the s-coordinate).
 - Debugging line drawer: The debug drawer extends the Bullet `btIDebugDraw interface`. It provides
   a simple line drawing function; this function is consumed by Bullet to draw the AABB for
   collision geometries. Moreover, I use this facility for my own purposes; right now,
