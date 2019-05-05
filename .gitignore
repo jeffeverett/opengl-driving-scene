@@ -2,8 +2,7 @@ Build
 Build-OSX
 cmake-build-debug
 cmake-build-release
-final
-final.zip
+opengl-driving-scene
 *.pdf
 .vscode
 README
