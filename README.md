@@ -8,7 +8,7 @@ deferred rendering, tessellated terrain, and more.
 ![deferred rendering screenshot](Screenshots/deferred_rendering.png)
 
 The position texture is in the top-left, the normal texture is in the top-right, the diffuse portion of the diffuse/specular
-texture is in the bottom-left, and the specular portion of the diffues/specular texture in the bottom-right.
+texture is in the bottom-left, and the specular portion of the diffuse/specular texture in the bottom-right.
 
 
 ## Tessellated Terrain
